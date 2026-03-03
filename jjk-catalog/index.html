@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquivo Jujutsu | Catálogo de Feiticeiros</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+    <header class="header-principal">
+        <div class="header-conteudo">
+            <div class="header-titulos">
+                <h1>Arquivo Jujutsu</h1>
+                <p>Catálogo de Feiticeiros e Maldições</p>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="busca-personagem" placeholder="Rastrear feiticeiro..." autocomplete="off">
+                
+                <select id="filtro-tipo">
+                    <option value="todos" selected>Todos</option>
+                    <option value="feiticeiro">Feiticeiros</option>
+                    <option value="maldicao">Maldições</option>
+                    <option value="outro">Outros</option>
+                    <option value="favoritos">Selados (Favoritos)</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="grid-personagens" class="grid-personagens">
+            </section>
+    </main>
+
+    <div id="modal-personagem" class="modal">
+        <div class="modal-conteudo">
+            <button id="btn-fechar-modal" class="btn-fechar">&times;</button>
+            
+            <div class="modal-layout">
+                <div class="modal-imagem-placeholder">
+                    <span id="modal-img-texto">[ Imagem ]</span>
+                </div>
+                
+                <div class="modal-info">
+                    <h2 id="modal-nome">Nome do Personagem</h2>
+                    <span id="modal-classe" class="badge">Grau</span>
+                    <p id="modal-descricao">Descrição detalhada vai aqui...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/main.js"></script>
+</body>
+</html>
