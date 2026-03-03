@@ -1,0 +1,620 @@
+/* --- Variáveis de Tema (Estilo JJK Visceral) --- */
+:root {
+    --bg-color: #060606; 
+    --text-color: #eaeaea;
+    --primary-color: #5900b3; 
+    --accent-color: #990000; 
+    --kokusen-red: #ff0000; 
+    --card-bg: #111111;
+    --ofuda-bg: #d9cbb0; 
+    --ofuda-text: #660000; 
+    --transition-speed: 0.2s; 
+    
+    --font-titulo: 'Permanent Marker', cursive;
+    --font-texto: 'Oswald', sans-serif;
+}
+
+/* --- Estilização da Barra de Rolagem --- */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--bg-color);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+    border-left: 1px solid #222;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #222;
+    border-radius: 0px; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-color); 
+}
+
+/* --- Reset Básico --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-texto);
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    overflow-x: hidden;
+    position: relative;
+    background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.01) 0px, rgba(255, 255, 255, 0.01) 2px, transparent 2px, transparent 10px);
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.8) 100%);
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* --- Header Estilizado --- */
+.header-principal {
+    background: linear-gradient(180deg, #000000 0%, #0c0c0c 100%);
+    border-bottom: 3px solid var(--accent-color); 
+    padding: 2.5rem 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(153, 0, 0, 0.3);
+}
+
+.header-principal::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(153, 0, 0, 0.2) 0%, transparent 70%);
+    z-index: 0;
+}
+
+.header-conteudo {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.header-titulos h1 {
+    font-family: var(--font-titulo); 
+    font-size: 3.2rem;
+    color: #fff;
+    text-shadow: 2px 2px 0px var(--accent-color), -1px -1px 8px var(--primary-color);
+    transform: rotate(-1.5deg); 
+    position: relative;
+    margin-bottom: 0.8rem; 
+    line-height: 1.1;
+}
+
+.header-titulos h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; 
+    left: 20px;
+    width: 3px;
+    height: 25px;
+    background-color: var(--accent-color);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 15px 5px 0 var(--accent-color), 40px -2px 0 var(--accent-color); 
+}
+
+.header-titulos p {
+    color: #777;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-top: 0; 
+}
+
+/* --- Barra de Pesquisa e Filtros --- */
+.search-container {
+    flex-grow: 1;
+    max-width: 550px;
+    display: flex; 
+    gap: 15px;
+    align-items: center; 
+}
+
+#busca-personagem {
+    flex: 1; 
+    padding: 0.9rem 1.2rem;
+    border-radius: 0; 
+    border: 1px solid #333;
+    border-left: 5px solid var(--primary-color); 
+    background-color: rgba(0, 0, 0, 0.8);
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-family: var(--font-texto);
+    outline: none;
+    transition: all var(--transition-speed) ease;
+}
+
+#busca-personagem:focus {
+    border-color: var(--accent-color);
+    border-left: 5px solid var(--kokusen-red);
+    box-shadow: 0 0 15px rgba(153, 0, 0, 0.5);
+    background-color: #000;
+}
+
+#filtro-tipo {
+    flex: 0 0 200px; /* Alargado ligeiramente para caber o novo texto de "Selados (Favoritos)" */
+    padding: 0.9rem 0; 
+    border-radius: 0;
+    border: none;
+    
+    background-color: var(--ofuda-bg);
+    color: var(--ofuda-text);
+    
+    font-size: 1rem;
+    font-family: var(--font-texto);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    text-align: center;
+    text-align-last: center; 
+    
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    
+    clip-path: polygon(
+        0% 5%, 5% 0%, 95% 2%, 100% 8%, 
+        98% 92%, 92% 100%, 8% 98%, 0% 90%
+    );
+    
+    position: relative;
+}
+
+#filtro-tipo:hover,
+#filtro-tipo:focus-visible {
+    background-color: #c4b69c; 
+    transform: skewX(-2deg) scale(1.02); 
+    outline: none;
+}
+
+#filtro-tipo option {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-family: var(--font-texto);
+}
+
+/* --- Container Principal --- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    perspective: 1000px; 
+}
+
+/* --- Grid Responsivo --- */
+.grid-personagens {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2.5rem;
+}
+
+/* --- Estilos do Card e Wrapper (COM FÍSICA 3D) --- */
+.card-wrapper {
+    animation: invocarCard 0.6s ease-out backwards;
+    display: block;
+    height: 100%; 
+    perspective: 1200px; 
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid #1a1a1a; 
+    border-radius: 0px; 
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%; 
+    
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) scale(1);
+    transition: transform 0.1s linear, box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease, outline var(--transition-speed);
+}
+
+.card:hover,
+.card:focus-visible {
+    border-color: rgb(var(--cor-aura));
+    box-shadow: 0 15px 35px rgba(var(--cor-aura), 0.5), inset 0 0 15px rgba(var(--cor-aura), 0.2); 
+    z-index: 10; 
+    transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) scale(1.05);
+}
+
+.card:focus-visible {
+    outline: 3px solid var(--kokusen-red);
+    outline-offset: 4px;
+}
+
+.card-imagem-placeholder {
+    width: 100%;
+    height: 380px; 
+    background: linear-gradient(180deg, #111 0%, #000 100%); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    border-bottom: 2px solid #1a1a1a;
+    overflow: hidden; 
+    position: relative; 
+    transform-style: preserve-3d; 
+}
+
+.card-imagem-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(var(--cor-aura), 0.6) 0%, transparent 70%);
+    opacity: 0; 
+    transition: opacity var(--transition-speed) ease; 
+    z-index: 1; 
+}
+
+.card:hover .card-imagem-placeholder::before,
+.card:focus-visible .card-imagem-placeholder::before {
+    opacity: 1;
+}
+
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    object-position: center bottom; 
+    padding: 0.5rem; 
+    transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); 
+    filter: drop-shadow(0 5px 20px rgba(0,0,0,0.9)); 
+    position: relative; 
+    z-index: 2; 
+    transform: translateZ(30px);
+}
+
+.card:hover .card-img,
+.card:focus-visible .card-img {
+    transform: translateZ(60px) scale(1.1) translateY(-5px); 
+}
+
+.card-info {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    position: relative;
+    z-index: 2;
+    background-color: var(--card-bg); 
+    flex-grow: 1; 
+    transform-style: preserve-3d; 
+}
+
+.card-info h3 {
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    color: var(--text-color); 
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+/* --- BADGES (SÉLOS OFUDA) --- */
+.badge {
+    background-color: var(--ofuda-bg); 
+    color: var(--ofuda-text);
+    padding: 0.2rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 3px double var(--ofuda-text); 
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.9); 
+    transform: translateZ(20px) rotate(-3deg); 
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.card:hover .badge,
+.card:focus-visible .badge {
+    transform: translateZ(40px) rotate(0deg) scale(1.05); 
+    box-shadow: 0 5px 15px rgba(var(--cor-aura), 0.6);
+}
+
+.badge.feiticeiro { border-color: #0033cc; color: #0033cc; }
+.badge.maldicao { border-color: #aa0000; color: #aa0000; }
+.badge.neutro { border-color: #886600; color: #886600; }
+.badge.anomalia { border-color: #4b0082; color: #4b0082; }
+
+.texto-hibrido {
+    background: linear-gradient(to right, #0033cc 50%, #aa0000 50%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block; 
+}
+
+/* --- O NOVO BOTÃO DE SELO / FAVORITAR --- */
+.btn-selo {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #333;
+    color: #444; /* Cor apagada (Desativado) */
+    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    
+    /* Aproveita a física 3D do card e salta pra fora */
+    transform: translateZ(30px);
+}
+
+.btn-selo:hover,
+.btn-selo:focus-visible {
+    background: #111;
+    border-color: var(--kokusen-red);
+    color: #fff;
+    transform: translateZ(50px) scale(1.1); /* Salta mais no hover */
+    outline: none;
+}
+
+/* Quando o personagem está SELADO */
+.btn-selo.ativo {
+    color: var(--kokusen-red);
+    border-color: var(--kokusen-red);
+    background: rgba(153, 0, 0, 0.2);
+    text-shadow: 0 0 10px var(--kokusen-red);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    animation: pulsarSelo 2s infinite alternate;
+}
+
+/* --- Modal Base --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none; 
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(10px) grayscale(100%); 
+}
+
+.modal.ativo {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-conteudo {
+    background-color: #000; 
+    border: 2px solid var(--primary-color);
+    border-top: 8px solid var(--kokusen-red); 
+    border-radius: 0px;
+    padding: 3rem; 
+    width: 90%;
+    max-width: 950px; 
+    position: relative;
+    transform: scale(0.8) skewY(5deg); 
+    transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    box-shadow: 0 0 50px rgba(89, 0, 179, 0.4);
+}
+
+.modal.ativo .modal-conteudo {
+    transform: scale(1) skewY(0deg); 
+}
+
+.btn-fechar {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    background: none;
+    border: none;
+    color: #444;
+    font-size: 3.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.btn-fechar:focus-visible {
+    outline: 2px dashed var(--kokusen-red);
+    outline-offset: 5px;
+}
+
+.btn-fechar:hover,
+.btn-fechar:focus-visible {
+    color: var(--kokusen-red);
+    transform: rotate(90deg) scale(1.2); 
+}
+
+/* --- Layout Interno do Modal --- */
+.modal-layout {
+    display: flex;
+    flex-direction: row; 
+    align-items: center; 
+    gap: 4rem; 
+}
+
+.modal-imagem-placeholder {
+    flex: 0 0 320px; 
+    height: 480px;
+    background: #050505;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #1a1a1a;
+    color: #222;
+}
+
+.modal-img-real {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    object-position: center bottom; 
+    padding: 0; 
+    filter: drop-shadow(0 0 25px rgba(var(--cor-aura), 0.5)); 
+}
+
+.modal-info {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.modal-info h2 {
+    font-size: 3.8rem; 
+    text-transform: uppercase;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+    text-shadow: 3px 3px 0px #000;
+}
+
+.modal-info .badge {
+    margin-bottom: 2.5rem; 
+    font-size: 1.1rem;
+    padding: 0.4rem 1.2rem;
+}
+
+.modal-info p {
+    color: #bbb;
+    font-size: 1.25rem;
+    line-height: 1.9;
+    font-weight: 400;
+    font-family: Arial, Helvetica, sans-serif; 
+    background-color: rgba(255, 255, 255, 0.03); 
+    padding: 1rem;
+    border-left: 3px solid #333;
+}
+
+/* --- KEYFRAMES --- */
+@keyframes invocarCard {
+    0% {
+        opacity: 0;
+        transform: translateY(60px) scale(0.9) skewX(5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) skewX(0deg);
+    }
+}
+
+@keyframes pulsarSelo {
+    from { box-shadow: 0 0 5px rgba(255, 0, 0, 0.2); }
+    to { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+    .header-conteudo {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-container {
+        flex-direction: column;
+        max-width: 100%;
+    }
+
+    .modal-layout {
+        flex-direction: column; 
+        align-items: center;
+        gap: 2rem;
+    }
+    
+    .modal-imagem-placeholder {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 300px;
+        height: 350px;
+    }
+
+    .modal-info {
+        align-items: center;
+        text-align: center;
+    }
+    
+    .header-titulos h1 {
+        font-size: 2.2rem;
+    }
+    
+    .modal-info h2 {
+        font-size: 2.8rem;
+    }
+}
+
+/* --- SKELETON UI (EFEITO DE CARREGAMENTO) --- */
+.skeleton {
+    position: relative;
+    overflow: hidden;
+}
+
+/* O feixe de luz passando pela caixa */
+.skeleton::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 1.5s infinite;
+    z-index: 3;
+}
+
+/* Opcional: Esconde a imagem/texto quebrado enquanto não carrega totalmente */
+.skeleton .card-img, 
+.skeleton span {
+    opacity: 0;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
