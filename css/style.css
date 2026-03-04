@@ -52,8 +52,8 @@ body::after {
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none; /* Deixa os cliques vazarem para os botões atrás do canvas */
-    z-index: 999999; /* Sobrepõe absolutamente tudo, incluindo modais e headers */
+    pointer-events: none; 
+    z-index: 999999; 
 }
 
 /* --- Header Estilizado --- */
@@ -63,8 +63,6 @@ body::after {
     padding: 2.5rem 0;
     position: relative;
     box-shadow: 0 5px 20px rgba(153, 0, 0, 0.3);
-    
-    /* A AUTORIDADE SUPREMA: Nada passa por cima do Header */
     z-index: 9999; 
 }
 
@@ -154,7 +152,7 @@ body::after {
     background-color: #000;
 }
 
-/* --- O NOVO MENU DROPDOWN CUSTOMIZADO --- */
+/* --- MENU DROPDOWN CUSTOMIZADO --- */
 .custom-select-wrapper {
     position: relative;
     flex: 0 0 220px; 
@@ -187,7 +185,7 @@ body::after {
 
 .custom-select-options {
     position: absolute;
-    top: calc(100% + 5px); /* Respiro para não colar no botão */
+    top: calc(100% + 5px); 
     left: 0;
     width: 100%;
     background-color: var(--card-bg);
@@ -199,7 +197,7 @@ body::after {
     transform: translateY(-10px);
     transition: all var(--transition-speed) ease;
     box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-    z-index: 99999; /* O elemento mais alto de toda a aplicação */
+    z-index: 99999; 
 }
 
 .custom-select-wrapper.open .custom-select-options {
@@ -230,7 +228,6 @@ body::after {
     padding: 4rem 2rem;
     perspective: 1000px; 
     position: relative;
-    /* A TRAVA FINAL DO 3D: Obriga os cards a respeitarem a hierarquia inferior */
     z-index: 1; 
 }
 
@@ -382,6 +379,7 @@ body::after {
     display: inline-block; 
 }
 
+/* O Botão de Selo Padrão (Nos Cards e no Modal) */
 .btn-selo {
     position: absolute;
     top: 15px;
@@ -421,25 +419,40 @@ body::after {
     animation: pulsarSelo 2s infinite alternate;
 }
 
-/* --- Modal Base --- */
+/* =========================================================
+   A SOLUÇÃO ABSOLUTA DO MODAL (SCROLL FLUIDO & OSSOS REAIS)
+============================================================ */
+
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
     background-color: rgba(0, 0, 0, 0.95); 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none; 
+    z-index: 100000; /* Prioridade máxima sobre todo o site */
+    opacity: 0; pointer-events: none; 
     transition: opacity 0.3s ease;
     backdrop-filter: blur(10px) grayscale(100%); 
+    
+    /* O SEGREDO DO LAYOUT: A rolagem agora é do fundo preto todo */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 60px 20px; /* Respiro pro celular e pc */
 }
 
 .modal.ativo { opacity: 1; pointer-events: all; }
+
+.modal-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 950px; 
+    /* A MÁGICA DE POSICIONAMENTO: Centraliza sempre e empurra se faltar espaço */
+    margin: auto; 
+    transform: scale(0.8) skewY(5deg); 
+    transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.modal.ativo .modal-wrapper { transform: scale(1) skewY(0deg); }
 
 .modal-conteudo {
     background-color: #000; 
@@ -447,37 +460,50 @@ body::after {
     border-top: 8px solid var(--kokusen-red); 
     border-radius: 0px;
     padding: 3rem; 
-    width: 90%;
-    max-width: 950px; 
-    position: relative;
-    transform: scale(0.8) skewY(5deg); 
-    transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    width: 100%;
     box-shadow: 0 0 50px rgba(89, 0, 179, 0.4);
+    height: auto; /* Sem scroll interno! O conteúdo cresce o quanto quiser */
 }
 
-.modal.ativo .modal-conteudo { transform: scale(1) skewY(0deg); }
-
+/* --- A ESCULTURA DOS OSSOS CRUZADOS (O BOTÃO 'X') --- */
 .btn-fechar {
-    position: absolute;
-    top: 15px;
-    right: 25px;
-    background: none;
+    position: fixed; /* O Botão agora cola na TELA, não no Modal. O scroll não afeta ele! */
+    top: 25px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background-color: transparent;
     border: none;
-    color: #444;
-    font-size: 3.5rem;
     cursor: pointer;
-    line-height: 1;
-    transition: color 0.2s, transform 0.2s;
+    z-index: 100001; /* Fica acima do fundo preto do modal */
+    
+    /* O Molde Vetorial (SVG puro de ossos reais convertido para Máscara CSS) */
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M438.6 73.4c-15.5-15.5-40-16.9-57.2-4.1-3.6 2.7-6.8 6-9.4 9.8L256 195 140 79.1c-2.6-3.8-5.8-7.1-9.4-9.8-17.2-12.8-41.7-11.4-57.2 4.1-16 16-16.7 41.5-1.5 58.1 4.7 5.1 10.4 8.9 16.9 10.9l115.9 115.9L88.8 374.2c-6.5 2-12.2 5.8-16.9 10.9-15.2 16.6-14.5 42.1 1.5 58.1 15.5 15.5 40 16.9 57.2 4.1 3.6-2.7 6.8-6 9.4-9.8L256 321l116 116.1c2.6 3.8 5.8 7.1 9.4 9.8 17.2 12.8 41.7 11.4 57.2-4.1 16-16 16.7-41.5 1.5-58.1-4.7-5.1-10.4-8.9-16.9-10.9L307.3 257.9l115.9-115.9c6.5-2 12.2-5.8 16.9-10.9 15.2-16.6 14.5-42.1-1.5-58.1z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M438.6 73.4c-15.5-15.5-40-16.9-57.2-4.1-3.6 2.7-6.8 6-9.4 9.8L256 195 140 79.1c-2.6-3.8-5.8-7.1-9.4-9.8-17.2-12.8-41.7-11.4-57.2 4.1-16 16-16.7 41.5-1.5 58.1 4.7 5.1 10.4 8.9 16.9 10.9l115.9 115.9L88.8 374.2c-6.5 2-12.2 5.8-16.9 10.9-15.2 16.6-14.5 42.1 1.5 58.1 15.5 15.5 40 16.9 57.2 4.1 3.6-2.7 6.8-6 9.4-9.8L256 321l116 116.1c2.6 3.8 5.8 7.1 9.4 9.8 17.2 12.8 41.7 11.4 57.2-4.1 16-16 16.7-41.5 1.5-58.1-4.7-5.1-10.4-8.9-16.9-10.9L307.3 257.9l115.9-115.9c6.5-2 12.2-5.8 16.9-10.9 15.2-16.6 14.5-42.1-1.5-58.1z'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain; mask-size: contain;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center;
+    
+    /* Textura 3D Fosca (Cor de Marfim/Osso Ancestral) */
+    background-image: radial-gradient(circle at 30% 30%, #ffffff 0%, #e3dac9 40%, #a6987c 100%);
+    filter: drop-shadow(0 5px 8px rgba(0,0,0,0.8)); 
+    transition: all 0.3s ease;
 }
 
 .btn-fechar:focus-visible { outline: 2px dashed var(--kokusen-red); outline-offset: 5px; }
-.btn-fechar:hover, .btn-fechar:focus-visible { color: var(--kokusen-red); transform: rotate(90deg) scale(1.2); }
 
-.modal-layout { display: flex; flex-direction: row; align-items: center; gap: 4rem; }
+/* Acendendo o osso com energia amaldiçoada */
+.btn-fechar:hover, .btn-fechar:focus-visible {
+    background-image: radial-gradient(circle at 30% 30%, #ff6666 0%, var(--kokusen-red) 50%, #660000 100%);
+    transform: rotate(90deg) scale(1.1); 
+    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.8)); 
+    animation: chocalhoDeOsso 0.4s infinite;
+}
+
+.modal-layout { display: flex; flex-direction: row; align-items: stretch; gap: 4rem; }
 
 .modal-imagem-placeholder {
     flex: 0 0 320px; 
-    height: 480px;
     background: #050505;
     display: flex;
     align-items: center;
@@ -486,17 +512,52 @@ body::after {
     color: #222;
 }
 
-.modal-img-real {
-    width: 100%; height: 100%; object-fit: contain; object-position: center bottom; padding: 0; filter: drop-shadow(0 0 25px rgba(var(--cor-aura), 0.5)); 
+.modal-img-real { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; padding: 0; filter: drop-shadow(0 0 25px rgba(var(--cor-aura), 0.5)); }
+.modal-info { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+
+/* --- ALINHAMENTO DO TÍTULO E BOTÃO SELAR NO MODAL --- */
+.modal-titulo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
 }
 
-.modal-info { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
-.modal-info h2 { font-size: 3.8rem; text-transform: uppercase; color: var(--text-color); margin-bottom: 0.5rem; line-height: 1; text-shadow: 3px 3px 0px #000; }
+.modal-titulo-wrapper h2 {
+    font-size: 3.8rem; 
+    text-transform: uppercase; 
+    color: var(--text-color); 
+    margin-bottom: 0; /* Tiramos a margem base para o flexbox controlar */
+    line-height: 1; 
+    text-shadow: 3px 3px 0px #000;
+}
+
+/* O Botão dentro do Modal perde a flutuação agressiva 3D */
+.modal-titulo-wrapper .btn-selo {
+    position: static; 
+    transform: none; 
+}
+
+.modal-titulo-wrapper .btn-selo:hover,
+.modal-titulo-wrapper .btn-selo:focus-visible {
+    transform: scale(1.1); 
+}
+
 .modal-info .badge { margin-bottom: 2.5rem; font-size: 1.1rem; padding: 0.4rem 1.2rem; }
 .modal-info p { color: #bbb; font-size: 1.25rem; line-height: 1.9; font-weight: 400; font-family: Arial, Helvetica, sans-serif; background-color: rgba(255, 255, 255, 0.03); padding: 1rem; border-left: 3px solid #333; }
 
+/* --- KEYFRAMES --- */
 @keyframes invocarCard { 0% { opacity: 0; transform: translateY(60px) scale(0.9) skewX(5deg); } 100% { opacity: 1; transform: translateY(0) scale(1) skewX(0deg); } }
 @keyframes pulsarSelo { from { box-shadow: 0 0 5px rgba(255, 0, 0, 0.2); } to { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); } }
+@keyframes chocalhoDeOsso {
+    0% { transform: rotate(0deg) scale(1.1); }
+    25% { transform: rotate(10deg) scale(1.1); }
+    50% { transform: rotate(0deg) scale(1.1); }
+    75% { transform: rotate(-10deg) scale(1.1); }
+    100% { transform: rotate(0deg) scale(1.1); }
+}
 
 /* --- SKELETON UI --- */
 .skeleton { position: relative; overflow: hidden; }
@@ -512,14 +573,26 @@ body::after {
 @media (max-width: 768px) {
     .header-conteudo { flex-direction: column; align-items: stretch; }
     .search-container { flex-direction: column; max-width: 100%; }
-    
     .custom-select-wrapper { flex: 0 0 auto; width: 100%; max-width: 280px; align-self: center; }
 
-    .modal-conteudo { max-height: 85vh; overflow-y: auto; padding: 2rem 1.5rem; }
+    /* Ajuste para o botão caber perfeitamente no celular */
+    .btn-fechar {
+        top: 15px; 
+        right: 15px; 
+        width: 35px; 
+        height: 35px;
+    }
 
     .modal-layout { flex-direction: column; align-items: center; gap: 2rem; }
     .modal-imagem-placeholder { flex: 0 0 auto; width: 100%; max-width: 300px; height: 350px; }
     .modal-info { align-items: center; text-align: center; }
+    
+    .modal-titulo-wrapper {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .modal-titulo-wrapper h2 { font-size: 2.2rem; } 
     .header-titulos h1 { font-size: 2.2rem; }
-    .modal-info h2 { font-size: 2.2rem; } 
 }
