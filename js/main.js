@@ -1,4 +1,98 @@
-// --- 1. SELEÇÃO DE ELEMENTOS DO DOM ---
+// --- 1. MOTOR DE PARTÍCULAS (CANVAS 2D) ---
+const canvasVFX = document.getElementById('dominio-vfx');
+const ctxVFX = canvasVFX.getContext('2d');
+let particulasAtivas = [];
+let motorRodando = false;
+
+// Redimensiona o canvas para sempre acompanhar a tela
+function redimensionarCanvas() {
+    canvasVFX.width = window.innerWidth;
+    canvasVFX.height = window.innerHeight;
+}
+window.addEventListener('resize', redimensionarCanvas);
+redimensionarCanvas();
+
+class ParticulaEnergia {
+    constructor(x, y, corRGB) {
+        this.x = x;
+        this.y = y;
+        
+        // Disparo radial aleatório (Trigonometria pura)
+        const angulo = Math.random() * Math.PI * 2;
+        const forcaExplosao = Math.random() * 6 + 2; 
+        
+        this.vx = Math.cos(angulo) * forcaExplosao;
+        this.vy = Math.sin(angulo) * forcaExplosao;
+        
+        this.tamanho = Math.random() * 4 + 2;
+        this.cor = corRGB;
+        this.vida = 1.0; // Nasce com 100% de opacidade
+        this.decaimento = Math.random() * 0.03 + 0.015; // Velocidade que a luz apaga
+        this.gravidade = 0.15; // Puxa as partículas levemente para baixo com o tempo
+    }
+
+    atualizar() {
+        this.vy += this.gravidade; 
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vida -= this.decaimento;
+    }
+
+    desenhar(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.tamanho, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.cor}, ${this.vida})`;
+        
+        // Efeito de brilho (Glow) usando Shadow
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = `rgba(${this.cor}, ${this.vida})`;
+        ctx.fill();
+        
+        // Reset da sombra para não poluir as próximas
+        ctx.shadowBlur = 0;
+    }
+}
+
+function invocarExplosao(x, y, corAura) {
+    // Cria 30 faíscas no local do clique
+    for (let i = 0; i < 30; i++) {
+        particulasAtivas.push(new ParticulaEnergia(x, y, corAura));
+    }
+    
+    // Se o motor estiver dormindo, acorde-o
+    if (!motorRodando) {
+        motorRodando = true;
+        animarMotorVFX();
+    }
+}
+
+function animarMotorVFX() {
+    // Limpa o frame anterior inteiro
+    ctxVFX.clearRect(0, 0, canvasVFX.width, canvasVFX.height);
+    
+    // Se não houver mais partículas vivas, desliga o requestAnimationFrame para salvar CPU
+    if (particulasAtivas.length === 0) {
+        motorRodando = false;
+        return; 
+    }
+
+    // Loop reverso (Best practice) para deletar itens de um array sem quebrar o índice
+    for (let i = particulasAtivas.length - 1; i >= 0; i--) {
+        const p = particulasAtivas[i];
+        p.atualizar();
+        
+        if (p.vida <= 0) {
+            particulasAtivas.splice(i, 1); // Destrói do array quando a luz acaba
+        } else {
+            p.desenhar(ctxVFX);
+        }
+    }
+
+    // Chama o próximo frame
+    requestAnimationFrame(animarMotorVFX);
+}
+
+// --- 2. SELEÇÃO DE ELEMENTOS DO DOM ---
 const gridPersonagens = document.getElementById('grid-personagens');
 const modal = document.getElementById('modal-personagem');
 const btnFecharModal = document.getElementById('btn-fechar-modal');
@@ -19,19 +113,16 @@ const textoFiltro = document.getElementById('filtro-texto');
 const opcoesFiltro = document.querySelectorAll('.custom-select-options li');
 let filtroTipoAtual = 'todos';
 
-// Abre/Fecha o menu ao clicar
 selectWrapper.addEventListener('click', () => {
     selectWrapper.classList.toggle('open');
 });
 
-// Fecha o menu se clicar fora dele
 document.addEventListener('click', (evento) => {
     if (!selectWrapper.contains(evento.target)) {
         selectWrapper.classList.remove('open');
     }
 });
 
-// Lida com o clique nas opções do menu
 opcoesFiltro.forEach(opcao => {
     opcao.addEventListener('click', (e) => {
         opcoesFiltro.forEach(opt => opt.classList.remove('selected'));
@@ -42,8 +133,7 @@ opcoesFiltro.forEach(opcao => {
     });
 });
 
-
-// --- 2. COMUNICAÇÃO COM A NOSSA "API" LOCAL ---
+// --- 3. COMUNICAÇÃO COM A NOSSA "API" LOCAL ---
 async function invocarFeiticeiros() {
     try {
         const resposta = await fetch('./data/personagens.json');
@@ -88,7 +178,7 @@ function lerURL() {
     aplicarFiltros(); 
 }
 
-// --- 3. RENDERIZAÇÃO ---
+// --- 4. RENDERIZAÇÃO ---
 function renderizarCards(listaDePersonagens) {
     gridPersonagens.innerHTML = "";
 
@@ -106,7 +196,8 @@ function renderizarCards(listaDePersonagens) {
         card.classList.add('card');
         card.setAttribute('tabindex', '0');
         
-        card.style.setProperty('--cor-aura', personagem.corAura || "89, 0, 179");
+        const corAura = personagem.corAura || "89, 0, 179";
+        card.style.setProperty('--cor-aura', corAura);
         
         let elementoVisual = `<span>${personagem.imgPlaceholder}</span>`;
         let temImagem = false;
@@ -135,9 +226,18 @@ function renderizarCards(listaDePersonagens) {
         btnSelo.setAttribute('title', 'Selar Personagem');
         if (feiticeirosSelados.includes(personagem.id)) btnSelo.classList.add('ativo');
 
+        // INTEGRAÇÃO DO MOTOR: Atira partículas ao clicar
         btnSelo.addEventListener('click', (evento) => {
             evento.stopPropagation(); 
             alternarSelo(personagem.id, btnSelo);
+            
+            // Pega a exata coordenada do botão na tela para centrar a explosão
+            const rect = btnSelo.getBoundingClientRect();
+            const centroX = rect.left + (rect.width / 2);
+            const centroY = rect.top + (rect.height / 2);
+            
+            // Invoca a explosão com a cor do personagem!
+            invocarExplosao(centroX, centroY, corAura);
         });
 
         card.appendChild(btnSelo);
@@ -182,7 +282,7 @@ function resetarFisica(card) {
     card.style.setProperty('--mouse-y', `50%`);
 }
 
-// --- RASTREADOR DE ENERGIA TOUCH (Com trava de Scroll após 300ms) ---
+// --- RASTREADOR DE ENERGIA TOUCH ---
 let cardAtivoTouch = null;
 let modoTravado = false;
 let temporizadorTrava = null;
@@ -197,11 +297,10 @@ document.addEventListener('touchstart', (evento) => {
     const card = elementoAlvo.closest('.card');
     
     if (card) {
-        // Inicia contagem: se segurar por 300ms, trava a tela para rodar a animação
         temporizadorTrava = setTimeout(() => {
             modoTravado = true;
             cardAtivoTouch = card;
-            card.classList.add('touch-travado'); // Dá o brilho
+            card.classList.add('touch-travado'); 
             
             const rect = card.getBoundingClientRect();
             aplicarFisica(card, touch.clientX - rect.left, touch.clientY - rect.top);
@@ -211,15 +310,13 @@ document.addEventListener('touchstart', (evento) => {
 
 document.addEventListener('touchmove', (evento) => {
     if (modoTravado) {
-        // A MÁGICA AQUI: O Dedo segurou o card? A tela para de rolar e vira um mouse 3D.
         evento.preventDefault(); 
     } else {
-        // Se o dedo moveu rápido antes dos 300ms, ele quer rolar a tela. Cancela a armadilha 3D!
         const touch = evento.touches[0];
         if (Math.abs(touch.clientY - posYInicial) > 10) {
             clearTimeout(temporizadorTrava);
         }
-        return; // Sai daqui para deixar a tela rolar normalmente
+        return; 
     }
 
     const touch = evento.touches[0];
@@ -242,7 +339,7 @@ document.addEventListener('touchmove', (evento) => {
         cardAtivoTouch.classList.remove('touch-travado');
         cardAtivoTouch = null;
     }
-}, { passive: false }); // PRECISA SER FALSE para o evento.preventDefault funcionar!
+}, { passive: false }); 
 
 function liberarDominoTouch() {
     clearTimeout(temporizadorTrava);
@@ -303,7 +400,7 @@ function debounce(funcao, tempoEspera) {
     };
 }
 
-// --- 4. MODAL ---
+// --- 5. MODAL ---
 function abrirModal(personagem) {
     modalNome.textContent = personagem.nome;
     modalNome.className = ''; 

@@ -45,6 +45,17 @@ body::after {
     z-index: 999;
 }
 
+/* --- MOTOR DE PARTÍCULAS (CANVAS) --- */
+#dominio-vfx {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; /* Deixa os cliques vazarem para os botões atrás do canvas */
+    z-index: 999999; /* Sobrepõe absolutamente tudo, incluindo modais e headers */
+}
+
 /* --- Header Estilizado --- */
 .header-principal {
     background: linear-gradient(180deg, #000000 0%, #0c0c0c 100%);
