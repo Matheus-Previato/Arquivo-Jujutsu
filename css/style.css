@@ -51,9 +51,10 @@ body::after {
     border-bottom: 3px solid var(--accent-color); 
     padding: 2.5rem 0;
     position: relative;
-    /* overflow: hidden; <--- O VILÃO FOI REMOVIDO DAQUI */
     box-shadow: 0 5px 20px rgba(153, 0, 0, 0.3);
-    z-index: 100; 
+    
+    /* A AUTORIDADE SUPREMA: Nada passa por cima do Header */
+    z-index: 9999; 
 }
 
 .header-principal::before {
@@ -66,7 +67,7 @@ body::after {
     height: 120px;
     background: radial-gradient(circle, rgba(153, 0, 0, 0.2) 0%, transparent 70%);
     z-index: 0;
-    pointer-events: none; /* Garante que a luz não bloqueie cliques */
+    pointer-events: none; 
 }
 
 .header-conteudo {
@@ -79,9 +80,7 @@ body::after {
     flex-wrap: wrap;
     gap: 1.5rem;
     position: relative;
-    
-    /* CORREÇÃO DO BUG: Tiramos do nível 1 e colocamos no 100 para o menu varar os cards */
-    z-index: 100; 
+    z-index: 9999; 
 }
 
 .header-titulos h1 {
@@ -153,7 +152,7 @@ body::after {
     text-transform: uppercase;
     letter-spacing: 1px;
     outline: none;
-    z-index: 50; 
+    z-index: 9999; 
 }
 
 .custom-select-trigger {
@@ -175,10 +174,9 @@ body::after {
     transform: skewX(-2deg) scale(1.02); 
 }
 
-/* Lista negra de opções */
 .custom-select-options {
     position: absolute;
-    top: 110%; 
+    top: calc(100% + 5px); /* Respiro para não colar no botão */
     left: 0;
     width: 100%;
     background-color: var(--card-bg);
@@ -190,7 +188,7 @@ body::after {
     transform: translateY(-10px);
     transition: all var(--transition-speed) ease;
     box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-    z-index: 999;
+    z-index: 99999; /* O elemento mais alto de toda a aplicação */
 }
 
 .custom-select-wrapper.open .custom-select-options {
@@ -220,6 +218,9 @@ body::after {
     margin: 0 auto;
     padding: 4rem 2rem;
     perspective: 1000px; 
+    position: relative;
+    /* A TRAVA FINAL DO 3D: Obriga os cards a respeitarem a hierarquia inferior */
+    z-index: 1; 
 }
 
 .grid-personagens {
