@@ -24,7 +24,6 @@ async function invocarFeiticeiros() {
 
         bancoDeDadosPersonagens = await resposta.json();
         
-        // A MÁGICA INICIAL: Em vez de desenhar tudo, o sistema lê a URL primeiro para ver se tem filtros salvos
         lerURL(); 
         
         console.log("Domínio Expandido: JSON e URLs sincronizados com sucesso!");
@@ -44,21 +43,18 @@ async function invocarFeiticeiros() {
 function atualizarURL(busca, tipo) {
     const url = new URL(window.location);
     
-    // Se o usuário digitou algo, coloca na URL. Se apagou, limpa da URL.
     if (busca) {
         url.searchParams.set('busca', busca);
     } else {
         url.searchParams.delete('busca');
     }
 
-    // Se o usuário filtrou algo diferente de 'todos', coloca na URL.
     if (tipo && tipo !== 'todos') {
         url.searchParams.set('tipo', tipo);
     } else {
         url.searchParams.delete('tipo');
     }
 
-    // Altera a URL no navegador sem recarregar a página
     window.history.replaceState({}, '', url);
 }
 
@@ -67,15 +63,12 @@ function lerURL() {
     const busca = urlParams.get('busca');
     const tipo = urlParams.get('tipo');
 
-    // Preenche o HTML visualmente com o que estava na URL
     if (busca) inputBusca.value = busca;
     if (tipo) {
-        // Verifica se a opção digitada maliciosamente na URL realmente existe no nosso select
         const opcaoExiste = Array.from(selectFiltro.options).some(opt => opt.value === tipo);
         if(opcaoExiste) selectFiltro.value = tipo;
     }
 
-    // Chama o filtro mestre para rodar a lógica (que por padrão, se estiver tudo vazio, mostra todos)
     aplicarFiltros(); 
 }
 
@@ -159,26 +152,16 @@ function renderizarCards(listaDePersonagens) {
             }
         });
 
+        // Eventos MOUSE nativos chamando a função utilitária
         card.addEventListener('mousemove', (evento) => {
             const rect = card.getBoundingClientRect();
             const x = evento.clientX - rect.left;
             const y = evento.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = ((y - centerY) / centerY) * -15; 
-            const rotateY = ((x - centerX) / centerX) * 15;
-
-            card.style.setProperty('--rotateX', `${rotateX}deg`);
-            card.style.setProperty('--rotateY', `${rotateY}deg`);
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
+            aplicarFisica(card, x, y);
         });
 
         card.addEventListener('mouseleave', () => {
-            card.style.setProperty('--rotateX', `0deg`);
-            card.style.setProperty('--rotateY', `0deg`);
-            card.style.setProperty('--mouse-x', `50%`);
-            card.style.setProperty('--mouse-y', `50%`);
+            resetarFisica(card);
         });
 
         wrapperCard.appendChild(card);
@@ -186,6 +169,81 @@ function renderizarCards(listaDePersonagens) {
     });
 }
 
+// --- FUNÇÕES UTILITÁRIAS DE FÍSICA (MOUSE E TOUCH) ---
+function aplicarFisica(card, x, y) {
+    const rect = card.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -15; 
+    const rotateY = ((x - centerX) / centerX) * 15;
+
+    card.style.setProperty('--rotateX', `${rotateX}deg`);
+    card.style.setProperty('--rotateY', `${rotateY}deg`);
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+    
+    // Adiciona uma classe manual para forçar o brilho/parallax no celular
+    card.classList.add('touch-ativo'); 
+}
+
+function resetarFisica(card) {
+    card.style.setProperty('--rotateX', `0deg`);
+    card.style.setProperty('--rotateY', `0deg`);
+    card.style.setProperty('--mouse-x', `50%`);
+    card.style.setProperty('--mouse-y', `50%`);
+    card.classList.remove('touch-ativo');
+}
+
+// --- O RASTREADOR DE ENERGIA (MAGIA DO TOUCH MOBILE) ---
+let cardAtivoTouch = null;
+
+// Rastreia o dedo arrastando pela tela inteira
+document.addEventListener('touchmove', (evento) => {
+    const touch = evento.touches[0];
+    
+    // Descobre qual elemento HTML está debaixo da coordenada exata do dedo
+    const elementoAlvo = document.elementFromPoint(touch.clientX, touch.clientY);
+    
+    if (!elementoAlvo) return;
+
+    // Verifica se o dedo está em cima de um Card
+    const card = elementoAlvo.closest('.card');
+
+    if (card) {
+        // Se o dedo pulou de um card para outro, reseta o anterior
+        if (cardAtivoTouch && cardAtivoTouch !== card) {
+            resetarFisica(cardAtivoTouch);
+        }
+        cardAtivoTouch = card;
+
+        // Calcula as coordenadas relativas ao card atual
+        const rect = card.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+
+        aplicarFisica(card, x, y);
+    } else if (cardAtivoTouch) {
+        // Se o dedo saiu do card para o fundo preto, reseta e limpa a variável
+        resetarFisica(cardAtivoTouch);
+        cardAtivoTouch = null;
+    }
+}, { passive: true }); // passive: true avisa o celular para não travar o scroll da página
+
+// Quando o usuário tira o dedo da tela, zera tudo (O Fim do Toque Fantasma)
+document.addEventListener('touchend', () => {
+    if (cardAtivoTouch) {
+        resetarFisica(cardAtivoTouch);
+        cardAtivoTouch = null;
+    }
+});
+document.addEventListener('touchcancel', () => {
+    if (cardAtivoTouch) {
+        resetarFisica(cardAtivoTouch);
+        cardAtivoTouch = null;
+    }
+});
+
+// --- LÓGICA DE SELAMENTO E FILTROS ABAIXO (MANTIDOS IGUAIS) ---
 function alternarSelo(idPersonagem, botaoElemento) {
     const index = feiticeirosSelados.indexOf(idPersonagem);
     
@@ -208,7 +266,6 @@ function aplicarFiltros() {
     const termoBusca = inputBusca.value.toLowerCase();
     const tipoFiltro = selectFiltro.value;
 
-    // Atualiza a barra de endereço instantaneamente
     atualizarURL(termoBusca, tipoFiltro);
 
     const personagensFiltrados = bancoDeDadosPersonagens.filter(personagem => {

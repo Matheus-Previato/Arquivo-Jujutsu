@@ -165,7 +165,7 @@ body::after {
 }
 
 #filtro-tipo {
-    flex: 0 0 200px; /* Alargado ligeiramente para caber o novo texto de "Selados (Favoritos)" */
+    flex: 0 0 200px; 
     padding: 0.9rem 0; 
     border-radius: 0;
     border: none;
@@ -244,8 +244,10 @@ body::after {
     transition: transform 0.1s linear, box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease, outline var(--transition-speed);
 }
 
+/* NOVO: A classe .touch-ativo agora recebe os mesmos poderes visuais que o :hover */
 .card:hover,
-.card:focus-visible {
+.card:focus-visible,
+.card.touch-ativo {
     border-color: rgb(var(--cor-aura));
     box-shadow: 0 15px 35px rgba(var(--cor-aura), 0.5), inset 0 0 15px rgba(var(--cor-aura), 0.2); 
     z-index: 10; 
@@ -285,7 +287,8 @@ body::after {
 }
 
 .card:hover .card-imagem-placeholder::before,
-.card:focus-visible .card-imagem-placeholder::before {
+.card:focus-visible .card-imagem-placeholder::before,
+.card.touch-ativo .card-imagem-placeholder::before {
     opacity: 1;
 }
 
@@ -303,7 +306,8 @@ body::after {
 }
 
 .card:hover .card-img,
-.card:focus-visible .card-img {
+.card:focus-visible .card-img,
+.card.touch-ativo .card-img {
     transform: translateZ(60px) scale(1.1) translateY(-5px); 
 }
 
@@ -345,7 +349,8 @@ body::after {
 }
 
 .card:hover .badge,
-.card:focus-visible .badge {
+.card:focus-visible .badge,
+.card.touch-ativo .badge {
     transform: translateZ(40px) rotate(0deg) scale(1.05); 
     box-shadow: 0 5px 15px rgba(var(--cor-aura), 0.6);
 }
@@ -370,7 +375,7 @@ body::after {
     right: 15px;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid #333;
-    color: #444; /* Cor apagada (Desativado) */
+    color: #444; 
     font-size: 1.3rem;
     width: 40px;
     height: 40px;
@@ -381,21 +386,19 @@ body::after {
     cursor: pointer;
     z-index: 10;
     transition: all 0.3s ease;
-    
-    /* Aproveita a física 3D do card e salta pra fora */
     transform: translateZ(30px);
 }
 
 .btn-selo:hover,
-.btn-selo:focus-visible {
+.btn-selo:focus-visible,
+.card.touch-ativo .btn-selo {
     background: #111;
     border-color: var(--kokusen-red);
     color: #fff;
-    transform: translateZ(50px) scale(1.1); /* Salta mais no hover */
+    transform: translateZ(50px) scale(1.1); 
     outline: none;
 }
 
-/* Quando o personagem está SELADO */
 .btn-selo.ativo {
     color: var(--kokusen-red);
     border-color: var(--kokusen-red);
@@ -548,7 +551,37 @@ body::after {
     to { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
 }
 
-/* --- Responsividade --- */
+/* --- SKELETON UI --- */
+.skeleton {
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 1.5s infinite;
+    z-index: 3;
+}
+
+.skeleton .card-img, 
+.skeleton span {
+    opacity: 0;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* --- RESPONSIVIDADE (MOBILE ABSOLUTO) --- */
 @media (max-width: 768px) {
     .header-conteudo {
         flex-direction: column;
@@ -558,6 +591,21 @@ body::after {
     .search-container {
         flex-direction: column;
         max-width: 100%;
+    }
+
+    /* CORREÇÃO DO ANEXO 1: O Botão não será mais gigantesco */
+    #filtro-tipo {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 280px; /* Limite seguro para manter elegância no celular */
+        align-self: center; /* Centraliza ele abaixo do campo de busca */
+    }
+
+    /* CORREÇÃO DO ANEXO 4: Modal transbordando na tela */
+    .modal-conteudo {
+        max-height: 85vh; /* Ocupa no máximo 85% da tela */
+        overflow-y: auto; /* Permite rolar apenas por dentro, salvando textos gigantes */
+        padding: 2rem 1.5rem; /* Ajuste no respiro interno */
     }
 
     .modal-layout {
@@ -583,38 +631,6 @@ body::after {
     }
     
     .modal-info h2 {
-        font-size: 2.8rem;
-    }
-}
-
-/* --- SKELETON UI (EFEITO DE CARREGAMENTO) --- */
-.skeleton {
-    position: relative;
-    overflow: hidden;
-}
-
-/* O feixe de luz passando pela caixa */
-.skeleton::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-    transform: translateX(-100%);
-    animation: shimmer 1.5s infinite;
-    z-index: 3;
-}
-
-/* Opcional: Esconde a imagem/texto quebrado enquanto não carrega totalmente */
-.skeleton .card-img, 
-.skeleton span {
-    opacity: 0;
-}
-
-@keyframes shimmer {
-    100% {
-        transform: translateX(100%);
+        font-size: 2.2rem; /* Fonte menor no mobile para não ocupar muito espaço */
     }
 }
