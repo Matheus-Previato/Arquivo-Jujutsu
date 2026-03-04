@@ -14,36 +14,13 @@
     --font-texto: 'Oswald', sans-serif;
 }
 
-/* --- Estilização da Barra de Rolagem --- */
-html {
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent-color) var(--bg-color);
-}
+html { scrollbar-width: thin; scrollbar-color: var(--accent-color) var(--bg-color); }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-color); border-left: 1px solid #222; }
+::-webkit-scrollbar-thumb { background-color: #222; border-radius: 0px; }
+::-webkit-scrollbar-thumb:hover { background-color: var(--accent-color); }
 
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-color);
-    border-left: 1px solid #222;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #222;
-    border-radius: 0px; 
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: var(--accent-color); 
-}
-
-/* --- Reset Básico --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     background-color: var(--bg-color);
@@ -68,7 +45,6 @@ body::after {
     z-index: 999;
 }
 
-/* --- Header Estilizado --- */
 .header-principal {
     background: linear-gradient(180deg, #000000 0%, #0c0c0c 100%);
     border-bottom: 3px solid var(--accent-color); 
@@ -134,7 +110,6 @@ body::after {
     margin-top: 0; 
 }
 
-/* --- Barra de Pesquisa e Filtros --- */
 .search-container {
     flex-grow: 1;
     max-width: 550px;
@@ -164,46 +139,73 @@ body::after {
     background-color: #000;
 }
 
-#filtro-tipo {
-    flex: 0 0 200px; 
-    padding: 0.9rem 0; 
-    border-radius: 0;
-    border: none;
-    
-    background-color: var(--ofuda-bg);
-    color: var(--ofuda-text);
-    
-    font-size: 1rem;
+/* --- O NOVO MENU DROPDOWN CUSTOMIZADO (Livre do Padrão Google) --- */
+.custom-select-wrapper {
+    position: relative;
+    flex: 0 0 220px; 
     font-family: var(--font-texto);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    
-    text-align: center;
-    text-align-last: center; 
-    
-    cursor: pointer;
-    transition: all var(--transition-speed) ease;
-    
-    clip-path: polygon(
-        0% 5%, 5% 0%, 95% 2%, 100% 8%, 
-        98% 92%, 92% 100%, 8% 98%, 0% 90%
-    );
-    
-    position: relative;
+    outline: none;
+    z-index: 50; /* Garante que o menu abra acima de tudo */
 }
 
-#filtro-tipo:hover,
-#filtro-tipo:focus-visible {
+.custom-select-trigger {
+    background-color: var(--ofuda-bg);
+    color: var(--ofuda-text);
+    padding: 0.9rem 1.2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all var(--transition-speed) ease;
+    clip-path: polygon(0% 5%, 5% 0%, 95% 2%, 100% 8%, 98% 92%, 92% 100%, 8% 98%, 0% 90%);
+}
+
+.custom-select-wrapper:hover .custom-select-trigger,
+.custom-select-wrapper:focus-visible .custom-select-trigger,
+.custom-select-wrapper.open .custom-select-trigger {
     background-color: #c4b69c; 
     transform: skewX(-2deg) scale(1.02); 
-    outline: none;
 }
 
-#filtro-tipo option {
+/* Lista negra de opções */
+.custom-select-options {
+    position: absolute;
+    top: 110%; /* Fica logo abaixo do botão de Ofuda */
+    left: 0;
+    width: 100%;
     background-color: var(--card-bg);
+    border: 1px solid #333;
+    border-top: 3px solid var(--accent-color);
+    list-style: none;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all var(--transition-speed) ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+}
+
+.custom-select-wrapper.open .custom-select-options {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
+.custom-select-options li {
+    padding: 0.9rem 1.2rem;
     color: var(--text-color);
-    font-family: var(--font-texto);
+    border-bottom: 1px solid #1a1a1a;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.custom-select-options li:hover, 
+.custom-select-options li.selected {
+    background-color: #222;
+    color: var(--kokusen-red);
+    border-left: 4px solid var(--kokusen-red);
 }
 
 /* --- Container Principal --- */
@@ -214,14 +216,13 @@ body::after {
     perspective: 1000px; 
 }
 
-/* --- Grid Responsivo --- */
 .grid-personagens {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 2.5rem;
 }
 
-/* --- Estilos do Card e Wrapper (COM FÍSICA 3D) --- */
+/* --- Estilos do Card (COM FÍSICA 3D E TRAVA MOBILE) --- */
 .card-wrapper {
     animation: invocarCard 0.6s ease-out backwards;
     display: block;
@@ -238,26 +239,22 @@ body::after {
     flex-direction: column;
     position: relative;
     height: 100%; 
-    
     transform-style: preserve-3d;
     transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) scale(1);
     transition: transform 0.1s linear, box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease, outline var(--transition-speed);
 }
 
-/* NOVO: A classe .touch-ativo agora recebe os mesmos poderes visuais que o :hover */
+/* A nova classe .touch-travado brilha intensamente quando a tela é travada pro celular */
 .card:hover,
 .card:focus-visible,
-.card.touch-ativo {
+.card.touch-travado {
     border-color: rgb(var(--cor-aura));
     box-shadow: 0 15px 35px rgba(var(--cor-aura), 0.5), inset 0 0 15px rgba(var(--cor-aura), 0.2); 
     z-index: 10; 
     transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) scale(1.05);
 }
 
-.card:focus-visible {
-    outline: 3px solid var(--kokusen-red);
-    outline-offset: 4px;
-}
+.card:focus-visible { outline: 3px solid var(--kokusen-red); outline-offset: 4px; }
 
 .card-imagem-placeholder {
     width: 100%;
@@ -288,7 +285,7 @@ body::after {
 
 .card:hover .card-imagem-placeholder::before,
 .card:focus-visible .card-imagem-placeholder::before,
-.card.touch-ativo .card-imagem-placeholder::before {
+.card.touch-travado .card-imagem-placeholder::before {
     opacity: 1;
 }
 
@@ -307,7 +304,7 @@ body::after {
 
 .card:hover .card-img,
 .card:focus-visible .card-img,
-.card.touch-ativo .card-img {
+.card.touch-travado .card-img {
     transform: translateZ(60px) scale(1.1) translateY(-5px); 
 }
 
@@ -332,7 +329,7 @@ body::after {
     text-shadow: 1px 1px 0 #000;
 }
 
-/* --- BADGES (SÉLOS OFUDA) --- */
+/* --- BADGES E BOTÕES --- */
 .badge {
     background-color: var(--ofuda-bg); 
     color: var(--ofuda-text);
@@ -350,7 +347,7 @@ body::after {
 
 .card:hover .badge,
 .card:focus-visible .badge,
-.card.touch-ativo .badge {
+.card.touch-travado .badge {
     transform: translateZ(40px) rotate(0deg) scale(1.05); 
     box-shadow: 0 5px 15px rgba(var(--cor-aura), 0.6);
 }
@@ -368,7 +365,6 @@ body::after {
     display: inline-block; 
 }
 
-/* --- O NOVO BOTÃO DE SELO / FAVORITAR --- */
 .btn-selo {
     position: absolute;
     top: 15px;
@@ -391,7 +387,7 @@ body::after {
 
 .btn-selo:hover,
 .btn-selo:focus-visible,
-.card.touch-ativo .btn-selo {
+.card.touch-travado .btn-selo {
     background: #111;
     border-color: var(--kokusen-red);
     color: #fff;
@@ -426,10 +422,7 @@ body::after {
     backdrop-filter: blur(10px) grayscale(100%); 
 }
 
-.modal.ativo {
-    opacity: 1;
-    pointer-events: all;
-}
+.modal.ativo { opacity: 1; pointer-events: all; }
 
 .modal-conteudo {
     background-color: #000; 
@@ -445,9 +438,7 @@ body::after {
     box-shadow: 0 0 50px rgba(89, 0, 179, 0.4);
 }
 
-.modal.ativo .modal-conteudo {
-    transform: scale(1) skewY(0deg); 
-}
+.modal.ativo .modal-conteudo { transform: scale(1) skewY(0deg); }
 
 .btn-fechar {
     position: absolute;
@@ -462,24 +453,10 @@ body::after {
     transition: color 0.2s, transform 0.2s;
 }
 
-.btn-fechar:focus-visible {
-    outline: 2px dashed var(--kokusen-red);
-    outline-offset: 5px;
-}
+.btn-fechar:focus-visible { outline: 2px dashed var(--kokusen-red); outline-offset: 5px; }
+.btn-fechar:hover, .btn-fechar:focus-visible { color: var(--kokusen-red); transform: rotate(90deg) scale(1.2); }
 
-.btn-fechar:hover,
-.btn-fechar:focus-visible {
-    color: var(--kokusen-red);
-    transform: rotate(90deg) scale(1.2); 
-}
-
-/* --- Layout Interno do Modal --- */
-.modal-layout {
-    display: flex;
-    flex-direction: row; 
-    align-items: center; 
-    gap: 4rem; 
-}
+.modal-layout { display: flex; flex-direction: row; align-items: center; gap: 4rem; }
 
 .modal-imagem-placeholder {
     flex: 0 0 320px; 
@@ -493,144 +470,45 @@ body::after {
 }
 
 .modal-img-real {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; 
-    object-position: center bottom; 
-    padding: 0; 
-    filter: drop-shadow(0 0 25px rgba(var(--cor-aura), 0.5)); 
+    width: 100%; height: 100%; object-fit: contain; object-position: center bottom; padding: 0; filter: drop-shadow(0 0 25px rgba(var(--cor-aura), 0.5)); 
 }
 
-.modal-info {
-    flex: 1; 
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
+.modal-info { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+.modal-info h2 { font-size: 3.8rem; text-transform: uppercase; color: var(--text-color); margin-bottom: 0.5rem; line-height: 1; text-shadow: 3px 3px 0px #000; }
+.modal-info .badge { margin-bottom: 2.5rem; font-size: 1.1rem; padding: 0.4rem 1.2rem; }
+.modal-info p { color: #bbb; font-size: 1.25rem; line-height: 1.9; font-weight: 400; font-family: Arial, Helvetica, sans-serif; background-color: rgba(255, 255, 255, 0.03); padding: 1rem; border-left: 3px solid #333; }
 
-.modal-info h2 {
-    font-size: 3.8rem; 
-    text-transform: uppercase;
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-    line-height: 1;
-    text-shadow: 3px 3px 0px #000;
-}
-
-.modal-info .badge {
-    margin-bottom: 2.5rem; 
-    font-size: 1.1rem;
-    padding: 0.4rem 1.2rem;
-}
-
-.modal-info p {
-    color: #bbb;
-    font-size: 1.25rem;
-    line-height: 1.9;
-    font-weight: 400;
-    font-family: Arial, Helvetica, sans-serif; 
-    background-color: rgba(255, 255, 255, 0.03); 
-    padding: 1rem;
-    border-left: 3px solid #333;
-}
-
-/* --- KEYFRAMES --- */
-@keyframes invocarCard {
-    0% {
-        opacity: 0;
-        transform: translateY(60px) scale(0.9) skewX(5deg);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1) skewX(0deg);
-    }
-}
-
-@keyframes pulsarSelo {
-    from { box-shadow: 0 0 5px rgba(255, 0, 0, 0.2); }
-    to { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
-}
+@keyframes invocarCard { 0% { opacity: 0; transform: translateY(60px) scale(0.9) skewX(5deg); } 100% { opacity: 1; transform: translateY(0) scale(1) skewX(0deg); } }
+@keyframes pulsarSelo { from { box-shadow: 0 0 5px rgba(255, 0, 0, 0.2); } to { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); } }
 
 /* --- SKELETON UI --- */
-.skeleton {
-    position: relative;
-    overflow: hidden;
-}
-
+.skeleton { position: relative; overflow: hidden; }
 .skeleton::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-    transform: translateX(-100%);
-    animation: shimmer 1.5s infinite;
-    z-index: 3;
+    transform: translateX(-100%); animation: shimmer 1.5s infinite; z-index: 3;
 }
-
-.skeleton .card-img, 
-.skeleton span {
-    opacity: 0;
-}
-
-@keyframes shimmer {
-    100% {
-        transform: translateX(100%);
-    }
-}
+.skeleton .card-img, .skeleton span { opacity: 0; }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
 
 /* --- RESPONSIVIDADE (MOBILE ABSOLUTO) --- */
 @media (max-width: 768px) {
-    .header-conteudo {
-        flex-direction: column;
-        align-items: stretch;
-    }
+    .header-conteudo { flex-direction: column; align-items: stretch; }
+    .search-container { flex-direction: column; max-width: 100%; }
     
-    .search-container {
-        flex-direction: column;
-        max-width: 100%;
-    }
+    /* O BOTÃO NÃO FICA MAIS GIGANTE */
+    .custom-select-wrapper { flex: 0 0 auto; width: 100%; max-width: 280px; align-self: center; }
 
-    /* CORREÇÃO DO ANEXO 1: O Botão não será mais gigantesco */
-    #filtro-tipo {
-        flex: 0 0 auto;
-        width: 100%;
-        max-width: 280px; /* Limite seguro para manter elegância no celular */
-        align-self: center; /* Centraliza ele abaixo do campo de busca */
-    }
-
-    /* CORREÇÃO DO ANEXO 4: Modal transbordando na tela */
+    /* O MODAL NÃO EXTRAPOLA A TELA */
     .modal-conteudo {
-        max-height: 85vh; /* Ocupa no máximo 85% da tela */
-        overflow-y: auto; /* Permite rolar apenas por dentro, salvando textos gigantes */
-        padding: 2rem 1.5rem; /* Ajuste no respiro interno */
+        max-height: 85vh; /* Ocupa máximo de 85% da tela */
+        overflow-y: auto; /* Gera barra de rolagem interna só no modal */
+        padding: 2rem 1.5rem; 
     }
 
-    .modal-layout {
-        flex-direction: column; 
-        align-items: center;
-        gap: 2rem;
-    }
-    
-    .modal-imagem-placeholder {
-        flex: 0 0 auto;
-        width: 100%;
-        max-width: 300px;
-        height: 350px;
-    }
-
-    .modal-info {
-        align-items: center;
-        text-align: center;
-    }
-    
-    .header-titulos h1 {
-        font-size: 2.2rem;
-    }
-    
-    .modal-info h2 {
-        font-size: 2.2rem; /* Fonte menor no mobile para não ocupar muito espaço */
-    }
+    .modal-layout { flex-direction: column; align-items: center; gap: 2rem; }
+    .modal-imagem-placeholder { flex: 0 0 auto; width: 100%; max-width: 300px; height: 350px; }
+    .modal-info { align-items: center; text-align: center; }
+    .header-titulos h1 { font-size: 2.2rem; }
+    .modal-info h2 { font-size: 2.2rem; } /* Menor para caber no celular */
 }

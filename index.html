@@ -23,13 +23,20 @@
             <div class="search-container">
                 <input type="text" id="busca-personagem" placeholder="Rastrear feiticeiro..." autocomplete="off">
                 
-                <select id="filtro-tipo">
-                    <option value="todos" selected>Todos</option>
-                    <option value="feiticeiro">Feiticeiros</option>
-                    <option value="maldicao">Maldições</option>
-                    <option value="outro">Outros</option>
-                    <option value="favoritos">Selados (Favoritos)</option>
-                </select>
+                <div class="custom-select-wrapper" tabindex="0">
+                    <div class="custom-select-trigger">
+                        <span id="filtro-texto">TODOS</span>
+                        <span class="custom-select-arrow">▼</span>
+                    </div>
+                    <ul class="custom-select-options">
+                        <li data-value="todos" class="selected">TODOS</li>
+                        <li data-value="feiticeiro">FEITICEIROS</li>
+                        <li data-value="maldicao">MALDIÇÕES</li>
+                        <li data-value="outro">OUTROS</li>
+                        <li data-value="favoritos">SELADOS (FAVORITOS)</li>
+                    </ul>
+                </div>
+
             </div>
         </div>
     </header>

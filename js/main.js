@@ -3,7 +3,6 @@ const gridPersonagens = document.getElementById('grid-personagens');
 const modal = document.getElementById('modal-personagem');
 const btnFecharModal = document.getElementById('btn-fechar-modal');
 const inputBusca = document.getElementById('busca-personagem'); 
-const selectFiltro = document.getElementById('filtro-tipo'); 
 
 const modalNome = document.getElementById('modal-nome');
 const modalClasse = document.getElementById('modal-classe');
@@ -11,49 +10,62 @@ const modalDescricao = document.getElementById('modal-descricao');
 const containerImagemModal = document.querySelector('.modal-imagem-placeholder'); 
 
 let bancoDeDadosPersonagens = [];
-
-// --- SISTEMA DE SELAMENTO (LOCAL STORAGE) ---
 let feiticeirosSelados = JSON.parse(localStorage.getItem('jjk_selados')) || [];
+
+// --- LÓGICA DO NOVO MENU CUSTOMIZADO ---
+const selectWrapper = document.querySelector('.custom-select-wrapper');
+const selectTrigger = document.querySelector('.custom-select-trigger');
+const textoFiltro = document.getElementById('filtro-texto');
+const opcoesFiltro = document.querySelectorAll('.custom-select-options li');
+let filtroTipoAtual = 'todos';
+
+// Abre/Fecha o menu ao clicar
+selectWrapper.addEventListener('click', () => {
+    selectWrapper.classList.toggle('open');
+});
+
+// Fecha o menu se clicar fora dele
+document.addEventListener('click', (evento) => {
+    if (!selectWrapper.contains(evento.target)) {
+        selectWrapper.classList.remove('open');
+    }
+});
+
+// Lida com o clique nas opções do menu
+opcoesFiltro.forEach(opcao => {
+    opcao.addEventListener('click', (e) => {
+        opcoesFiltro.forEach(opt => opt.classList.remove('selected'));
+        opcao.classList.add('selected');
+        textoFiltro.textContent = opcao.textContent;
+        filtroTipoAtual = opcao.getAttribute('data-value');
+        aplicarFiltros();
+    });
+});
+
 
 // --- 2. COMUNICAÇÃO COM A NOSSA "API" LOCAL ---
 async function invocarFeiticeiros() {
     try {
         const resposta = await fetch('./data/personagens.json');
-        
         if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
 
         bancoDeDadosPersonagens = await resposta.json();
-        
         lerURL(); 
-        
-        console.log("Domínio Expandido: JSON e URLs sincronizados com sucesso!");
-
+        console.log("Domínio Expandido: JS carregado com sucesso!");
     } catch (erro) {
         console.error("Falha ao invocar os feiticeiros:", erro);
-        gridPersonagens.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; color: var(--accent-color); padding: 2rem;">
-                <h2>Erro na Invocação</h2>
-                <p>Não foi possível ler o arquivo JSON.</p>
-            </div>
-        `;
+        gridPersonagens.innerHTML = `<p style="color:red; text-align:center;">Erro na invocação do JSON.</p>`;
     }
 }
 
-// --- DEEP LINKING (SINCRONIZAÇÃO DE ROTEAMENTO) ---
+// --- DEEP LINKING ---
 function atualizarURL(busca, tipo) {
     const url = new URL(window.location);
-    
-    if (busca) {
-        url.searchParams.set('busca', busca);
-    } else {
-        url.searchParams.delete('busca');
-    }
+    if (busca) url.searchParams.set('busca', busca);
+    else url.searchParams.delete('busca');
 
-    if (tipo && tipo !== 'todos') {
-        url.searchParams.set('tipo', tipo);
-    } else {
-        url.searchParams.delete('tipo');
-    }
+    if (tipo && tipo !== 'todos') url.searchParams.set('tipo', tipo);
+    else url.searchParams.delete('tipo');
 
     window.history.replaceState({}, '', url);
 }
@@ -65,27 +77,27 @@ function lerURL() {
 
     if (busca) inputBusca.value = busca;
     if (tipo) {
-        const opcaoExiste = Array.from(selectFiltro.options).some(opt => opt.value === tipo);
-        if(opcaoExiste) selectFiltro.value = tipo;
+        const opcaoEncontrada = Array.from(opcoesFiltro).find(opt => opt.getAttribute('data-value') === tipo);
+        if (opcaoEncontrada) {
+            opcoesFiltro.forEach(opt => opt.classList.remove('selected'));
+            opcaoEncontrada.classList.add('selected');
+            textoFiltro.textContent = opcaoEncontrada.textContent;
+            filtroTipoAtual = tipo;
+        }
     }
-
     aplicarFiltros(); 
 }
 
-// --- 3. FUNÇÕES DE RENDERIZAÇÃO E FILTRO ---
+// --- 3. RENDERIZAÇÃO ---
 function renderizarCards(listaDePersonagens) {
     gridPersonagens.innerHTML = "";
 
     if (listaDePersonagens.length === 0) {
-        gridPersonagens.innerHTML = `
-            <p style="grid-column: 1 / -1; text-align: center; color: #ccc; font-size: 1.2rem;">
-                Nenhum personagem condiz com os filtros atuais.
-            </p>`;
+        gridPersonagens.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #ccc;">Nenhum personagem condiz com os filtros.</p>`;
         return; 
     }
 
     listaDePersonagens.forEach((personagem, index) => {
-        
         const wrapperCard = document.createElement('div');
         wrapperCard.classList.add('card-wrapper');
         wrapperCard.style.animationDelay = `${index * 50}ms`; 
@@ -94,28 +106,18 @@ function renderizarCards(listaDePersonagens) {
         card.classList.add('card');
         card.setAttribute('tabindex', '0');
         
-        const corAura = personagem.corAura || "89, 0, 179";
-        card.style.setProperty('--cor-aura', corAura);
+        card.style.setProperty('--cor-aura', personagem.corAura || "89, 0, 179");
         
         let elementoVisual = `<span>${personagem.imgPlaceholder}</span>`;
         let temImagem = false;
 
         if (personagem.imagem) {
             temImagem = true;
-            elementoVisual = `<img 
-                src="${personagem.imagem}" 
-                alt="${personagem.nome}" 
-                class="card-img" 
-                loading="lazy" 
-                onload="this.parentElement.classList.remove('skeleton')"
-                onerror="this.onerror=null; this.parentElement.classList.remove('skeleton'); this.outerHTML='<span>${personagem.imgPlaceholder}</span>';"
-            >`;
+            elementoVisual = `<img src="${personagem.imagem}" alt="${personagem.nome}" class="card-img" loading="lazy" onload="this.parentElement.classList.remove('skeleton')" onerror="this.onerror=null; this.parentElement.classList.remove('skeleton'); this.outerHTML='<span>${personagem.imgPlaceholder}</span>';">`;
         }
         
         const badgeHibridaClass = personagem.tipo === 'anomalia' ? 'hibrida' : '';
-        const conteudoBadge = personagem.tipo === 'anomalia' 
-            ? `<span class="texto-hibrido">${personagem.classe}</span>` 
-            : personagem.classe;
+        const conteudoBadge = personagem.tipo === 'anomalia' ? `<span class="texto-hibrido">${personagem.classe}</span>` : personagem.classe;
         
         card.innerHTML = `
             <div class="card-imagem-placeholder ${temImagem ? 'skeleton' : ''}">
@@ -131,11 +133,7 @@ function renderizarCards(listaDePersonagens) {
         btnSelo.classList.add('btn-selo');
         btnSelo.innerHTML = '封'; 
         btnSelo.setAttribute('title', 'Selar Personagem');
-        btnSelo.setAttribute('aria-label', 'Selar Personagem');
-        
-        if (feiticeirosSelados.includes(personagem.id)) {
-            btnSelo.classList.add('ativo');
-        }
+        if (feiticeirosSelados.includes(personagem.id)) btnSelo.classList.add('ativo');
 
         btnSelo.addEventListener('click', (evento) => {
             evento.stopPropagation(); 
@@ -152,24 +150,18 @@ function renderizarCards(listaDePersonagens) {
             }
         });
 
-        // Eventos MOUSE nativos chamando a função utilitária
+        // Física no Desktop
         card.addEventListener('mousemove', (evento) => {
             const rect = card.getBoundingClientRect();
-            const x = evento.clientX - rect.left;
-            const y = evento.clientY - rect.top;
-            aplicarFisica(card, x, y);
+            aplicarFisica(card, evento.clientX - rect.left, evento.clientY - rect.top);
         });
-
-        card.addEventListener('mouseleave', () => {
-            resetarFisica(card);
-        });
+        card.addEventListener('mouseleave', () => resetarFisica(card));
 
         wrapperCard.appendChild(card);
         gridPersonagens.appendChild(wrapperCard);
     });
 }
 
-// --- FUNÇÕES UTILITÁRIAS DE FÍSICA (MOUSE E TOUCH) ---
 function aplicarFisica(card, x, y) {
     const rect = card.getBoundingClientRect();
     const centerX = rect.width / 2;
@@ -181,9 +173,6 @@ function aplicarFisica(card, x, y) {
     card.style.setProperty('--rotateY', `${rotateY}deg`);
     card.style.setProperty('--mouse-x', `${x}px`);
     card.style.setProperty('--mouse-y', `${y}px`);
-    
-    // Adiciona uma classe manual para forçar o brilho/parallax no celular
-    card.classList.add('touch-ativo'); 
 }
 
 function resetarFisica(card) {
@@ -191,62 +180,85 @@ function resetarFisica(card) {
     card.style.setProperty('--rotateY', `0deg`);
     card.style.setProperty('--mouse-x', `50%`);
     card.style.setProperty('--mouse-y', `50%`);
-    card.classList.remove('touch-ativo');
 }
 
-// --- O RASTREADOR DE ENERGIA (MAGIA DO TOUCH MOBILE) ---
+// --- RASTREADOR DE ENERGIA TOUCH (Com trava de Scroll após 300ms) ---
 let cardAtivoTouch = null;
+let modoTravado = false;
+let temporizadorTrava = null;
+let posYInicial = 0;
 
-// Rastreia o dedo arrastando pela tela inteira
-document.addEventListener('touchmove', (evento) => {
+document.addEventListener('touchstart', (evento) => {
     const touch = evento.touches[0];
+    posYInicial = touch.clientY;
     
-    // Descobre qual elemento HTML está debaixo da coordenada exata do dedo
     const elementoAlvo = document.elementFromPoint(touch.clientX, touch.clientY);
-    
     if (!elementoAlvo) return;
+    const card = elementoAlvo.closest('.card');
+    
+    if (card) {
+        // Inicia contagem: se segurar por 300ms, trava a tela para rodar a animação
+        temporizadorTrava = setTimeout(() => {
+            modoTravado = true;
+            cardAtivoTouch = card;
+            card.classList.add('touch-travado'); // Dá o brilho
+            
+            const rect = card.getBoundingClientRect();
+            aplicarFisica(card, touch.clientX - rect.left, touch.clientY - rect.top);
+        }, 300); 
+    }
+}, { passive: true });
 
-    // Verifica se o dedo está em cima de um Card
+document.addEventListener('touchmove', (evento) => {
+    if (modoTravado) {
+        // A MÁGICA AQUI: O Dedo segurou o card? A tela para de rolar e vira um mouse 3D.
+        evento.preventDefault(); 
+    } else {
+        // Se o dedo moveu rápido antes dos 300ms, ele quer rolar a tela. Cancela a armadilha 3D!
+        const touch = evento.touches[0];
+        if (Math.abs(touch.clientY - posYInicial) > 10) {
+            clearTimeout(temporizadorTrava);
+        }
+        return; // Sai daqui para deixar a tela rolar normalmente
+    }
+
+    const touch = evento.touches[0];
+    const elementoAlvo = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!elementoAlvo) return;
     const card = elementoAlvo.closest('.card');
 
     if (card) {
-        // Se o dedo pulou de um card para outro, reseta o anterior
         if (cardAtivoTouch && cardAtivoTouch !== card) {
             resetarFisica(cardAtivoTouch);
+            cardAtivoTouch.classList.remove('touch-travado');
         }
         cardAtivoTouch = card;
+        card.classList.add('touch-travado');
 
-        // Calcula as coordenadas relativas ao card atual
         const rect = card.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-
-        aplicarFisica(card, x, y);
+        aplicarFisica(card, touch.clientX - rect.left, touch.clientY - rect.top);
     } else if (cardAtivoTouch) {
-        // Se o dedo saiu do card para o fundo preto, reseta e limpa a variável
         resetarFisica(cardAtivoTouch);
+        cardAtivoTouch.classList.remove('touch-travado');
         cardAtivoTouch = null;
     }
-}, { passive: true }); // passive: true avisa o celular para não travar o scroll da página
+}, { passive: false }); // PRECISA SER FALSE para o evento.preventDefault funcionar!
 
-// Quando o usuário tira o dedo da tela, zera tudo (O Fim do Toque Fantasma)
-document.addEventListener('touchend', () => {
+function liberarDominoTouch() {
+    clearTimeout(temporizadorTrava);
+    modoTravado = false;
     if (cardAtivoTouch) {
         resetarFisica(cardAtivoTouch);
+        cardAtivoTouch.classList.remove('touch-travado');
         cardAtivoTouch = null;
     }
-});
-document.addEventListener('touchcancel', () => {
-    if (cardAtivoTouch) {
-        resetarFisica(cardAtivoTouch);
-        cardAtivoTouch = null;
-    }
-});
+}
+document.addEventListener('touchend', liberarDominoTouch);
+document.addEventListener('touchcancel', liberarDominoTouch);
 
-// --- LÓGICA DE SELAMENTO E FILTROS ABAIXO (MANTIDOS IGUAIS) ---
+
 function alternarSelo(idPersonagem, botaoElemento) {
     const index = feiticeirosSelados.indexOf(idPersonagem);
-    
     if (index > -1) {
         feiticeirosSelados.splice(index, 1);
         botaoElemento.classList.remove('ativo');
@@ -254,19 +266,13 @@ function alternarSelo(idPersonagem, botaoElemento) {
         feiticeirosSelados.push(idPersonagem);
         botaoElemento.classList.add('ativo');
     }
-    
     localStorage.setItem('jjk_selados', JSON.stringify(feiticeirosSelados));
-
-    if (selectFiltro.value === 'favoritos') {
-        aplicarFiltros();
-    }
+    if (filtroTipoAtual === 'favoritos') aplicarFiltros();
 }
 
 function aplicarFiltros() {
     const termoBusca = inputBusca.value.toLowerCase();
-    const tipoFiltro = selectFiltro.value;
-
-    atualizarURL(termoBusca, tipoFiltro);
+    atualizarURL(termoBusca, filtroTipoAtual);
 
     const personagensFiltrados = bancoDeDadosPersonagens.filter(personagem => {
         const nomeBate = personagem.nome.toLowerCase().includes(termoBusca);
@@ -274,18 +280,11 @@ function aplicarFiltros() {
         const passouNoTexto = nomeBate || classeBate;
 
         let passouNoTipo = false;
-        
-        if (tipoFiltro === 'todos') {
-            passouNoTipo = true;
-        } else if (tipoFiltro === 'feiticeiro') {
-            passouNoTipo = personagem.tipo === 'feiticeiro';
-        } else if (tipoFiltro === 'maldicao') {
-            passouNoTipo = personagem.tipo === 'maldicao';
-        } else if (tipoFiltro === 'outro') {
-            passouNoTipo = personagem.tipo !== 'feiticeiro' && personagem.tipo !== 'maldicao';
-        } else if (tipoFiltro === 'favoritos') {
-            passouNoTipo = feiticeirosSelados.includes(personagem.id);
-        }
+        if (filtroTipoAtual === 'todos') passouNoTipo = true;
+        else if (filtroTipoAtual === 'feiticeiro') passouNoTipo = personagem.tipo === 'feiticeiro';
+        else if (filtroTipoAtual === 'maldicao') passouNoTipo = personagem.tipo === 'maldicao';
+        else if (filtroTipoAtual === 'outro') passouNoTipo = personagem.tipo !== 'feiticeiro' && personagem.tipo !== 'maldicao';
+        else if (filtroTipoAtual === 'favoritos') passouNoTipo = feiticeirosSelados.includes(personagem.id);
 
         return passouNoTexto && passouNoTipo; 
     });
@@ -293,43 +292,30 @@ function aplicarFiltros() {
     renderizarCards(personagensFiltrados);
 }
 
+const buscarComCooldown = debounce(aplicarFiltros, 300);
+inputBusca.addEventListener('input', buscarComCooldown); 
+
 function debounce(funcao, tempoEspera) {
     let temporizador;
     return function(...argumentos) {
         clearTimeout(temporizador);
-        temporizador = setTimeout(() => {
-            funcao.apply(this, argumentos); 
-        }, tempoEspera);
+        temporizador = setTimeout(() => { funcao.apply(this, argumentos); }, tempoEspera);
     };
 }
-const buscarComCooldown = debounce(aplicarFiltros, 300);
 
-inputBusca.addEventListener('input', buscarComCooldown); 
-selectFiltro.addEventListener('change', aplicarFiltros); 
-
-// --- 4. LÓGICA DO MODAL ---
+// --- 4. MODAL ---
 function abrirModal(personagem) {
     modalNome.textContent = personagem.nome;
     modalNome.className = ''; 
-    
     modalClasse.className = `badge ${personagem.tipo}`;
     
-    if(personagem.tipo === 'anomalia') {
-        modalClasse.innerHTML = `<span class="texto-hibrido">${personagem.classe}</span>`;
-    } else {
-        modalClasse.textContent = personagem.classe;
-    }
+    if(personagem.tipo === 'anomalia') modalClasse.innerHTML = `<span class="texto-hibrido">${personagem.classe}</span>`;
+    else modalClasse.textContent = personagem.classe;
     
     modalDescricao.textContent = personagem.descricao;
     
     if (personagem.imagem) {
-        containerImagemModal.innerHTML = `<img 
-            src="${personagem.imagem}" 
-            alt="${personagem.nome}" 
-            class="modal-img-real" 
-            loading="lazy"
-            onerror="this.onerror=null; this.outerHTML='<span id=\\'modal-img-texto\\'>${personagem.imgPlaceholder}</span>'; document.querySelector('.modal-imagem-placeholder').style.background = 'linear-gradient(45deg, #111, #222)';"
-        >`;
+        containerImagemModal.innerHTML = `<img src="${personagem.imagem}" alt="${personagem.nome}" class="modal-img-real" loading="lazy" onerror="this.onerror=null; this.outerHTML='<span id=\\'modal-img-texto\\'>${personagem.imgPlaceholder}</span>'; document.querySelector('.modal-imagem-placeholder').style.background = 'linear-gradient(45deg, #111, #222)';">`;
         containerImagemModal.style.background = "transparent";
         containerImagemModal.style.border = "none";
     } else {
@@ -342,18 +328,10 @@ function abrirModal(personagem) {
     btnFecharModal.focus(); 
 }
 
-function fecharModal() {
-    modal.classList.remove('ativo');
-}
+function fecharModal() { modal.classList.remove('ativo'); }
 
 btnFecharModal.addEventListener('click', fecharModal);
-
-modal.addEventListener('click', (evento) => {
-    if (evento.target === modal) fecharModal();
-});
-
-document.addEventListener('keydown', (evento) => {
-    if (evento.key === 'Escape' && modal.classList.contains('ativo')) fecharModal();
-});
+modal.addEventListener('click', (evento) => { if (evento.target === modal) fecharModal(); });
+document.addEventListener('keydown', (evento) => { if (evento.key === 'Escape' && modal.classList.contains('ativo')) fecharModal(); });
 
 invocarFeiticeiros();
