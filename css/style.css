@@ -51,10 +51,8 @@ body::after {
     border-bottom: 3px solid var(--accent-color); 
     padding: 2.5rem 0;
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden; <--- O VILÃO FOI REMOVIDO DAQUI */
     box-shadow: 0 5px 20px rgba(153, 0, 0, 0.3);
-    
-    /* CORREÇÃO DO BUG DE SOBREPOSIÇÃO: O Header agora é o rei da tela */
     z-index: 100; 
 }
 
@@ -68,6 +66,7 @@ body::after {
     height: 120px;
     background: radial-gradient(circle, rgba(153, 0, 0, 0.2) 0%, transparent 70%);
     z-index: 0;
+    pointer-events: none; /* Garante que a luz não bloqueie cliques */
 }
 
 .header-conteudo {
@@ -191,6 +190,7 @@ body::after {
     transform: translateY(-10px);
     transition: all var(--transition-speed) ease;
     box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    z-index: 999;
 }
 
 .custom-select-wrapper.open .custom-select-options {
