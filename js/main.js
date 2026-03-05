@@ -1,4 +1,4 @@
-// --- 1. MOTOR DE PARTÍCULAS (CANVAS 2D) ---
+// --- 1. MOTOR DE PARTÍCULAS E GRÁFICO (CANVAS API) ---
 const canvasVFX = document.getElementById('dominio-vfx');
 const ctxVFX = canvasVFX.getContext('2d');
 let particulasAtivas = [];
@@ -64,14 +64,112 @@ function animarMotorVFX() {
     requestAnimationFrame(animarMotorVFX);
 }
 
+// --- MOTOR GRÁFICO DO PENTÁGONO (RADAR CHART) ---
+let pontosRadar = []; // Banco de dados das coordenadas atuais do gráfico
+
+function desenharGraficoRadar(atributos, corAura) {
+    const canvas = document.getElementById('grafico-radar');
+    if(!canvas) return; 
+    const ctx = canvas.getContext('2d');
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pontosRadar = []; // Zera os pontos de colisão da tela anterior
+    
+    const cw = canvas.width;
+    const ch = canvas.height;
+    const cx = cw / 2;
+    const cy = ch / 2;
+    const raioMaximo = 100; 
+    
+    const labels = ['FÍS', 'VEL', 'ENG', 'INT', 'LET'];
+    const vals = atributos ? [atributos.fis, atributos.vel, atributos.eng, atributos.int, atributos.let] : [0,0,0,0,0];
+    const lados = 5;
+
+    // 1. Teia Guias
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.lineWidth = 1;
+    for (let nivel = 1; nivel <= 5; nivel++) { 
+        const r = raioMaximo * (nivel / 5);
+        ctx.beginPath();
+        for (let i = 0; i < lados; i++) {
+            const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
+            const x = cx + Math.cos(angle) * r;
+            const y = cy + Math.sin(angle) * r;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+    }
+
+    // 2. Raios Centrais
+    ctx.beginPath();
+    for (let i = 0; i < lados; i++) {
+        const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(angle) * raioMaximo, cy + Math.sin(angle) * raioMaximo);
+    }
+    ctx.stroke();
+
+    // 3. Textos (Labels)
+    ctx.fillStyle = '#aaa';
+    ctx.font = '14px Oswald, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (let i = 0; i < lados; i++) {
+        const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
+        const x = cx + Math.cos(angle) * (raioMaximo + 25);
+        const y = cy + Math.sin(angle) * (raioMaximo + 20);
+        ctx.fillText(labels[i], x, y);
+    }
+
+    // 4. Polígono de Força Colorido
+    ctx.beginPath();
+    for (let i = 0; i < lados; i++) {
+        const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
+        const r = raioMaximo * ((vals[i] || 0) / 100); 
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+        
+        // SALVA AS COORDENADAS PARA O RADAR DO MOUSE!
+        pontosRadar.push({ x: x, y: y, valor: vals[i] || 0 });
+        
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+
+    ctx.fillStyle = `rgba(${corAura}, 0.5)`;
+    ctx.fill();
+    ctx.strokeStyle = `rgb(${corAura})`;
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = `rgb(${corAura})`;
+    ctx.stroke();
+    ctx.shadowBlur = 0; 
+
+    // 5. Bolinhas das pontas
+    for (let i = 0; i < pontosRadar.length; i++) {
+        ctx.beginPath();
+        ctx.arc(pontosRadar[i].x, pontosRadar[i].y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.stroke();
+    }
+}
+
 // --- 2. SELEÇÃO DE ELEMENTOS DO DOM ---
 const gridPersonagens = document.getElementById('grid-personagens');
 const modal = document.getElementById('modal-personagem');
 const btnFecharModal = document.getElementById('btn-fechar-modal');
 const inputBusca = document.getElementById('busca-personagem'); 
-
-// NOVO: Seleção do botão de selar do Modal
 const btnSelarModal = document.getElementById('btn-selar-modal');
+
+// Elementos das Notificações
+const btnInfoGrafico = document.getElementById('btn-info-grafico');
+const tooltipGrafico = document.getElementById('tooltip-grafico');
+const canvasRadar = document.getElementById('grafico-radar');
+const tooltipPonto = document.getElementById('tooltip-ponto');
 
 const modalNome = document.getElementById('modal-nome');
 const modalClasse = document.getElementById('modal-classe');
@@ -80,7 +178,124 @@ const containerImagemModal = document.querySelector('.modal-imagem-placeholder')
 
 let bancoDeDadosPersonagens = [];
 let feiticeirosSelados = JSON.parse(localStorage.getItem('jjk_selados')) || [];
-let personagemAtualModal = null; // NOVO: Monitora qual personagem está aberto
+let personagemAtualModal = null; 
+
+// --- MOTOR MATEMÁTICO: BALÃO DE NÚMEROS NOS PONTOS (HOVER NO CANVAS) ---
+let timerTooltipPonto = null;
+let pontoAtivoIndex = -1;
+
+if (canvasRadar && tooltipPonto) {
+    canvasRadar.addEventListener('mousemove', (e) => {
+        const rect = canvasRadar.getBoundingClientRect();
+        // Fator de escala caso o canvas do celular diminua com o CSS
+        const scaleX = canvasRadar.width / rect.width;
+        const scaleY = canvasRadar.height / rect.height;
+
+        // Posição exata do mouse convertida para o mundo 320x320 do Canvas
+        const mouseX = (e.clientX - rect.left) * scaleX;
+        const mouseY = (e.clientY - rect.top) * scaleY;
+
+        let achouColisao = false;
+
+        // Vasculha todos os 5 pontos em tempo real
+        for (let i = 0; i < pontosRadar.length; i++) {
+            const p = pontosRadar[i];
+            const distancia = Math.hypot(p.x - mouseX, p.y - mouseY);
+
+            // Se o mouse estiver a 15px de distância do centro da bolinha (Hitbox perdoável)
+            if (distancia < 15) {
+                achouColisao = true;
+                if (pontoAtivoIndex !== i) {
+                    pontoAtivoIndex = i;
+                    abrirTooltipPonto(p.valor, p.x / scaleX, p.y / scaleY, rect);
+                }
+                break; // Achou um ponto, pode parar a busca
+            }
+        }
+
+        // Se moveu pro vazio negro e tinha um ponto ativo
+        if (!achouColisao && pontoAtivoIndex !== -1) {
+            pontoAtivoIndex = -1;
+            iniciarContagemPonto();
+        }
+    });
+
+    // Se o mouse sair totalmente do quadrado do canvas
+    canvasRadar.addEventListener('mouseleave', () => {
+        pontoAtivoIndex = -1;
+        iniciarContagemPonto();
+    });
+}
+
+function abrirTooltipPonto(valor, visualX, visualY, canvasRect) {
+    clearTimeout(timerTooltipPonto); // Trava o tempo enquanto estiver colidindo
+    tooltipPonto.textContent = valor;
+    tooltipPonto.classList.add('ativo');
+
+    // Cálculo absoluto para o balão subir acima do mouse
+    const containerRect = document.querySelector('.grafico-container').getBoundingClientRect();
+    const posX = (canvasRect.left - containerRect.left) + visualX;
+    const posY = (canvasRect.top - containerRect.top) + visualY; 
+    
+    tooltipPonto.style.left = `${posX}px`;
+    tooltipPonto.style.top = `${posY}px`;
+}
+
+function iniciarContagemPonto() {
+    clearTimeout(timerTooltipPonto);
+    timerTooltipPonto = setTimeout(() => {
+        tooltipPonto.classList.remove('ativo');
+    }, 1000); // Exatos 1 segundo pedido para apagar
+}
+
+
+// --- LÓGICA DA TOOLTIP DE EXPLICAÇÃO (O BOTÃO [?]) ---
+let timerTooltip;
+
+function abrirTooltip() {
+    if(!tooltipGrafico || !btnInfoGrafico) return;
+    tooltipGrafico.classList.add('ativo');
+    btnInfoGrafico.classList.add('ativo');
+}
+
+function fecharTooltip() {
+    if(!tooltipGrafico || !btnInfoGrafico) return;
+    tooltipGrafico.classList.remove('ativo');
+    btnInfoGrafico.classList.remove('ativo');
+}
+
+function agendarFechamento() {
+    clearTimeout(timerTooltip);
+    timerTooltip = setTimeout(() => { fecharTooltip(); }, 3000);
+}
+
+function cancelarFechamento() {
+    clearTimeout(timerTooltip);
+}
+
+if (btnInfoGrafico) {
+    btnInfoGrafico.addEventListener('mouseenter', () => { abrirTooltip(); cancelarFechamento(); });
+    btnInfoGrafico.addEventListener('mouseleave', () => { agendarFechamento(); });
+    btnInfoGrafico.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (tooltipGrafico.classList.contains('ativo')) fecharTooltip();
+        else { abrirTooltip(); agendarFechamento(); }
+    });
+}
+
+if (tooltipGrafico) {
+    tooltipGrafico.addEventListener('mouseenter', () => { cancelarFechamento(); });
+    tooltipGrafico.addEventListener('mouseleave', () => { agendarFechamento(); });
+}
+
+document.addEventListener('click', (e) => {
+    if (tooltipGrafico && btnInfoGrafico) {
+        if (tooltipGrafico.classList.contains('ativo') && !tooltipGrafico.contains(e.target) && e.target !== btnInfoGrafico) {
+            fecharTooltip();
+        }
+    }
+});
+
 
 // --- LÓGICA DO MENU CUSTOMIZADO ---
 const selectWrapper = document.querySelector('.custom-select-wrapper');
@@ -89,14 +304,16 @@ const textoFiltro = document.getElementById('filtro-texto');
 const opcoesFiltro = document.querySelectorAll('.custom-select-options li');
 let filtroTipoAtual = 'todos';
 
-selectWrapper.addEventListener('click', () => { selectWrapper.classList.toggle('open'); });
-document.addEventListener('click', (evento) => { if (!selectWrapper.contains(evento.target)) { selectWrapper.classList.remove('open'); } });
+if (selectWrapper) {
+    selectWrapper.addEventListener('click', () => { selectWrapper.classList.toggle('open'); });
+    document.addEventListener('click', (evento) => { if (!selectWrapper.contains(evento.target)) { selectWrapper.classList.remove('open'); } });
+}
 
 opcoesFiltro.forEach(opcao => {
     opcao.addEventListener('click', (e) => {
         opcoesFiltro.forEach(opt => opt.classList.remove('selected'));
         opcao.classList.add('selected');
-        textoFiltro.textContent = opcao.textContent;
+        if(textoFiltro) textoFiltro.textContent = opcao.textContent;
         filtroTipoAtual = opcao.getAttribute('data-value');
         aplicarFiltros();
     });
@@ -110,7 +327,7 @@ async function invocarFeiticeiros() {
         bancoDeDadosPersonagens = await resposta.json();
         lerURL(); 
     } catch (erro) {
-        gridPersonagens.innerHTML = `<p style="color:red; text-align:center;">Erro na invocação do JSON.</p>`;
+        if(gridPersonagens) gridPersonagens.innerHTML = `<p style="color:red; text-align:center;">Erro na invocação do JSON.</p>`;
     }
 }
 
@@ -126,13 +343,13 @@ function lerURL() {
     const busca = urlParams.get('busca');
     const tipo = urlParams.get('tipo');
 
-    if (busca) inputBusca.value = busca;
+    if (busca && inputBusca) inputBusca.value = busca;
     if (tipo) {
         const opcaoEncontrada = Array.from(opcoesFiltro).find(opt => opt.getAttribute('data-value') === tipo);
         if (opcaoEncontrada) {
             opcoesFiltro.forEach(opt => opt.classList.remove('selected'));
             opcaoEncontrada.classList.add('selected');
-            textoFiltro.textContent = opcaoEncontrada.textContent;
+            if(textoFiltro) textoFiltro.textContent = opcaoEncontrada.textContent;
             filtroTipoAtual = tipo;
         }
     }
@@ -141,6 +358,7 @@ function lerURL() {
 
 // --- 4. RENDERIZAÇÃO ---
 function renderizarCards(listaDePersonagens) {
+    if (!gridPersonagens) return;
     gridPersonagens.innerHTML = "";
 
     if (listaDePersonagens.length === 0) {
@@ -189,12 +407,9 @@ function renderizarCards(listaDePersonagens) {
 
         btnSelo.addEventListener('click', (evento) => {
             evento.stopPropagation(); 
-            
-            // BUGFIX SÊNIOR: Calcula a coordenada da explosão ANTES de recriar os cards
             const rect = btnSelo.getBoundingClientRect();
             const centroX = rect.left + (rect.width / 2);
             const centroY = rect.top + (rect.height / 2);
-            
             alternarSeloGlobal(personagem.id);
             invocarExplosao(centroX, centroY, corAura);
         });
@@ -229,7 +444,6 @@ function resetarFisica(card) {
     card.style.setProperty('--mouse-y', `50%`);
 }
 
-// --- FÍSICA TOUCH MANTIDA ---
 let cardAtivoTouch = null;
 let modoTravado = false;
 let temporizadorTrava = null;
@@ -285,7 +499,6 @@ function liberarDominoTouch() {
 document.addEventListener('touchend', liberarDominoTouch);
 document.addEventListener('touchcancel', liberarDominoTouch);
 
-// --- LÓGICA GLOBAL DE SELAMENTO ---
 function alternarSeloGlobal(idPersonagem) {
     const index = feiticeirosSelados.indexOf(idPersonagem);
     if (index > -1) {
@@ -295,20 +508,18 @@ function alternarSeloGlobal(idPersonagem) {
     }
     localStorage.setItem('jjk_selados', JSON.stringify(feiticeirosSelados));
     
-    // 1. Atualiza o botão de dentro do Modal se for o mesmo personagem!
     if (personagemAtualModal && personagemAtualModal.id === idPersonagem) {
         if (feiticeirosSelados.includes(idPersonagem)) {
-            btnSelarModal.classList.add('ativo');
+            if(btnSelarModal) btnSelarModal.classList.add('ativo');
         } else {
-            btnSelarModal.classList.remove('ativo');
+            if(btnSelarModal) btnSelarModal.classList.remove('ativo');
         }
     }
-
-    // 2. Re-renderiza o painel de fundo silenciosamente
     aplicarFiltros();
 }
 
 function aplicarFiltros() {
+    if (!inputBusca) return;
     const termoBusca = inputBusca.value.toLowerCase();
     atualizarURL(termoBusca, filtroTipoAtual);
 
@@ -331,7 +542,8 @@ function aplicarFiltros() {
 }
 
 const buscarComCooldown = debounce(aplicarFiltros, 300);
-inputBusca.addEventListener('input', buscarComCooldown); 
+if(inputBusca) inputBusca.addEventListener('input', buscarComCooldown); 
+
 function debounce(funcao, tempoEspera) {
     let temporizador;
     return function(...argumentos) { clearTimeout(temporizador); temporizador = setTimeout(() => { funcao.apply(this, argumentos); }, tempoEspera); };
@@ -339,56 +551,72 @@ function debounce(funcao, tempoEspera) {
 
 // --- 5. MODAL E EVENTOS ---
 function abrirModal(personagem) {
-    personagemAtualModal = personagem; // Avisa o sistema global quem está aberto
+    personagemAtualModal = personagem; 
 
-    modalNome.textContent = personagem.nome;
-    modalNome.className = ''; 
-    modalClasse.className = `badge ${personagem.tipo}`;
-    if(personagem.tipo === 'anomalia') modalClasse.innerHTML = `<span class="texto-hibrido">${personagem.classe}</span>`;
-    else modalClasse.textContent = personagem.classe;
-    
-    modalDescricao.textContent = personagem.descricao;
-    
-    // O Botão do Modal puxa a cor da aura ou o padrão
-    if (feiticeirosSelados.includes(personagem.id)) {
-        btnSelarModal.classList.add('ativo');
-    } else {
-        btnSelarModal.classList.remove('ativo');
+    if(modalNome) {
+        modalNome.textContent = personagem.nome;
+        modalNome.className = ''; 
     }
     
-    if (personagem.imagem) {
-        containerImagemModal.innerHTML = `<img src="${personagem.imagem}" alt="${personagem.nome}" class="modal-img-real" loading="lazy" onerror="this.onerror=null; this.outerHTML='<span id=\\'modal-img-texto\\'>${personagem.imgPlaceholder}</span>'; document.querySelector('.modal-imagem-placeholder').style.background = 'linear-gradient(45deg, #111, #222)';">`;
-        containerImagemModal.style.background = "transparent";
-        containerImagemModal.style.border = "none";
-    } else {
-        containerImagemModal.innerHTML = `<span id="modal-img-texto">${personagem.imgPlaceholder}</span>`;
-        containerImagemModal.style.background = "linear-gradient(45deg, #111, #222)";
-        containerImagemModal.style.border = "1px solid #333";
+    if(modalClasse) {
+        modalClasse.className = `badge ${personagem.tipo}`;
+        if(personagem.tipo === 'anomalia') modalClasse.innerHTML = `<span class="texto-hibrido">${personagem.classe}</span>`;
+        else modalClasse.textContent = personagem.classe;
     }
     
-    modal.classList.add('ativo');
-    btnFecharModal.focus(); 
+    if(modalDescricao) modalDescricao.textContent = personagem.descricao;
+    
+    if (btnSelarModal) {
+        if (feiticeirosSelados.includes(personagem.id)) {
+            btnSelarModal.classList.add('ativo');
+        } else {
+            btnSelarModal.classList.remove('ativo');
+        }
+    }
+    
+    if (containerImagemModal) {
+        if (personagem.imagem) {
+            containerImagemModal.innerHTML = `<img src="${personagem.imagem}" alt="${personagem.nome}" class="modal-img-real" loading="lazy" onerror="this.onerror=null; this.outerHTML='<span id=\\'modal-img-texto\\'>${personagem.imgPlaceholder}</span>'; document.querySelector('.modal-imagem-placeholder').style.background = 'linear-gradient(45deg, #111, #222)';">`;
+            containerImagemModal.style.background = "transparent";
+            containerImagemModal.style.border = "none";
+        } else {
+            containerImagemModal.innerHTML = `<span id="modal-img-texto">${personagem.imgPlaceholder}</span>`;
+            containerImagemModal.style.background = "linear-gradient(45deg, #111, #222)";
+            containerImagemModal.style.border = "1px solid #333";
+        }
+    }
+    
+    desenharGraficoRadar(personagem.atributos, personagem.corAura || "89, 0, 179");
+    
+    if(modal) {
+        modal.classList.add('ativo');
+        if(btnFecharModal) btnFecharModal.focus(); 
+    }
 }
 
 function fecharModal() { 
-    modal.classList.remove('ativo'); 
-    personagemAtualModal = null; // Limpa memória
+    if(modal) modal.classList.remove('ativo'); 
+    personagemAtualModal = null; 
+    fecharTooltip(); 
+    if(tooltipPonto) tooltipPonto.classList.remove('ativo'); // Garante que reseta o balão de numeração
 }
 
-// Evento de Clique no Botão de Dentro do Modal
-btnSelarModal.addEventListener('click', () => {
-    if (!personagemAtualModal) return;
-    
-    const rect = btnSelarModal.getBoundingClientRect();
-    const centroX = rect.left + (rect.width / 2);
-    const centroY = rect.top + (rect.height / 2);
+if(btnSelarModal) {
+    btnSelarModal.addEventListener('click', () => {
+        if (!personagemAtualModal) return;
+        const rect = btnSelarModal.getBoundingClientRect();
+        const centroX = rect.left + (rect.width / 2);
+        const centroY = rect.top + (rect.height / 2);
 
-    alternarSeloGlobal(personagemAtualModal.id);
-    invocarExplosao(centroX, centroY, personagemAtualModal.corAura || "89, 0, 179");
-});
+        alternarSeloGlobal(personagemAtualModal.id);
+        invocarExplosao(centroX, centroY, personagemAtualModal.corAura || "89, 0, 179");
+    });
+}
 
-btnFecharModal.addEventListener('click', fecharModal);
-modal.addEventListener('click', (evento) => { if (evento.target === modal) fecharModal(); });
-document.addEventListener('keydown', (evento) => { if (evento.key === 'Escape' && modal.classList.contains('ativo')) fecharModal(); });
+if(btnFecharModal) btnFecharModal.addEventListener('click', fecharModal);
+if(modal) {
+    modal.addEventListener('click', (evento) => { if (evento.target === modal) fecharModal(); });
+    document.addEventListener('keydown', (evento) => { if (evento.key === 'Escape' && modal.classList.contains('ativo')) fecharModal(); });
+}
 
 invocarFeiticeiros();

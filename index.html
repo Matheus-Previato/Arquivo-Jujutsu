@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="./css/style.css?v=5.0">
+    <link rel="stylesheet" href="./css/style.css?v=8.0">
 </head>
 <body>
 
@@ -67,6 +67,28 @@
                         
                         <span id="modal-classe" class="badge">Grau</span>
                         <p id="modal-descricao">Descrição detalhada vai aqui...</p>
+                        
+                        <div class="grafico-container">
+                            <div class="grafico-header">
+                                <h3>Status de Combate</h3>
+                                <button id="btn-info-grafico" class="btn-info" aria-label="Explicação dos Atributos">?</button>
+                            </div>
+                            
+                            <canvas id="grafico-radar" width="320" height="320"></canvas>
+                            
+                            <div id="tooltip-ponto" class="tooltip-ponto">0</div>
+                            
+                            <div id="tooltip-grafico" class="tooltip-grafico">
+                                <ul>
+                                    <li><strong>FÍS:</strong> Força Bruta e Combate Corporal</li>
+                                    <li><strong>VEL:</strong> Agilidade e Tempo de Reação</li>
+                                    <li><strong>ENG:</strong> Reservas de Energia Amaldiçoada</li>
+                                    <li><strong>INT:</strong> QI de Batalha e Estratégia</li>
+                                    <li><strong>LET:</strong> Letalidade da Técnica/Domínio</li>
+                                </ul>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

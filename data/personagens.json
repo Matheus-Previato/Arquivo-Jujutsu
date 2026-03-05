@@ -7,7 +7,8 @@
         "descricao": "Conhecido como o Assassino de Feiticeiros. Nascido sem energia amaldiçoada, seus atributos físicos foram elevados a níveis sobre-humanos.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Toji ]",
-        "corAura": "46, 139, 87" 
+        "corAura": "46, 139, 87",
+        "atributos": { "fis": 100, "vel": 100, "eng": 0, "int": 95, "let": 85 }
     },
     {
         "id": "gojo-02",
@@ -15,9 +16,10 @@
         "classe": "Grau Especial",
         "tipo": "feiticeiro",
         "descricao": "O feiticeiro mais forte da era moderna. Herdeiro dos Seis Olhos e da técnica Ilimitado.",
-        "imagem": "./assets/img/gojo-0.png",
+        "imagem": "",
         "imgPlaceholder": "[ Arte do Gojo ]",
-        "corAura": "0, 191, 255"
+        "corAura": "0, 191, 255",
+        "atributos": { "fis": 95, "vel": 100, "eng": 100, "int": 95, "let": 100 }
     },
     {
         "id": "yuji-03",
@@ -27,7 +29,8 @@
         "descricao": "Estudante atlético que se tornou o receptáculo do Rei das Maldições após engolir um dedo amaldiçoado.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Yuji ]",
-        "corAura": "220, 20, 60"
+        "corAura": "220, 20, 60",
+        "atributos": { "fis": 95, "vel": 85, "eng": 75, "int": 75, "let": 70 }
     },
     {
         "id": "megumi-04",
@@ -37,7 +40,8 @@
         "descricao": "Estudante do primeiro ano e prodígio do Clã Zenin, usuário da cobiçada Técnica das Dez Sombras.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Megumi ]",
-        "corAura": "0, 51, 102"
+        "corAura": "0, 51, 102",
+        "atributos": { "fis": 65, "vel": 75, "eng": 75, "int": 85, "let": 85 }
     },
     {
         "id": "nobara-05",
@@ -47,7 +51,8 @@
         "descricao": "Feiticeira confiante e implacável do interior, especialista na técnica de Ressonância usando pregos e um martelo.",
         "imagem": "",
         "imgPlaceholder": "[ Arte da Nobara ]",
-        "corAura": "199, 21, 133"
+        "corAura": "199, 21, 133",
+        "atributos": { "fis": 50, "vel": 60, "eng": 65, "int": 70, "let": 75 }
     },
     {
         "id": "nanami-06",
@@ -57,7 +62,8 @@
         "descricao": "Ex-assalariado que voltou a ser feiticeiro. Sua técnica inata cria pontos fracos forçados no alvo na proporção de 7:3.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Nanami ]",
-        "corAura": "255, 215, 0"
+        "corAura": "255, 215, 0",
+        "atributos": { "fis": 85, "vel": 80, "eng": 75, "int": 90, "let": 80 }
     },
     {
         "id": "maki-07",
@@ -67,7 +73,8 @@
         "descricao": "Rejeitada pelo seu clã por não ter energia amaldiçoada, ela compensa com destreza física absurda e maestria em ferramentas amaldiçoadas.",
         "imagem": "",
         "imgPlaceholder": "[ Arte da Maki ]",
-        "corAura": "0, 100, 0"
+        "corAura": "0, 100, 0",
+        "atributos": { "fis": 95, "vel": 95, "eng": 0, "int": 85, "let": 85 }
     },
     {
         "id": "toge-08",
@@ -77,7 +84,8 @@
         "descricao": "Usuário da Fala Amaldiçoada. Ele se comunica apenas usando ingredientes de onigiri para não amaldiçoar acidentalmente seus aliados.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Toge ]",
-        "corAura": "138, 43, 226"
+        "corAura": "138, 43, 226",
+        "atributos": { "fis": 60, "vel": 70, "eng": 70, "int": 70, "let": 80 }
     },
     {
         "id": "panda-09",
@@ -87,7 +95,8 @@
         "descricao": "Um Cadáver Amaldiçoado Mutante Abrupto criado pelo diretor Yaga. Possui três núcleos de energia amaldiçoada diferentes.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Panda ]",
-        "corAura": "211, 211, 211"
+        "corAura": "211, 211, 211",
+        "atributos": { "fis": 85, "vel": 75, "eng": 80, "int": 75, "let": 75 }
     },
     {
         "id": "geto-10",
@@ -97,7 +106,8 @@
         "descricao": "Antigo melhor amigo de Gojo. Capaz de absorver e controlar milhares de maldições através de sua técnica de Manipulação de Espíritos Amaldiçoados.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Geto ]",
-        "corAura": "75, 0, 130"
+        "corAura": "75, 0, 130",
+        "atributos": { "fis": 90, "vel": 85, "eng": 95, "int": 95, "let": 90 }
     },
     {
         "id": "sukuna-11",
@@ -107,7 +117,8 @@
         "descricao": "O Rei das Maldições. Uma calamidade viva do período Heian cujos dedos indestrutíveis atravessaram as eras.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Sukuna ]",
-        "corAura": "139, 0, 0"
+        "corAura": "139, 0, 0",
+        "atributos": { "fis": 100, "vel": 100, "eng": 100, "int": 100, "let": 100 }
     },
     {
         "id": "mahito-12",
@@ -117,7 +128,8 @@
         "descricao": "Uma maldição nascida do ódio dos humanos uns pelos outros. Pode remodelar a alma (e consequentemente o corpo) de quem ele toca.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Mahito ]",
-        "corAura": "0, 206, 209"
+        "corAura": "0, 206, 209",
+        "atributos": { "fis": 75, "vel": 85, "eng": 90, "int": 85, "let": 100 }
     },
     {
         "id": "yuta-13",
@@ -127,7 +139,8 @@
         "descricao": "Um dos feiticeiros mais fortes da atualidade. Assombrado pelo espírito de sua amiga de infância, Rika, ele possui reservas imensas de energia amaldiçoada.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Yuta ]",
-        "corAura": "0, 0, 139"
+        "corAura": "0, 0, 139",
+        "atributos": { "fis": 85, "vel": 85, "eng": 100, "int": 90, "let": 95 }
     },
     {
         "id": "choso-14",
@@ -137,7 +150,8 @@
         "descricao": "O irmão mais velho dos fetos das Nove Pinturas da Morte. Utiliza a Manipulação de Sangue com letalidade extrema para proteger seus irmãos.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Choso ]",
-        "corAura": "139, 0, 0"
+        "corAura": "139, 0, 0",
+        "atributos": { "fis": 80, "vel": 80, "eng": 85, "int": 85, "let": 90 }
     },
     {
         "id": "todo-15",
@@ -147,7 +161,8 @@
         "descricao": "Um estudante musculoso e excêntrico de Kyoto. Sua técnica inata, Boogie Woogie, permite trocar de lugar com qualquer coisa que tenha energia amaldiçoada ao bater palmas.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Todo ]",
-        "corAura": "255, 20, 147"
+        "corAura": "255, 20, 147",
+        "atributos": { "fis": 90, "vel": 85, "eng": 80, "int": 100, "let": 65 }
     },
     {
         "id": "jogo-16",
@@ -157,7 +172,8 @@
         "descricao": "Uma maldição nascida do medo humano da terra e dos vulcões. Possui um temperamento explosivo e ataques de fogo devastadores.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Jogo ]",
-        "corAura": "255, 69, 0"
+        "corAura": "255, 69, 0",
+        "atributos": { "fis": 60, "vel": 95, "eng": 90, "int": 80, "let": 95 }
     },
     {
         "id": "hanami-17",
@@ -167,7 +183,8 @@
         "descricao": "Nascida do medo e ódio pelos abusos contra a natureza. Possui uma durabilidade absurda e manipula plantas amaldiçoadas.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Hanami ]",
-        "corAura": "34, 139, 34"
+        "corAura": "34, 139, 34",
+        "atributos": { "fis": 95, "vel": 75, "eng": 90, "int": 75, "let": 80 }
     },
     {
         "id": "hakari-18",
@@ -177,7 +194,8 @@
         "descricao": "Um estudante suspenso da escola de Tokyo. Quando acerta o Jackpot em seu Domínio, ganha energia amaldiçoada ilimitada por 4 minutos e 11 segundos.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Hakari ]",
-        "corAura": "255, 215, 0"
+        "corAura": "255, 215, 0",
+        "atributos": { "fis": 90, "vel": 85, "eng": 100, "int": 85, "let": 75 }
     },
     {
         "id": "kashimo-19",
@@ -187,7 +205,8 @@
         "descricao": "Um feiticeiro implacável do passado reencarnado no Jogo do Abate. Sua energia amaldiçoada possui as propriedades mortais da eletricidade.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Kashimo ]",
-        "corAura": "0, 255, 255"
+        "corAura": "0, 255, 255",
+        "atributos": { "fis": 95, "vel": 95, "eng": 90, "int": 85, "let": 95 }
     },
     {
         "id": "higuruma-20",
@@ -197,6 +216,7 @@
         "descricao": "Um advogado prodígio que despertou como feiticeiro. Seu Domínio julga os oponentes de acordo com as leis do sistema judiciário.",
         "imagem": "",
         "imgPlaceholder": "[ Arte do Higuruma ]",
-        "corAura": "105, 105, 105"
+        "corAura": "105, 105, 105",
+        "atributos": { "fis": 65, "vel": 70, "eng": 75, "int": 100, "let": 95 }
     }
 ]
