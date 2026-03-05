@@ -4,7 +4,6 @@ const ctxVFX = canvasVFX.getContext('2d');
 let particulasAtivas = [];
 let motorRodando = false;
 
-// Redimensiona o canvas para sempre acompanhar a tela
 function redimensionarCanvas() {
     canvasVFX.width = window.innerWidth;
     canvasVFX.height = window.innerHeight;
@@ -16,8 +15,6 @@ class ParticulaEnergia {
     constructor(x, y, corRGB) {
         this.x = x;
         this.y = y;
-        
-        // Disparo radial aleatório (Trigonometria pura)
         const angulo = Math.random() * Math.PI * 2;
         const forcaExplosao = Math.random() * 6 + 2; 
         
@@ -26,9 +23,9 @@ class ParticulaEnergia {
         
         this.tamanho = Math.random() * 4 + 2;
         this.cor = corRGB;
-        this.vida = 1.0; // Nasce com 100% de opacidade
-        this.decaimento = Math.random() * 0.03 + 0.015; // Velocidade que a luz apaga
-        this.gravidade = 0.15; // Puxa as partículas levemente para baixo com o tempo
+        this.vida = 1.0; 
+        this.decaimento = Math.random() * 0.03 + 0.015; 
+        this.gravidade = 0.15; 
     }
 
     atualizar() {
@@ -42,53 +39,28 @@ class ParticulaEnergia {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.tamanho, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${this.cor}, ${this.vida})`;
-        
-        // Efeito de brilho (Glow) usando Shadow
         ctx.shadowBlur = 15;
         ctx.shadowColor = `rgba(${this.cor}, ${this.vida})`;
         ctx.fill();
-        
-        // Reset da sombra para não poluir as próximas
         ctx.shadowBlur = 0;
     }
 }
 
 function invocarExplosao(x, y, corAura) {
-    // Cria 30 faíscas no local do clique
-    for (let i = 0; i < 30; i++) {
-        particulasAtivas.push(new ParticulaEnergia(x, y, corAura));
-    }
-    
-    // Se o motor estiver dormindo, acorde-o
-    if (!motorRodando) {
-        motorRodando = true;
-        animarMotorVFX();
-    }
+    for (let i = 0; i < 30; i++) { particulasAtivas.push(new ParticulaEnergia(x, y, corAura)); }
+    if (!motorRodando) { motorRodando = true; animarMotorVFX(); }
 }
 
 function animarMotorVFX() {
-    // Limpa o frame anterior inteiro
     ctxVFX.clearRect(0, 0, canvasVFX.width, canvasVFX.height);
-    
-    // Se não houver mais partículas vivas, desliga o requestAnimationFrame para salvar CPU
-    if (particulasAtivas.length === 0) {
-        motorRodando = false;
-        return; 
-    }
+    if (particulasAtivas.length === 0) { motorRodando = false; return; }
 
-    // Loop reverso (Best practice) para deletar itens de um array sem quebrar o índice
     for (let i = particulasAtivas.length - 1; i >= 0; i--) {
         const p = particulasAtivas[i];
         p.atualizar();
-        
-        if (p.vida <= 0) {
-            particulasAtivas.splice(i, 1); // Destrói do array quando a luz acaba
-        } else {
-            p.desenhar(ctxVFX);
-        }
+        if (p.vida <= 0) particulasAtivas.splice(i, 1); 
+        else p.desenhar(ctxVFX);
     }
-
-    // Chama o próximo frame
     requestAnimationFrame(animarMotorVFX);
 }
 
@@ -98,6 +70,9 @@ const modal = document.getElementById('modal-personagem');
 const btnFecharModal = document.getElementById('btn-fechar-modal');
 const inputBusca = document.getElementById('busca-personagem'); 
 
+// NOVO: Seleção do botão de selar do Modal
+const btnSelarModal = document.getElementById('btn-selar-modal');
+
 const modalNome = document.getElementById('modal-nome');
 const modalClasse = document.getElementById('modal-classe');
 const modalDescricao = document.getElementById('modal-descricao');
@@ -105,23 +80,17 @@ const containerImagemModal = document.querySelector('.modal-imagem-placeholder')
 
 let bancoDeDadosPersonagens = [];
 let feiticeirosSelados = JSON.parse(localStorage.getItem('jjk_selados')) || [];
+let personagemAtualModal = null; // NOVO: Monitora qual personagem está aberto
 
-// --- LÓGICA DO NOVO MENU CUSTOMIZADO ---
+// --- LÓGICA DO MENU CUSTOMIZADO ---
 const selectWrapper = document.querySelector('.custom-select-wrapper');
 const selectTrigger = document.querySelector('.custom-select-trigger');
 const textoFiltro = document.getElementById('filtro-texto');
 const opcoesFiltro = document.querySelectorAll('.custom-select-options li');
 let filtroTipoAtual = 'todos';
 
-selectWrapper.addEventListener('click', () => {
-    selectWrapper.classList.toggle('open');
-});
-
-document.addEventListener('click', (evento) => {
-    if (!selectWrapper.contains(evento.target)) {
-        selectWrapper.classList.remove('open');
-    }
-});
+selectWrapper.addEventListener('click', () => { selectWrapper.classList.toggle('open'); });
+document.addEventListener('click', (evento) => { if (!selectWrapper.contains(evento.target)) { selectWrapper.classList.remove('open'); } });
 
 opcoesFiltro.forEach(opcao => {
     opcao.addEventListener('click', (e) => {
@@ -133,30 +102,22 @@ opcoesFiltro.forEach(opcao => {
     });
 });
 
-// --- 3. COMUNICAÇÃO COM A NOSSA "API" LOCAL ---
+// --- 3. COMUNICAÇÃO COM API ---
 async function invocarFeiticeiros() {
     try {
         const resposta = await fetch('./data/personagens.json');
         if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
-
         bancoDeDadosPersonagens = await resposta.json();
         lerURL(); 
-        console.log("Domínio Expandido: JS carregado com sucesso!");
     } catch (erro) {
-        console.error("Falha ao invocar os feiticeiros:", erro);
         gridPersonagens.innerHTML = `<p style="color:red; text-align:center;">Erro na invocação do JSON.</p>`;
     }
 }
 
-// --- DEEP LINKING ---
 function atualizarURL(busca, tipo) {
     const url = new URL(window.location);
-    if (busca) url.searchParams.set('busca', busca);
-    else url.searchParams.delete('busca');
-
-    if (tipo && tipo !== 'todos') url.searchParams.set('tipo', tipo);
-    else url.searchParams.delete('tipo');
-
+    if (busca) url.searchParams.set('busca', busca); else url.searchParams.delete('busca');
+    if (tipo && tipo !== 'todos') url.searchParams.set('tipo', tipo); else url.searchParams.delete('tipo');
     window.history.replaceState({}, '', url);
 }
 
@@ -226,35 +187,22 @@ function renderizarCards(listaDePersonagens) {
         btnSelo.setAttribute('title', 'Selar Personagem');
         if (feiticeirosSelados.includes(personagem.id)) btnSelo.classList.add('ativo');
 
-        // INTEGRAÇÃO DO MOTOR: Atira partículas ao clicar
         btnSelo.addEventListener('click', (evento) => {
             evento.stopPropagation(); 
-            alternarSelo(personagem.id, btnSelo);
             
-            // Pega a exata coordenada do botão na tela para centrar a explosão
+            // BUGFIX SÊNIOR: Calcula a coordenada da explosão ANTES de recriar os cards
             const rect = btnSelo.getBoundingClientRect();
             const centroX = rect.left + (rect.width / 2);
             const centroY = rect.top + (rect.height / 2);
             
-            // Invoca a explosão com a cor do personagem!
+            alternarSeloGlobal(personagem.id);
             invocarExplosao(centroX, centroY, corAura);
         });
 
         card.appendChild(btnSelo);
-
         card.addEventListener('click', () => abrirModal(personagem));
-        card.addEventListener('keydown', (evento) => {
-            if (evento.key === 'Enter' || evento.key === ' ') {
-                evento.preventDefault(); 
-                abrirModal(personagem);
-            }
-        });
-
-        // Física no Desktop
-        card.addEventListener('mousemove', (evento) => {
-            const rect = card.getBoundingClientRect();
-            aplicarFisica(card, evento.clientX - rect.left, evento.clientY - rect.top);
-        });
+        card.addEventListener('keydown', (evento) => { if (evento.key === 'Enter' || evento.key === ' ') { evento.preventDefault(); abrirModal(personagem); } });
+        card.addEventListener('mousemove', (evento) => { const rect = card.getBoundingClientRect(); aplicarFisica(card, evento.clientX - rect.left, evento.clientY - rect.top); });
         card.addEventListener('mouseleave', () => resetarFisica(card));
 
         wrapperCard.appendChild(card);
@@ -268,7 +216,6 @@ function aplicarFisica(card, x, y) {
     const centerY = rect.height / 2;
     const rotateX = ((y - centerY) / centerY) * -15; 
     const rotateY = ((x - centerX) / centerX) * 15;
-
     card.style.setProperty('--rotateX', `${rotateX}deg`);
     card.style.setProperty('--rotateY', `${rotateY}deg`);
     card.style.setProperty('--mouse-x', `${x}px`);
@@ -282,7 +229,7 @@ function resetarFisica(card) {
     card.style.setProperty('--mouse-y', `50%`);
 }
 
-// --- RASTREADOR DE ENERGIA TOUCH ---
+// --- FÍSICA TOUCH MANTIDA ---
 let cardAtivoTouch = null;
 let modoTravado = false;
 let temporizadorTrava = null;
@@ -291,7 +238,6 @@ let posYInicial = 0;
 document.addEventListener('touchstart', (evento) => {
     const touch = evento.touches[0];
     posYInicial = touch.clientY;
-    
     const elementoAlvo = document.elementFromPoint(touch.clientX, touch.clientY);
     if (!elementoAlvo) return;
     const card = elementoAlvo.closest('.card');
@@ -301,7 +247,6 @@ document.addEventListener('touchstart', (evento) => {
             modoTravado = true;
             cardAtivoTouch = card;
             card.classList.add('touch-travado'); 
-            
             const rect = card.getBoundingClientRect();
             aplicarFisica(card, touch.clientX - rect.left, touch.clientY - rect.top);
         }, 300); 
@@ -309,29 +254,20 @@ document.addEventListener('touchstart', (evento) => {
 }, { passive: true });
 
 document.addEventListener('touchmove', (evento) => {
-    if (modoTravado) {
-        evento.preventDefault(); 
-    } else {
+    if (modoTravado) { evento.preventDefault(); } else {
         const touch = evento.touches[0];
-        if (Math.abs(touch.clientY - posYInicial) > 10) {
-            clearTimeout(temporizadorTrava);
-        }
+        if (Math.abs(touch.clientY - posYInicial) > 10) clearTimeout(temporizadorTrava);
         return; 
     }
-
     const touch = evento.touches[0];
     const elementoAlvo = document.elementFromPoint(touch.clientX, touch.clientY);
     if (!elementoAlvo) return;
     const card = elementoAlvo.closest('.card');
 
     if (card) {
-        if (cardAtivoTouch && cardAtivoTouch !== card) {
-            resetarFisica(cardAtivoTouch);
-            cardAtivoTouch.classList.remove('touch-travado');
-        }
+        if (cardAtivoTouch && cardAtivoTouch !== card) { resetarFisica(cardAtivoTouch); cardAtivoTouch.classList.remove('touch-travado'); }
         cardAtivoTouch = card;
         card.classList.add('touch-travado');
-
         const rect = card.getBoundingClientRect();
         aplicarFisica(card, touch.clientX - rect.left, touch.clientY - rect.top);
     } else if (cardAtivoTouch) {
@@ -344,27 +280,32 @@ document.addEventListener('touchmove', (evento) => {
 function liberarDominoTouch() {
     clearTimeout(temporizadorTrava);
     modoTravado = false;
-    if (cardAtivoTouch) {
-        resetarFisica(cardAtivoTouch);
-        cardAtivoTouch.classList.remove('touch-travado');
-        cardAtivoTouch = null;
-    }
+    if (cardAtivoTouch) { resetarFisica(cardAtivoTouch); cardAtivoTouch.classList.remove('touch-travado'); cardAtivoTouch = null; }
 }
 document.addEventListener('touchend', liberarDominoTouch);
 document.addEventListener('touchcancel', liberarDominoTouch);
 
-
-function alternarSelo(idPersonagem, botaoElemento) {
+// --- LÓGICA GLOBAL DE SELAMENTO ---
+function alternarSeloGlobal(idPersonagem) {
     const index = feiticeirosSelados.indexOf(idPersonagem);
     if (index > -1) {
         feiticeirosSelados.splice(index, 1);
-        botaoElemento.classList.remove('ativo');
     } else {
         feiticeirosSelados.push(idPersonagem);
-        botaoElemento.classList.add('ativo');
     }
     localStorage.setItem('jjk_selados', JSON.stringify(feiticeirosSelados));
-    if (filtroTipoAtual === 'favoritos') aplicarFiltros();
+    
+    // 1. Atualiza o botão de dentro do Modal se for o mesmo personagem!
+    if (personagemAtualModal && personagemAtualModal.id === idPersonagem) {
+        if (feiticeirosSelados.includes(idPersonagem)) {
+            btnSelarModal.classList.add('ativo');
+        } else {
+            btnSelarModal.classList.remove('ativo');
+        }
+    }
+
+    // 2. Re-renderiza o painel de fundo silenciosamente
+    aplicarFiltros();
 }
 
 function aplicarFiltros() {
@@ -375,8 +316,8 @@ function aplicarFiltros() {
         const nomeBate = personagem.nome.toLowerCase().includes(termoBusca);
         const classeBate = personagem.classe.toLowerCase().includes(termoBusca);
         const passouNoTexto = nomeBate || classeBate;
-
         let passouNoTipo = false;
+        
         if (filtroTipoAtual === 'todos') passouNoTipo = true;
         else if (filtroTipoAtual === 'feiticeiro') passouNoTipo = personagem.tipo === 'feiticeiro';
         else if (filtroTipoAtual === 'maldicao') passouNoTipo = personagem.tipo === 'maldicao';
@@ -391,25 +332,29 @@ function aplicarFiltros() {
 
 const buscarComCooldown = debounce(aplicarFiltros, 300);
 inputBusca.addEventListener('input', buscarComCooldown); 
-
 function debounce(funcao, tempoEspera) {
     let temporizador;
-    return function(...argumentos) {
-        clearTimeout(temporizador);
-        temporizador = setTimeout(() => { funcao.apply(this, argumentos); }, tempoEspera);
-    };
+    return function(...argumentos) { clearTimeout(temporizador); temporizador = setTimeout(() => { funcao.apply(this, argumentos); }, tempoEspera); };
 }
 
-// --- 5. MODAL ---
+// --- 5. MODAL E EVENTOS ---
 function abrirModal(personagem) {
+    personagemAtualModal = personagem; // Avisa o sistema global quem está aberto
+
     modalNome.textContent = personagem.nome;
     modalNome.className = ''; 
     modalClasse.className = `badge ${personagem.tipo}`;
-    
     if(personagem.tipo === 'anomalia') modalClasse.innerHTML = `<span class="texto-hibrido">${personagem.classe}</span>`;
     else modalClasse.textContent = personagem.classe;
     
     modalDescricao.textContent = personagem.descricao;
+    
+    // O Botão do Modal puxa a cor da aura ou o padrão
+    if (feiticeirosSelados.includes(personagem.id)) {
+        btnSelarModal.classList.add('ativo');
+    } else {
+        btnSelarModal.classList.remove('ativo');
+    }
     
     if (personagem.imagem) {
         containerImagemModal.innerHTML = `<img src="${personagem.imagem}" alt="${personagem.nome}" class="modal-img-real" loading="lazy" onerror="this.onerror=null; this.outerHTML='<span id=\\'modal-img-texto\\'>${personagem.imgPlaceholder}</span>'; document.querySelector('.modal-imagem-placeholder').style.background = 'linear-gradient(45deg, #111, #222)';">`;
@@ -425,7 +370,22 @@ function abrirModal(personagem) {
     btnFecharModal.focus(); 
 }
 
-function fecharModal() { modal.classList.remove('ativo'); }
+function fecharModal() { 
+    modal.classList.remove('ativo'); 
+    personagemAtualModal = null; // Limpa memória
+}
+
+// Evento de Clique no Botão de Dentro do Modal
+btnSelarModal.addEventListener('click', () => {
+    if (!personagemAtualModal) return;
+    
+    const rect = btnSelarModal.getBoundingClientRect();
+    const centroX = rect.left + (rect.width / 2);
+    const centroY = rect.top + (rect.height / 2);
+
+    alternarSeloGlobal(personagemAtualModal.id);
+    invocarExplosao(centroX, centroY, personagemAtualModal.corAura || "89, 0, 179");
+});
 
 btnFecharModal.addEventListener('click', fecharModal);
 modal.addEventListener('click', (evento) => { if (evento.target === modal) fecharModal(); });

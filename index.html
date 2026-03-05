@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="./css/style.css?v=2.0">
+    <link rel="stylesheet" href="./css/style.css?v=5.0">
 </head>
 <body>
 
@@ -45,22 +45,29 @@
 
     <main class="container">
         <section id="grid-personagens" class="grid-personagens">
-            </section>
+        </section>
     </main>
 
     <div id="modal-personagem" class="modal">
-        <div class="modal-conteudo">
-            <button id="btn-fechar-modal" class="btn-fechar">&times;</button>
-            
-            <div class="modal-layout">
-                <div class="modal-imagem-placeholder">
-                    <span id="modal-img-texto">[ Imagem ]</span>
-                </div>
-                
-                <div class="modal-info">
-                    <h2 id="modal-nome">Nome do Personagem</h2>
-                    <span id="modal-classe" class="badge">Grau</span>
-                    <p id="modal-descricao">Descrição detalhada vai aqui...</p>
+        
+        <button id="btn-fechar-modal" class="btn-fechar" aria-label="Fechar Modal"></button>
+        
+        <div class="modal-wrapper">
+            <div class="modal-conteudo">
+                <div class="modal-layout">
+                    <div class="modal-imagem-placeholder">
+                        <span id="modal-img-texto">[ Imagem ]</span>
+                    </div>
+                    
+                    <div class="modal-info">
+                        <div class="modal-titulo-wrapper">
+                            <h2 id="modal-nome">Nome do Personagem</h2>
+                            <button id="btn-selar-modal" class="btn-selo" aria-label="Selar Personagem">封</button>
+                        </div>
+                        
+                        <span id="modal-classe" class="badge">Grau</span>
+                        <p id="modal-descricao">Descrição detalhada vai aqui...</p>
+                    </div>
                 </div>
             </div>
         </div>

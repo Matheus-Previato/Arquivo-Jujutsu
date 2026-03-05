@@ -15,7 +15,7 @@
         "classe": "Grau Especial",
         "tipo": "feiticeiro",
         "descricao": "O feiticeiro mais forte da era moderna. Herdeiro dos Seis Olhos e da técnica Ilimitado.",
-        "imagem": "",
+        "imagem": "./assets/img/gojo-0.png",
         "imgPlaceholder": "[ Arte do Gojo ]",
         "corAura": "0, 191, 255"
     },
