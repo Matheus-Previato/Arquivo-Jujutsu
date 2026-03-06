@@ -65,7 +65,7 @@ function animarMotorVFX() {
 }
 
 // --- MOTOR GRÁFICO DO PENTÁGONO (RADAR CHART) ---
-let pontosRadar = []; // Banco de dados das coordenadas atuais do gráfico
+let pontosRadar = []; 
 
 function desenharGraficoRadar(atributos, corAura) {
     const canvas = document.getElementById('grafico-radar');
@@ -73,7 +73,7 @@ function desenharGraficoRadar(atributos, corAura) {
     const ctx = canvas.getContext('2d');
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    pontosRadar = []; // Zera os pontos de colisão da tela anterior
+    pontosRadar = []; 
     
     const cw = canvas.width;
     const ch = canvas.height;
@@ -85,7 +85,6 @@ function desenharGraficoRadar(atributos, corAura) {
     const vals = atributos ? [atributos.fis, atributos.vel, atributos.eng, atributos.int, atributos.let] : [0,0,0,0,0];
     const lados = 5;
 
-    // 1. Teia Guias
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.lineWidth = 1;
     for (let nivel = 1; nivel <= 5; nivel++) { 
@@ -102,7 +101,6 @@ function desenharGraficoRadar(atributos, corAura) {
         ctx.stroke();
     }
 
-    // 2. Raios Centrais
     ctx.beginPath();
     for (let i = 0; i < lados; i++) {
         const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
@@ -111,7 +109,6 @@ function desenharGraficoRadar(atributos, corAura) {
     }
     ctx.stroke();
 
-    // 3. Textos (Labels)
     ctx.fillStyle = '#aaa';
     ctx.font = '14px Oswald, sans-serif';
     ctx.textAlign = 'center';
@@ -123,7 +120,6 @@ function desenharGraficoRadar(atributos, corAura) {
         ctx.fillText(labels[i], x, y);
     }
 
-    // 4. Polígono de Força Colorido
     ctx.beginPath();
     for (let i = 0; i < lados; i++) {
         const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
@@ -131,7 +127,6 @@ function desenharGraficoRadar(atributos, corAura) {
         const x = cx + Math.cos(angle) * r;
         const y = cy + Math.sin(angle) * r;
         
-        // SALVA AS COORDENADAS PARA O RADAR DO MOUSE!
         pontosRadar.push({ x: x, y: y, valor: vals[i] || 0 });
         
         if (i === 0) ctx.moveTo(x, y);
@@ -148,7 +143,6 @@ function desenharGraficoRadar(atributos, corAura) {
     ctx.stroke();
     ctx.shadowBlur = 0; 
 
-    // 5. Bolinhas das pontas
     for (let i = 0; i < pontosRadar.length; i++) {
         ctx.beginPath();
         ctx.arc(pontosRadar[i].x, pontosRadar[i].y, 4, 0, Math.PI * 2);
@@ -180,47 +174,78 @@ let bancoDeDadosPersonagens = [];
 let feiticeirosSelados = JSON.parse(localStorage.getItem('jjk_selados')) || [];
 let personagemAtualModal = null; 
 
-// --- MOTOR MATEMÁTICO: BALÃO DE NÚMEROS NOS PONTOS (HOVER NO CANVAS) ---
+// --- MÁQUINA DE ESTADOS: SIMULADOR DE DOMÍNIO ---
+const btnDominio = document.getElementById('btn-dominio');
+const cenarioDominio = document.getElementById('cenario-dominio');
+
+// Matriz de Domínios (Ordem Exata) - MAHITO SUBSTITUÍDO POR HIGURUMA
+const dominiosDisponiveis = [
+    { classe: 'normal', icone: '🌀', cor: '89, 0, 179' }, // Reset
+    { classe: 'dominio-gojo', icone: '🤞', cor: '0, 191, 255' }, // Vazio Imensurável
+    { classe: 'dominio-sukuna', icone: '⛩️', cor: '139, 0, 0' }, // Santuário Malevolente
+    { classe: 'dominio-higuruma', icone: '⚖️', cor: '255, 215, 0' }  // Sentenciamento Mortal
+];
+let dominioAtualIndex = 0;
+
+if(btnDominio) {
+    btnDominio.addEventListener('click', () => {
+        dominioAtualIndex++;
+        if (dominioAtualIndex >= dominiosDisponiveis.length) {
+            dominioAtualIndex = 0; 
+        }
+
+        const dominioAtivo = dominiosDisponiveis[dominioAtualIndex];
+        
+        btnDominio.textContent = dominioAtivo.icone;
+        btnDominio.style.transform = 'scale(1.4)';
+        setTimeout(() => { btnDominio.style.transform = 'scale(1)'; }, 200);
+
+        cenarioDominio.className = '';
+        if (dominioAtivo.classe !== 'normal') {
+            cenarioDominio.classList.add(dominioAtivo.classe);
+        }
+
+        const rect = btnDominio.getBoundingClientRect();
+        invocarExplosao(rect.left + rect.width/2, rect.top + rect.height/2, dominioAtivo.cor);
+    });
+}
+
+
+// --- MOTOR MATEMÁTICO: BALÃO DE NÚMEROS NOS PONTOS ---
 let timerTooltipPonto = null;
 let pontoAtivoIndex = -1;
 
 if (canvasRadar && tooltipPonto) {
     canvasRadar.addEventListener('mousemove', (e) => {
         const rect = canvasRadar.getBoundingClientRect();
-        // Fator de escala caso o canvas do celular diminua com o CSS
         const scaleX = canvasRadar.width / rect.width;
         const scaleY = canvasRadar.height / rect.height;
 
-        // Posição exata do mouse convertida para o mundo 320x320 do Canvas
         const mouseX = (e.clientX - rect.left) * scaleX;
         const mouseY = (e.clientY - rect.top) * scaleY;
 
         let achouColisao = false;
 
-        // Vasculha todos os 5 pontos em tempo real
         for (let i = 0; i < pontosRadar.length; i++) {
             const p = pontosRadar[i];
             const distancia = Math.hypot(p.x - mouseX, p.y - mouseY);
 
-            // Se o mouse estiver a 15px de distância do centro da bolinha (Hitbox perdoável)
             if (distancia < 15) {
                 achouColisao = true;
                 if (pontoAtivoIndex !== i) {
                     pontoAtivoIndex = i;
                     abrirTooltipPonto(p.valor, p.x / scaleX, p.y / scaleY, rect);
                 }
-                break; // Achou um ponto, pode parar a busca
+                break; 
             }
         }
 
-        // Se moveu pro vazio negro e tinha um ponto ativo
         if (!achouColisao && pontoAtivoIndex !== -1) {
             pontoAtivoIndex = -1;
             iniciarContagemPonto();
         }
     });
 
-    // Se o mouse sair totalmente do quadrado do canvas
     canvasRadar.addEventListener('mouseleave', () => {
         pontoAtivoIndex = -1;
         iniciarContagemPonto();
@@ -228,11 +253,10 @@ if (canvasRadar && tooltipPonto) {
 }
 
 function abrirTooltipPonto(valor, visualX, visualY, canvasRect) {
-    clearTimeout(timerTooltipPonto); // Trava o tempo enquanto estiver colidindo
+    clearTimeout(timerTooltipPonto); 
     tooltipPonto.textContent = valor;
     tooltipPonto.classList.add('ativo');
 
-    // Cálculo absoluto para o balão subir acima do mouse
     const containerRect = document.querySelector('.grafico-container').getBoundingClientRect();
     const posX = (canvasRect.left - containerRect.left) + visualX;
     const posY = (canvasRect.top - containerRect.top) + visualY; 
@@ -245,11 +269,11 @@ function iniciarContagemPonto() {
     clearTimeout(timerTooltipPonto);
     timerTooltipPonto = setTimeout(() => {
         tooltipPonto.classList.remove('ativo');
-    }, 1000); // Exatos 1 segundo pedido para apagar
+    }, 1000); 
 }
 
 
-// --- LÓGICA DA TOOLTIP DE EXPLICAÇÃO (O BOTÃO [?]) ---
+// --- LÓGICA DA TOOLTIP DE EXPLICAÇÃO ---
 let timerTooltip;
 
 function abrirTooltip() {
@@ -269,9 +293,7 @@ function agendarFechamento() {
     timerTooltip = setTimeout(() => { fecharTooltip(); }, 3000);
 }
 
-function cancelarFechamento() {
-    clearTimeout(timerTooltip);
-}
+function cancelarFechamento() { clearTimeout(timerTooltip); }
 
 if (btnInfoGrafico) {
     btnInfoGrafico.addEventListener('mouseenter', () => { abrirTooltip(); cancelarFechamento(); });
@@ -598,7 +620,7 @@ function fecharModal() {
     if(modal) modal.classList.remove('ativo'); 
     personagemAtualModal = null; 
     fecharTooltip(); 
-    if(tooltipPonto) tooltipPonto.classList.remove('ativo'); // Garante que reseta o balão de numeração
+    if(tooltipPonto) tooltipPonto.classList.remove('ativo'); 
 }
 
 if(btnSelarModal) {
