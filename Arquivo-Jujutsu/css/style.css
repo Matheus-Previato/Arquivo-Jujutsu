@@ -1,0 +1,1081 @@
+/* --- Variáveis de Tema (Estilo JJK Visceral) --- */
+:root {
+    --bg-color: #060606; 
+    --text-color: #eaeaea;
+    --primary-color: #5900b3; 
+    --accent-color: #990000; 
+    --kokusen-red: #ff0000; 
+    --card-bg: #111111;
+    --ofuda-bg: #d9cbb0; 
+    --ofuda-text: #660000; 
+    --transition-speed: 0.2s; 
+    
+    --font-titulo: 'Permanent Marker', cursive;
+    --font-texto: 'Oswald', sans-serif;
+}
+
+html { 
+    scrollbar-width: thin; 
+    scrollbar-color: var(--accent-color) var(--bg-color); 
+}
+
+::-webkit-scrollbar { 
+    width: 8px; 
+}
+
+::-webkit-scrollbar-track { 
+    background: var(--bg-color); 
+    border-left: 1px solid #222; 
+}
+
+::-webkit-scrollbar-thumb { 
+    background-color: #222; 
+    border-radius: 0px; 
+}
+
+::-webkit-scrollbar-thumb:hover { 
+    background-color: var(--accent-color); 
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-texto);
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    overflow-x: hidden;
+    position: relative;
+    background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.01) 0px, rgba(255, 255, 255, 0.01) 2px, transparent 2px, transparent 10px);
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.8) 100%);
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* --- MOTOR DE PARTÍCULAS E DOMÍNIOS --- */
+#dominio-vfx {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; 
+    z-index: 999999; 
+}
+
+/* O Fundo que vai sobrepor o body original quando invocado */
+#cenario-dominio {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100vw; 
+    height: 100vh;
+    z-index: -2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out, filter 1.5s ease-in-out;
+}
+
+/* --- Header Estilizado --- */
+.header-principal {
+    background: linear-gradient(180deg, #000000 0%, rgba(12, 12, 12, 0.8) 100%);
+    border-bottom: 3px solid var(--accent-color); 
+    padding: 2.5rem 0;
+    position: relative;
+    box-shadow: 0 5px 20px rgba(153, 0, 0, 0.3);
+    z-index: 9999; 
+    backdrop-filter: blur(5px);
+}
+
+.header-principal::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(153, 0, 0, 0.2) 0%, transparent 70%);
+    z-index: 0;
+    pointer-events: none; 
+}
+
+.header-conteudo {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 9999; 
+}
+
+/* Agrupamento do Botão de Domínio com o Título */
+.header-titulos-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+#btn-inicial {
+    background-color: transparent;
+    border: none;              
+    color: transparent;                
+    cursor: pointer;             
+    font-size: 16px;
+    padding: 0; 
+}
+
+.btn-dominio {
+    background: transparent;
+    border: 2px solid #333;
+    border-radius: 8px;
+    font-size: 1.8rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    transform: perspective(100px) rotateY(10deg); 
+}
+
+.btn-dominio:hover, 
+.btn-dominio:focus-visible {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(89, 0, 179, 0.6), inset 0 0 15px rgba(89, 0, 179, 0.3);
+    transform: perspective(100px) rotateY(0deg) scale(1.1);
+    outline: none;
+}
+
+.header-titulos h1 {
+    font-family: var(--font-titulo); 
+    font-size: 3.2rem;
+    color: #fff;
+    text-shadow: 2px 2px 0px var(--accent-color), -1px -1px 8px var(--primary-color);
+    transform: rotate(-1.5deg); 
+    position: relative;
+    margin-bottom: 0.8rem; 
+    line-height: 1.1;
+}
+
+.header-titulos h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; 
+    left: 20px;
+    width: 3px;
+    height: 25px;
+    background-color: var(--accent-color);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 15px 5px 0 var(--accent-color), 40px -2px 0 var(--accent-color); 
+}
+
+.header-titulos p {
+    color: #777;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-top: 0; 
+}
+
+.search-container {
+    flex-grow: 1;
+    max-width: 550px;
+    display: flex; 
+    gap: 15px;
+    align-items: center; 
+}
+
+#busca-personagem {
+    flex: 1; 
+    padding: 0.9rem 1.2rem;
+    border-radius: 0; 
+    border: 1px solid #333;
+    border-left: 5px solid var(--primary-color); 
+    background-color: rgba(0, 0, 0, 0.8);
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-family: var(--font-texto);
+    outline: none;
+    transition: all var(--transition-speed) ease;
+}
+
+#busca-personagem:focus {
+    border-color: var(--accent-color);
+    border-left: 5px solid var(--kokusen-red);
+    box-shadow: 0 0 15px rgba(153, 0, 0, 0.5);
+    background-color: #000;
+}
+
+/* --- MENU DROPDOWN CUSTOMIZADO --- */
+.custom-select-wrapper {
+    position: relative;
+    flex: 0 0 220px; 
+    font-family: var(--font-texto);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    outline: none;
+    z-index: 9999; 
+}
+
+.custom-select-trigger {
+    background-color: var(--ofuda-bg);
+    color: var(--ofuda-text);
+    padding: 0.9rem 1.2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all var(--transition-speed) ease;
+    clip-path: polygon(0% 5%, 5% 0%, 95% 2%, 100% 8%, 98% 92%, 92% 100%, 8% 98%, 0% 90%);
+}
+
+.custom-select-wrapper:hover .custom-select-trigger,
+.custom-select-wrapper:focus-visible .custom-select-trigger,
+.custom-select-wrapper.open .custom-select-trigger {
+    background-color: #c4b69c; 
+    transform: skewX(-2deg) scale(1.02); 
+}
+
+.custom-select-options {
+    position: absolute;
+    top: calc(100% + 5px); 
+    left: 0;
+    width: 100%;
+    background-color: var(--card-bg);
+    border: 1px solid #333;
+    border-top: 3px solid var(--accent-color);
+    list-style: none;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all var(--transition-speed) ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    z-index: 99999; 
+}
+
+.custom-select-wrapper.open .custom-select-options {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
+.custom-select-options li {
+    padding: 0.9rem 1.2rem;
+    color: var(--text-color);
+    border-bottom: 1px solid #1a1a1a;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.custom-select-options li:hover, 
+.custom-select-options li.selected {
+    background-color: #222;
+    color: var(--kokusen-red);
+    border-left: 4px solid var(--kokusen-red);
+}
+
+/* --- Container Principal --- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    perspective: 1000px; 
+    position: relative;
+    z-index: 1; 
+}
+
+.grid-personagens {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2.5rem;
+}
+
+/* --- Estilos do Card --- */
+.card-wrapper {
+    animation: invocarCard 0.6s ease-out backwards;
+    display: block;
+    height: 100%; 
+    perspective: 1200px; 
+}
+
+.card {
+    background-color: rgba(17, 17, 17, 0.9); 
+    border: 1px solid #1a1a1a; 
+    border-radius: 0px; 
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%; 
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) scale(1);
+    transition: transform 0.1s linear, box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease, outline var(--transition-speed);
+    backdrop-filter: blur(2px);
+}
+
+.card:hover,
+.card:focus-visible,
+.card.touch-travado {
+    border-color: rgb(var(--cor-aura));
+    box-shadow: 0 15px 35px rgba(var(--cor-aura), 0.5), inset 0 0 15px rgba(var(--cor-aura), 0.2); 
+    z-index: 10; 
+    transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) scale(1.05);
+}
+
+.card:focus-visible { 
+    outline: 3px solid var(--kokusen-red); 
+    outline-offset: 4px; 
+}
+
+.card-imagem-placeholder {
+    width: 100%;
+    height: 380px; 
+    background: linear-gradient(180deg, rgba(17,17,17,0.8) 0%, rgba(0,0,0,0.8) 100%); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    border-bottom: 2px solid #1a1a1a;
+    overflow: hidden; 
+    position: relative; 
+    transform-style: preserve-3d; 
+}
+
+.card-imagem-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(var(--cor-aura), 0.6) 0%, transparent 70%);
+    opacity: 0; 
+    transition: opacity var(--transition-speed) ease; 
+    z-index: 1; 
+}
+
+.card:hover .card-imagem-placeholder::before,
+.card:focus-visible .card-imagem-placeholder::before,
+.card.touch-travado .card-imagem-placeholder::before {
+    opacity: 1;
+}
+
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    object-position: center bottom; 
+    padding: 0.5rem; 
+    transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); 
+    filter: drop-shadow(0 5px 20px rgba(0,0,0,0.9)); 
+    position: relative; 
+    z-index: 2; 
+    transform: translateZ(30px);
+}
+
+.card:hover .card-img,
+.card:focus-visible .card-img,
+.card.touch-travado .card-img {
+    transform: translateZ(60px) scale(1.1) translateY(-5px); 
+}
+
+.card-info {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    position: relative;
+    z-index: 2;
+    background-color: transparent; 
+    flex-grow: 1; 
+    transform-style: preserve-3d; 
+}
+
+.card-info h3 {
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    color: var(--text-color); 
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+/* --- BADGES E BOTÕES --- */
+.badge {
+    background-color: var(--ofuda-bg); 
+    color: var(--ofuda-text);
+    padding: 0.2rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 3px double var(--ofuda-text); 
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.9); 
+    transform: translateZ(20px) rotate(-3deg); 
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.card:hover .badge,
+.card:focus-visible .badge,
+.card.touch-travado .badge {
+    transform: translateZ(40px) rotate(0deg) scale(1.05); 
+    box-shadow: 0 5px 15px rgba(var(--cor-aura), 0.6);
+}
+
+.badge.feiticeiro { border-color: #0033cc; color: #0033cc; }
+.badge.maldicao { border-color: #aa0000; color: #aa0000; }
+.badge.neutro { border-color: #886600; color: #886600; }
+.badge.anomalia { border-color: #4b0082; color: #4b0082; }
+
+.texto-hibrido {
+    background: linear-gradient(to right, #0033cc 50%, #aa0000 50%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block; 
+}
+
+.btn-selo {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #333;
+    color: #444; 
+    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    transform: translateZ(30px);
+}
+
+.btn-selo:hover,
+.btn-selo:focus-visible,
+.card.touch-travado .btn-selo {
+    background: #111;
+    border-color: var(--kokusen-red);
+    color: #fff;
+    transform: translateZ(50px) scale(1.1); 
+    outline: none;
+}
+
+.btn-selo.ativo {
+    color: var(--kokusen-red);
+    border-color: var(--kokusen-red);
+    background: rgba(153, 0, 0, 0.2);
+    text-shadow: 0 0 10px var(--kokusen-red);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    animation: pulsarSelo 2s infinite alternate;
+}
+
+/* =========================================================
+   A SOLUÇÃO ABSOLUTA DO MODAL (SCROLL FLUIDO & OSSOS REAIS)
+============================================================ */
+
+.modal {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100vw; 
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.95); 
+    z-index: 100000; 
+    opacity: 0; 
+    pointer-events: none; 
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(10px) grayscale(100%); 
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 60px 20px; 
+}
+
+.modal.ativo { 
+    opacity: 1; 
+    pointer-events: all; 
+}
+
+.modal-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 950px; 
+    margin: auto; 
+    transform: scale(0.8) skewY(5deg); 
+    transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.modal.ativo .modal-wrapper { 
+    transform: scale(1) skewY(0deg); 
+}
+
+.modal-conteudo {
+    background-color: #000; 
+    border: 2px solid var(--primary-color);
+    border-top: 8px solid var(--kokusen-red); 
+    border-radius: 0px;
+    padding: 3rem; 
+    width: 100%;
+    box-shadow: 0 0 50px rgba(89, 0, 179, 0.4);
+    height: auto; 
+}
+
+.btn-fechar {
+    position: fixed; 
+    top: 25px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 100001; 
+    
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M438.6 73.4c-15.5-15.5-40-16.9-57.2-4.1-3.6 2.7-6.8 6-9.4 9.8L256 195 140 79.1c-2.6-3.8-5.8-7.1-9.4-9.8-17.2-12.8-41.7-11.4-57.2 4.1-16 16-16.7 41.5-1.5 58.1 4.7 5.1 10.4 8.9 16.9 10.9l115.9 115.9L88.8 374.2c-6.5 2-12.2 5.8-16.9 10.9-15.2 16.6-14.5 42.1 1.5 58.1 15.5 15.5 40 16.9 57.2 4.1 3.6-2.7 6.8-6 9.4-9.8L256 321l116 116.1c2.6 3.8 5.8 7.1 9.4 9.8 17.2 12.8 41.7 11.4 57.2-4.1 16-16 16.7-41.5 1.5-58.1-4.7-5.1-10.4-8.9-16.9-10.9L307.3 257.9l115.9-115.9c6.5-2 12.2-5.8 16.9-10.9 15.2-16.6 14.5-42.1-1.5-58.1z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M438.6 73.4c-15.5-15.5-40-16.9-57.2-4.1-3.6 2.7-6.8 6-9.4 9.8L256 195 140 79.1c-2.6-3.8-5.8-7.1-9.4-9.8-17.2-12.8-41.7-11.4-57.2 4.1-16 16-16.7 41.5-1.5 58.1 4.7 5.1 10.4 8.9 16.9 10.9l115.9 115.9L88.8 374.2c-6.5 2-12.2 5.8-16.9 10.9-15.2 16.6-14.5 42.1 1.5 58.1 15.5 15.5 40 16.9 57.2 4.1 3.6-2.7 6.8-6 9.4-9.8L256 321l116 116.1c2.6 3.8 5.8 7.1 9.4 9.8 17.2 12.8 41.7 11.4 57.2-4.1 16-16 16.7-41.5 1.5-58.1-4.7-5.1-10.4-8.9-16.9-10.9L307.3 257.9l115.9-115.9c6.5-2 12.2-5.8 16.9-10.9 15.2-16.6 14.5-42.1-1.5-58.1z'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain; 
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat; 
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center; 
+    mask-position: center;
+    background-image: radial-gradient(circle at 30% 30%, #ffffff 0%, #e3dac9 40%, #a6987c 100%);
+    filter: drop-shadow(0 5px 8px rgba(0,0,0,0.8)); 
+    transition: all 0.3s ease;
+}
+
+.btn-fechar:focus-visible { 
+    outline: 2px dashed var(--kokusen-red); 
+    outline-offset: 5px; 
+}
+
+.btn-fechar:hover, 
+.btn-fechar:focus-visible {
+    background-image: radial-gradient(circle at 30% 30%, #ff6666 0%, var(--kokusen-red) 50%, #660000 100%);
+    transform: rotate(90deg) scale(1.1); 
+    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.8)); 
+    animation: chocalhoDeOsso 0.4s infinite;
+}
+
+.modal-layout { 
+    display: flex; 
+    flex-direction: row; 
+    align-items: stretch; 
+    gap: 4rem; 
+}
+
+.modal-imagem-placeholder {
+    flex: 0 0 320px; 
+    background: #050505;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #1a1a1a;
+    color: #222;
+}
+
+.modal-img-real { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain; 
+    object-position: center bottom; 
+    padding: 0; 
+    filter: drop-shadow(0 0 25px rgba(var(--cor-aura), 0.5)); 
+}
+
+.modal-info { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
+}
+
+/* --- ALINHAMENTO DO TÍTULO E BOTÃO SELAR NO MODAL --- */
+.modal-titulo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.modal-titulo-wrapper h2 {
+    font-size: 3.8rem; 
+    text-transform: uppercase; 
+    color: var(--text-color); 
+    margin-bottom: 0; 
+    line-height: 1; 
+    text-shadow: 3px 3px 0px #000;
+}
+
+.modal-titulo-wrapper .btn-selo {
+    position: static; 
+    transform: none; 
+}
+
+.modal-titulo-wrapper .btn-selo:hover,
+.modal-titulo-wrapper .btn-selo:focus-visible {
+    transform: scale(1.1); 
+}
+
+.modal-info .badge { 
+    margin-bottom: 2.5rem; 
+    font-size: 1.1rem; 
+    padding: 0.4rem 1.2rem; 
+}
+
+.modal-info p { 
+    color: #bbb; 
+    font-size: 1.25rem; 
+    line-height: 1.9; 
+    font-weight: 400; 
+    font-family: Arial, Helvetica, sans-serif; 
+    background-color: rgba(255, 255, 255, 0.03); 
+    padding: 1rem; 
+    border-left: 3px solid #333; 
+}
+
+/* --- ESTILO DO GRÁFICO DE ATRIBUTOS E TOOLTIP --- */
+.grafico-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed #333; 
+    position: relative; 
+}
+
+.grafico-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 1rem;
+}
+
+.grafico-header h3 {
+    font-size: 1.2rem;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+.btn-info {
+    background: transparent;
+    border: 1px solid #555;
+    color: #aaa;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-family: var(--font-texto);
+    font-size: 1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-info:hover, 
+.btn-info.ativo, 
+.btn-info:focus-visible {
+    border-color: var(--kokusen-red);
+    color: var(--kokusen-red);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+    outline: none;
+}
+
+#grafico-radar {
+    max-width: 100%; 
+    height: auto;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
+}
+
+.tooltip-grafico {
+    position: absolute;
+    top: 60px; 
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: rgba(10, 10, 10, 0.95);
+    border: 1px solid var(--kokusen-red);
+    padding: 1.2rem;
+    width: 90%;
+    max-width: 320px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9), inset 0 0 20px rgba(153,0,0,0.2);
+    backdrop-filter: blur(8px);
+}
+
+.tooltip-grafico.ativo {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(-50%) translateY(0);
+}
+
+.tooltip-grafico ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tooltip-grafico li {
+    font-size: 0.95rem;
+    color: #ccc;
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
+    border-bottom: 1px dashed #222;
+    padding-bottom: 0.6rem;
+}
+
+.tooltip-grafico li:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.tooltip-grafico li strong {
+    color: var(--kokusen-red);
+    font-weight: 700;
+    margin-right: 5px;
+}
+
+/* --- A NOTIFICAÇÃO DO PONTO DO GRÁFICO (BALÃO NUMÉRICO) --- */
+.tooltip-ponto {
+    position: absolute;
+    background-color: var(--kokusen-red);
+    color: #fff;
+    font-family: var(--font-texto);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 2px 10px;
+    border-radius: 4px;
+    pointer-events: none; 
+    opacity: 0;
+    transform: translate(-50%, -100%); 
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    z-index: 10000;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+}
+
+.tooltip-ponto.ativo {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 12px));
+}
+
+.tooltip-ponto::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--kokusen-red) transparent transparent transparent;
+}
+
+
+/* =========================================================
+   MÁQUINA DE ESTADOS: OS DOMÍNIOS (VFX ABSOLUTO)
+============================================================ */
+
+/* 1. MURYOKUSHO (Gojo - Vazio Imensurável) */
+.dominio-gojo {
+    opacity: 1 !important;
+    background: #02000a;
+    overflow: hidden;
+}
+
+.dominio-gojo::before {
+    content: ''; 
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    width: 80vw; 
+    height: 80vw; 
+    max-width: 900px; 
+    max-height: 900px; 
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0%, #00bfff 2%, #000033 20%, transparent 60%);
+    box-shadow: 0 0 150px 50px rgba(0, 191, 255, 0.15), inset 0 0 80px 40px rgba(0, 0, 0, 0.9);
+    animation: respiracaoInfinita 5s ease-in-out infinite alternate;
+}
+
+.dominio-gojo::after {
+    content: ''; 
+    position: absolute; 
+    top: -50%; 
+    left: -50%; 
+    width: 200%; 
+    height: 200%;
+    background-image: 
+        radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, rgba(0, 191, 255, 0.9), rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.8), rgba(0,0,0,0)),
+        radial-gradient(2.5px 2.5px at 160px 120px, rgba(0, 191, 255, 0.5), rgba(0,0,0,0));
+    background-size: 200px 200px, 250px 250px, 150px 150px, 300px 300px; 
+    opacity: 0.7; 
+    animation: galaxiaRodando 160s linear infinite;
+    z-index: -1;
+}
+
+/* 2. FUKUMA MIZUSHI (Sukuna - Santuário Malevolente) */
+.dominio-sukuna {
+    opacity: 1 !important;
+    background: radial-gradient(circle at top, #1a0000 0%, #030000 100%);
+    border-bottom: 5px solid #8b0000;
+}
+
+.dominio-sukuna::before {
+    content: ''; 
+    position: absolute; 
+    bottom: 0; 
+    left: -100%; 
+    width: 300%; 
+    height: 45vh;
+    background: 
+        linear-gradient(to bottom, transparent, rgba(60, 0, 0, 0.9) 20%, #1a0000 100%),
+        repeating-radial-gradient(circle at 50px 0px, rgba(139, 0, 0, 0.6), rgba(77, 0, 0, 0.6) 30px, transparent 40px);
+    background-size: 100% 100%, 250px 80px;
+    animation: marDeSangue 12s linear infinite;
+    filter: blur(3px); 
+    z-index: -1;
+}
+
+.dominio-sukuna::after {
+    content: ''; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-image: 
+        linear-gradient(115deg, transparent 49.8%, rgba(255,255,255,0.9) 49.9%, rgba(255,0,0,0.8) 50%, transparent 50.2%),
+        linear-gradient(-65deg, transparent 49.8%, rgba(255,255,255,0.9) 49.9%, rgba(139,0,0,0.8) 50%, transparent 50.2%);
+    background-size: 200% 200%;
+    opacity: 0; 
+    animation: cortesMalevolentes 1.5s infinite;
+}
+
+/* 3. SENTENCIAMENTO MORTAL (Higuruma - Deadly Sentencing) */
+.dominio-higuruma {
+    opacity: 1 !important;
+    background: radial-gradient(ellipse at bottom, #111 0%, #000 100%);
+    border-bottom: 5px solid #b8860b; 
+}
+
+.dominio-higuruma::before {
+    content: ''; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: repeating-linear-gradient(90deg, 
+        #050505, #1a1a1a 10px, #333 14px, #1a1a1a 18px, #050505 25px, 
+        transparent 25px, transparent 150px);
+    box-shadow: inset 0 -100px 150px rgba(0,0,0,0.9); 
+    transform: translateY(-100%); 
+    animation: prisaoPesada 0.8s cubic-bezier(0.2, 1.5, 0.6, 1) forwards;
+    z-index: 1;
+}
+
+.dominio-higuruma::after {
+    content: ''; 
+    position: absolute; 
+    top: -10%; 
+    left: 0; 
+    width: 100%; 
+    height: 120%;
+    background: conic-gradient(from 160deg at 50% -10%, transparent 0deg, rgba(255, 215, 0, 0.15) 20deg, transparent 40deg);
+    transform-origin: top center;
+    animation: holofoteJulgamento 8s ease-in-out infinite alternate;
+}
+
+/* --- KEYFRAMES GERAIS --- */
+@keyframes invocarCard { 
+    0% { opacity: 0; transform: translateY(60px) scale(0.9) skewX(5deg); } 
+    100% { opacity: 1; transform: translateY(0) scale(1) skewX(0deg); } 
+}
+
+@keyframes pulsarSelo { 
+    from { box-shadow: 0 0 5px rgba(255, 0, 0, 0.2); } 
+    to { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); } 
+}
+
+@keyframes chocalhoDeOsso {
+    0% { transform: rotate(0deg) scale(1.1); }
+    25% { transform: rotate(10deg) scale(1.1); }
+    50% { transform: rotate(0deg) scale(1.1); }
+    75% { transform: rotate(-10deg) scale(1.1); }
+    100% { transform: rotate(0deg) scale(1.1); }
+}
+
+@keyframes shimmer { 
+    100% { transform: translateX(100%); } 
+}
+
+/* --- KEYFRAMES DOS DOMÍNIOS REALISTAS --- */
+@keyframes respiracaoInfinita { 
+    0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.8; filter: blur(2px); } 
+    100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; filter: blur(0px); } 
+}
+
+@keyframes galaxiaRodando { 
+    from { transform: rotate(0deg); } 
+    to { transform: rotate(360deg); } 
+}
+
+@keyframes marDeSangue { 
+    0% { transform: translateX(0) translateY(0); } 
+    50% { transform: translateX(200px) translateY(15px); }
+    100% { transform: translateX(400px) translateY(0); } 
+}
+
+@keyframes cortesMalevolentes { 
+    0% { opacity: 0; background-position: 0% 0%, 100% 100%; } 
+    20% { opacity: 0.6; background-position: 50% 50%, 50% 50%; } 
+    30% { opacity: 0; background-position: 100% 100%, 0% 0%; }
+    100% { opacity: 0; } 
+}
+
+@keyframes prisaoPesada { 
+    0% { transform: translateY(-100%); opacity: 0; } 
+    100% { transform: translateY(0); opacity: 1; } 
+}
+
+@keyframes holofoteJulgamento { 
+    0% { transform: rotate(-15deg); opacity: 0.8; } 
+    50% { opacity: 1; }
+    100% { transform: rotate(15deg); opacity: 0.8; } 
+}
+
+/* --- SKELETON UI --- */
+.skeleton { 
+    position: relative; 
+    overflow: hidden; 
+}
+
+.skeleton::after {
+    content: ''; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transform: translateX(-100%); 
+    animation: shimmer 1.5s infinite; 
+    z-index: 3;
+}
+
+.skeleton .card-img, 
+.skeleton span { 
+    opacity: 0; 
+}
+
+/* --- RESPONSIVIDADE (MOBILE ABSOLUTO) --- */
+@media (max-width: 768px) {
+    .header-conteudo { 
+        flex-direction: column; 
+        align-items: stretch; 
+    }
+    
+    .header-titulos-wrapper { 
+        justify-content: center; 
+    } 
+
+    .search-container { 
+        flex-direction: column; 
+        max-width: 100%; 
+    }
+    
+    .custom-select-wrapper { 
+        flex: 0 0 auto; 
+        width: 100%; 
+        max-width: 280px; 
+        align-self: center; 
+    }
+
+    .btn-fechar {
+        top: 15px; 
+        right: 15px; 
+        width: 35px; 
+        height: 35px;
+    }
+
+    .modal-layout { 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 2rem; 
+    }
+
+    .modal-imagem-placeholder { 
+        flex: 0 0 auto; 
+        width: 100%; 
+        max-width: 300px; 
+        height: 350px; 
+    }
+
+    .modal-info { 
+        align-items: center; 
+        text-align: center; 
+    }
+    
+    .modal-titulo-wrapper {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .modal-titulo-wrapper h2 { 
+        font-size: 2.2rem; 
+    } 
+    
+    /* Ajustes dos Domínios pro Mobile */
+    .dominio-sukuna::before { 
+        background-size: 100% 100%, 150px 60px; 
+    }
+    
+    .dominio-higuruma::before { 
+        background: repeating-linear-gradient(90deg, #050505, #1a1a1a 8px, #333 12px, #1a1a1a 16px, #050505 20px, transparent 20px, transparent 80px); 
+    }
+
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquivo Jujutsu | Catálogo de Feiticeiros</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="./css/style.css?v=9.0">
+</head>
+<body>
+
+    <div id="cenario-dominio"></div>
+
+    <canvas id="dominio-vfx"></canvas>
+
+    <header class="header-principal">
+        <div class="header-conteudo">
+            
+            <div class="header-titulos-wrapper">
+                <button id="btn-dominio" class="btn-dominio" title="Expandir Domínio">🌀</button>
+                <div class="header-titulos">
+                   <button id="btn-inicial" onclick="reload()"> 
+                        <h1>Arquivo Jujutsu</h1> 
+                    </button>
+                    <p>Catálogo de Feiticeiros e Maldições</p>
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="busca-personagem" placeholder="Rastrear feiticeiro..." autocomplete="off">
+                
+                <div class="custom-select-wrapper" tabindex="0">
+                    <div class="custom-select-trigger">
+                        <span id="filtro-texto">TODOS</span>
+                        <span class="custom-select-arrow">▼</span>
+                    </div>
+                    <ul class="custom-select-options">
+                        <li data-value="todos" class="selected">TODOS</li>
+                        <li data-value="feiticeiro">FEITICEIROS</li>
+                        <li data-value="maldicao">MALDIÇÕES</li>
+                        <li data-value="outro">OUTROS</li>
+                        <li data-value="favoritos">SELADOS (FAVORITOS)</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="grid-personagens" class="grid-personagens">
+        </section>
+    </main>
+
+    <div id="modal-personagem" class="modal">
+        
+        <button id="btn-fechar-modal" class="btn-fechar" aria-label="Fechar Modal"></button>
+        
+        <div class="modal-wrapper">
+            <div class="modal-conteudo">
+                <div class="modal-layout">
+                    <div class="modal-imagem-placeholder">
+                        <span id="modal-img-texto">[ Imagem ]</span>
+                    </div>
+                    
+                    <div class="modal-info">
+                        <div class="modal-titulo-wrapper">
+                            <h2 id="modal-nome">Nome do Personagem</h2>
+                            <button id="btn-selar-modal" class="btn-selo" aria-label="Selar Personagem">封</button>
+                        </div>
+                        
+                        <span id="modal-classe" class="badge">Grau</span>
+                        <p id="modal-descricao">Descrição detalhada vai aqui...</p>
+                        
+                        <div class="grafico-container">
+                            <div class="grafico-header">
+                                <h3>Status de Combate</h3>
+                                <button id="btn-info-grafico" class="btn-info" aria-label="Explicação dos Atributos">?</button>
+                            </div>
+                            
+                            <canvas id="grafico-radar" width="320" height="320"></canvas>
+                            
+                            <div id="tooltip-ponto" class="tooltip-ponto">0</div>
+                            
+                            <div id="tooltip-grafico" class="tooltip-grafico">
+                                <ul>
+                                    <li><strong>FÍS:</strong> Força Bruta e Combate Corporal</li>
+                                    <li><strong>VEL:</strong> Agilidade e Tempo de Reação</li>
+                                    <li><strong>ENG:</strong> Reservas de Energia Amaldiçoada</li>
+                                    <li><strong>INT:</strong> QI de Batalha e Estratégia</li>
+                                    <li><strong>LET:</strong> Letalidade da Técnica/Domínio</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/utils.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>
