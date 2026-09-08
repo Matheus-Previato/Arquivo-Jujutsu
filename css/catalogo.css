@@ -1,0 +1,201 @@
+/* --- Container Principal --- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    perspective: 1000px; 
+    position: relative;
+    z-index: 1; 
+}
+
+.grid-personagens {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2.5rem;
+}
+
+/* --- Estilos do Card --- */
+.card-wrapper {
+    animation: invocarCard 0.6s ease-out backwards;
+    display: block;
+    height: 100%; 
+    perspective: 1200px; 
+}
+
+.card {
+    background-color: rgba(17, 17, 17, 0.9); 
+    border: 1px solid #1a1a1a; 
+    border-radius: 0px; 
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%; 
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) scale(1);
+    transition: transform 0.1s linear, box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease, outline var(--transition-speed);
+    backdrop-filter: blur(2px);
+}
+
+.card:hover,
+.card:focus-visible,
+.card.touch-travado {
+    border-color: rgb(var(--cor-aura));
+    box-shadow: 0 15px 35px rgba(var(--cor-aura), 0.5), inset 0 0 15px rgba(var(--cor-aura), 0.2); 
+    z-index: 10; 
+    transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) scale(1.05);
+}
+
+.card:focus-visible { 
+    outline: 3px solid var(--kokusen-red); 
+    outline-offset: 4px; 
+}
+
+.card-imagem-placeholder {
+    width: 100%;
+    height: 380px; 
+    background: linear-gradient(180deg, rgba(17,17,17,0.8) 0%, rgba(0,0,0,0.8) 100%); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    border-bottom: 2px solid #1a1a1a;
+    overflow: hidden; 
+    position: relative; 
+    transform-style: preserve-3d; 
+}
+
+.card-imagem-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(var(--cor-aura), 0.6) 0%, transparent 70%);
+    opacity: 0; 
+    transition: opacity var(--transition-speed) ease; 
+    z-index: 1; 
+}
+
+.card:hover .card-imagem-placeholder::before,
+.card:focus-visible .card-imagem-placeholder::before,
+.card.touch-travado .card-imagem-placeholder::before {
+    opacity: 1;
+}
+
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    object-position: center bottom; 
+    padding: 0.5rem; 
+    transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); 
+    filter: drop-shadow(0 5px 20px rgba(0,0,0,0.9)); 
+    position: relative; 
+    z-index: 2; 
+    transform: translateZ(30px);
+}
+
+.card:hover .card-img,
+.card:focus-visible .card-img,
+.card.touch-travado .card-img {
+    transform: translateZ(60px) scale(1.1) translateY(-5px); 
+}
+
+.card-info {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    position: relative;
+    z-index: 2;
+    background-color: transparent; 
+    flex-grow: 1; 
+    transform-style: preserve-3d; 
+}
+
+.card-info h3 {
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    color: var(--text-color); 
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+/* --- BADGES E BOTÕES --- */
+.badge {
+    background-color: var(--ofuda-bg); 
+    color: var(--ofuda-text);
+    padding: 0.2rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 3px double var(--ofuda-text); 
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.9); 
+    transform: translateZ(20px) rotate(-3deg); 
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.card:hover .badge,
+.card:focus-visible .badge,
+.card.touch-travado .badge {
+    transform: translateZ(40px) rotate(0deg) scale(1.05); 
+    box-shadow: 0 5px 15px rgba(var(--cor-aura), 0.6);
+}
+
+.badge.feiticeiro { border-color: #0033cc; color: #0033cc; }
+.badge.maldicao { border-color: #aa0000; color: #aa0000; }
+.badge.neutro { border-color: #886600; color: #886600; }
+.badge.anomalia { border-color: #4b0082; color: #4b0082; }
+
+.texto-hibrido {
+    background: linear-gradient(to right, #0033cc 50%, #aa0000 50%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block; 
+}
+
+.btn-selo {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #333;
+    color: #444; 
+    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    transform: translateZ(30px);
+}
+
+.btn-selo:hover,
+.btn-selo:focus-visible,
+.card.touch-travado .btn-selo {
+    background: #111;
+    border-color: var(--kokusen-red);
+    color: #fff;
+    transform: translateZ(50px) scale(1.1); 
+    outline: none;
+}
+
+.btn-selo.ativo {
+    color: var(--kokusen-red);
+    border-color: var(--kokusen-red);
+    background: rgba(153, 0, 0, 0.2);
+    text-shadow: 0 0 10px var(--kokusen-red);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    animation: pulsarSelo 2s infinite alternate;
+}
+

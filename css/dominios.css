@@ -1,0 +1,118 @@
+/* =========================================================
+   MÁQUINA DE ESTADOS: OS DOMÍNIOS (VFX ABSOLUTO)
+============================================================ */
+
+/* 1. MURYOKUSHO (Gojo - Vazio Imensurável) */
+.dominio-gojo {
+    opacity: 1 !important;
+    background: #02000a;
+    overflow: hidden;
+}
+
+.dominio-gojo::before {
+    content: ''; 
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    width: 80vw; 
+    height: 80vw; 
+    max-width: 900px; 
+    max-height: 900px; 
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0%, #00bfff 2%, #000033 20%, transparent 60%);
+    box-shadow: 0 0 150px 50px rgba(0, 191, 255, 0.15), inset 0 0 80px 40px rgba(0, 0, 0, 0.9);
+    animation: respiracaoInfinita 5s ease-in-out infinite alternate;
+}
+
+.dominio-gojo::after {
+    content: ''; 
+    position: absolute; 
+    top: -50%; 
+    left: -50%; 
+    width: 200%; 
+    height: 200%;
+    background-image: 
+        radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, rgba(0, 191, 255, 0.9), rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.8), rgba(0,0,0,0)),
+        radial-gradient(2.5px 2.5px at 160px 120px, rgba(0, 191, 255, 0.5), rgba(0,0,0,0));
+    background-size: 200px 200px, 250px 250px, 150px 150px, 300px 300px; 
+    opacity: 0.7; 
+    animation: galaxiaRodando 160s linear infinite;
+    z-index: -1;
+}
+
+/* 2. FUKUMA MIZUSHI (Sukuna - Santuário Malevolente) */
+.dominio-sukuna {
+    opacity: 1 !important;
+    background: radial-gradient(circle at top, #1a0000 0%, #030000 100%);
+    border-bottom: 5px solid #8b0000;
+}
+
+.dominio-sukuna::before {
+    content: ''; 
+    position: absolute; 
+    bottom: 0; 
+    left: -100%; 
+    width: 300%; 
+    height: 45vh;
+    background: 
+        linear-gradient(to bottom, transparent, rgba(60, 0, 0, 0.9) 20%, #1a0000 100%),
+        repeating-radial-gradient(circle at 50px 0px, rgba(139, 0, 0, 0.6), rgba(77, 0, 0, 0.6) 30px, transparent 40px);
+    background-size: 100% 100%, 250px 80px;
+    animation: marDeSangue 12s linear infinite;
+    filter: blur(3px); 
+    z-index: -1;
+}
+
+.dominio-sukuna::after {
+    content: ''; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-image: 
+        linear-gradient(115deg, transparent 49.8%, rgba(255,255,255,0.9) 49.9%, rgba(255,0,0,0.8) 50%, transparent 50.2%),
+        linear-gradient(-65deg, transparent 49.8%, rgba(255,255,255,0.9) 49.9%, rgba(139,0,0,0.8) 50%, transparent 50.2%);
+    background-size: 200% 200%;
+    opacity: 0; 
+    animation: cortesMalevolentes 1.5s infinite;
+}
+
+/* 3. SENTENCIAMENTO MORTAL (Higuruma - Deadly Sentencing) */
+.dominio-higuruma {
+    opacity: 1 !important;
+    background: radial-gradient(ellipse at bottom, #111 0%, #000 100%);
+    border-bottom: 5px solid #b8860b; 
+}
+
+.dominio-higuruma::before {
+    content: ''; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: repeating-linear-gradient(90deg, 
+        #050505, #1a1a1a 10px, #333 14px, #1a1a1a 18px, #050505 25px, 
+        transparent 25px, transparent 150px);
+    box-shadow: inset 0 -100px 150px rgba(0,0,0,0.9); 
+    transform: translateY(-100%); 
+    animation: prisaoPesada 0.8s cubic-bezier(0.2, 1.5, 0.6, 1) forwards;
+    z-index: 1;
+}
+
+.dominio-higuruma::after {
+    content: ''; 
+    position: absolute; 
+    top: -10%; 
+    left: 0; 
+    width: 100%; 
+    height: 120%;
+    background: conic-gradient(from 160deg at 50% -10%, transparent 0deg, rgba(255, 215, 0, 0.15) 20deg, transparent 40deg);
+    transform-origin: top center;
+    animation: holofoteJulgamento 8s ease-in-out infinite alternate;
+}
+

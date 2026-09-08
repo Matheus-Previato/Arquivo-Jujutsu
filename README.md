@@ -61,17 +61,38 @@ Para rodar este Domínio na sua máquina:
 3.  Instale a extensão **Live Server**.
 4.  Clique com o botão direito no arquivo `index.html` e selecione **"Open with Live Server"**.
 
+Use um servidor HTTP local, como o Live Server. O JavaScript usa módulos nativos do navegador e o catálogo é carregado por `fetch`, portanto abrir o HTML diretamente como `file://` não é suficiente. Não é necessário instalar pacotes nem executar uma compilação.
+
 ---
 
-### 🔥 Arquitetura Semântica
+### Organização dos arquivos
 
-```txt
-📂 index.html      # O Coração Semântico e Acessível.
-📂 css
-   └── 📄 style.css # O Grimmório de Estilos, Perspectivas 3D e Animações de Ofuda.
-📂 js
-   └── 📄 main.js   # O Domínio Expandido: Lógica, Física, LocalStorage e Roteamento.
-📂 data
-   └── 📄 personagens.json # O Banco de Dados de Almas Jujutsu.
-📂 img
-   └── 📄 # Galeria de Imagens JJK.
+```text
+index.html                 Estrutura da página e ordem dos estilos
+js/
+  main.js                  Inicialização e conexão dos módulos
+  estado.js                Dados compartilhados da aplicação
+  catalogo.js              Carregamento, cards, busca, filtros e URL
+  favoritos.js             Selos e persistência dos favoritos
+  modal.js                 Detalhes e eventos da janela do personagem
+  radar.js                 Gráfico de atributos e suas dicas
+  efeitos.js               Partículas, domínios e interação 3D
+css/
+  base.css                 Tema, estilos globais e camadas dos efeitos
+  cabecalho.css            Cabeçalho, busca e filtro
+  catalogo.css             Grade, cards, badges e selos
+  modal.css                Detalhes, gráfico e dicas
+  dominios.css             Aparência dos cenários de domínio
+  animacoes.css            Keyframes e efeito de carregamento
+  responsivo.css           Adaptação para telas pequenas
+data/
+  personagens.json         Informações dos personagens
+assets/img/
+  gojo-02.png               Artes dos personagens
+```
+
+Cada módulo de JavaScript expõe uma função de inicialização ou criação. O `main.js` conecta essas funções e passa o estado e os callbacks necessários, evitando que catálogo, favoritos e detalhes importem uns aos outros.
+
+Para mudar o conteúdo de um personagem, edite `data/personagens.json`. Para alterar a busca, use `js/catalogo.js`; para ajustar um domínio, use `js/efeitos.js` e `css/dominios.css`.
+
+Os estilos são carregados diretamente no `index.html`. Preserve a ordem dos links: a divisão mantém a mesma sequência de regras do antigo `style.css`, com os ajustes responsivos por último. Os caminhos relativos de dados e imagens continuam compatíveis com a publicação em `/Arquivo-Jujutsu/` no GitHub Pages.

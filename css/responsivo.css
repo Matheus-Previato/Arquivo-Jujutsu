@@ -1,0 +1,71 @@
+/* --- RESPONSIVIDADE (MOBILE ABSOLUTO) --- */
+@media (max-width: 768px) {
+    .header-conteudo { 
+        flex-direction: column; 
+        align-items: stretch; 
+    }
+    
+    .header-titulos-wrapper { 
+        justify-content: center; 
+    } 
+
+    .search-container { 
+        flex-direction: column; 
+        max-width: 100%; 
+    }
+    
+    .custom-select-wrapper { 
+        flex: 0 0 auto; 
+        width: 100%; 
+        max-width: 280px; 
+        align-self: center; 
+    }
+
+    .btn-fechar {
+        top: 15px; 
+        right: 15px; 
+        width: 35px; 
+        height: 35px;
+    }
+
+    .modal-layout { 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 2rem; 
+    }
+
+    .modal-imagem-placeholder { 
+        flex: 0 0 auto; 
+        width: 100%; 
+        max-width: 300px; 
+        height: 350px; 
+    }
+
+    .modal-info { 
+        align-items: center; 
+        text-align: center; 
+    }
+    
+    .modal-titulo-wrapper {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .modal-titulo-wrapper h2 { 
+        font-size: 2.2rem; 
+    } 
+
+    .header-titulos h1 { 
+        font-size: 2.2rem; 
+    }
+    
+    /* Ajustes dos Domínios pro Mobile */
+    .dominio-sukuna::before { 
+        background-size: 100% 100%, 150px 60px; 
+    }
+    
+    .dominio-higuruma::before { 
+        background: repeating-linear-gradient(90deg, #050505, #1a1a1a 8px, #333 12px, #1a1a1a 16px, #050505 20px, transparent 20px, transparent 80px); 
+    }
+}
