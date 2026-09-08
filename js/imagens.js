@@ -1,9 +1,21 @@
+const requisicoes = new WeakMap();
+
 // A mesma apresentação de imagem é usada nos cards e nos detalhes.
-export function preencherImagemPersonagem(container, personagem, { modal = false, prioritaria = false } = {}) {
-    container.replaceChildren();
+export function preencherImagemPersonagem(container, personagem, { modal = false, prioritaria = false, transicao = false } = {}) {
+    const previa = requisicoes.get(container);
+    clearTimeout(previa?.temporizador);
+    let anterior = transicao ? (previa?.carregada ? previa.imagem : previa?.anterior) : null;
+    if (!anterior || !container.contains(anterior)) anterior = null;
+    anterior?.classList.remove('retrato-sobreposto', 'retrato-pendente', 'retrato-revelado', 'retrato-saindo');
+    container.replaceChildren(...(anterior ? [anterior] : []));
+    const pedido = { anterior, imagem: null, carregada: false, temporizador: null };
+    requisicoes.set(container, pedido);
     container.classList.remove('skeleton', 'tem-imagem', 'sem-imagem');
 
     function mostrarAusencia() {
+        clearTimeout(pedido.temporizador);
+        pedido.anterior = null;
+        pedido.carregada = false;
         container.replaceChildren();
         container.classList.remove('skeleton', 'tem-imagem');
         container.classList.add('sem-imagem');
@@ -22,6 +34,7 @@ export function preencherImagemPersonagem(container, personagem, { modal = false
 
     if (!personagem.imagem) { mostrarAusencia(); return; }
     const imagem = document.createElement('img');
+    pedido.imagem = imagem;
     imagem.className = modal ? 'modal-img-real' : 'card-img';
     imagem.alt = personagem.nome;
     imagem.width = personagem.larguraImagem || 400;
@@ -29,12 +42,30 @@ export function preencherImagemPersonagem(container, personagem, { modal = false
     imagem.loading = modal || prioritaria ? 'eager' : 'lazy';
     imagem.decoding = 'async';
     if (prioritaria) imagem.fetchPriority = 'high';
-    container.classList.add('skeleton', 'tem-imagem');
+    container.classList.add('tem-imagem');
+    if (anterior) imagem.classList.add('retrato-sobreposto', 'retrato-pendente');
+    else container.classList.add('skeleton');
     imagem.addEventListener('load', () => {
-        if (container.contains(imagem)) container.classList.remove('skeleton');
+        if (requisicoes.get(container) !== pedido || !container.contains(imagem)) return;
+        pedido.carregada = true;
+        container.classList.remove('skeleton');
+        if (!anterior) return;
+        imagem.classList.remove('retrato-pendente');
+        imagem.classList.add('retrato-revelado');
+        anterior.classList.add('retrato-saindo');
+        function concluir() {
+            if (requisicoes.get(container) !== pedido) return;
+            clearTimeout(pedido.temporizador);
+            anterior.remove();
+            imagem.classList.remove('retrato-sobreposto', 'retrato-revelado');
+            pedido.anterior = null;
+        }
+        imagem.addEventListener('animationend', concluir, { once: true });
+        // Também limpa a imagem anterior quando o usuário desativa as animações.
+        pedido.temporizador = setTimeout(concluir, 400);
     }, { once: true });
     imagem.addEventListener('error', () => {
-        if (container.contains(imagem)) mostrarAusencia();
+        if (requisicoes.get(container) === pedido && container.contains(imagem)) mostrarAusencia();
     }, { once: true });
     container.append(imagem);
     imagem.src = personagem.imagem;

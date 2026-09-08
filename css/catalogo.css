@@ -219,6 +219,46 @@
     outline-offset: 5px;
 }
 .card:focus-within { border-color: rgb(var(--cor-aura)); }
+
+.card.tem-versoes .card-info h3 { width: 100%; padding-right: 3rem; }
+.btn-versao {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 5;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #a8b9ae;
+    display: grid;
+    place-items: center;
+    font: 22px/1 sans-serif;
+    cursor: pointer;
+}
+.btn-versao::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid #435349;
+    border-radius: 4px;
+    background: #111a15;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+.btn-versao span { position: relative; }
+.btn-versao:hover::before { border-color: #b8d6c1; background: #173124; }
+.btn-versao:hover { color: #e9fff0; }
+.btn-versao:focus-visible { outline: 3px solid #bba4d8; outline-offset: 3px; }
+
+.card-img.retrato-sobreposto { position: absolute; inset: 0; z-index: 3; }
+.retrato-pendente { opacity: 0; }
+.retrato-revelado { animation: revelarVersao 0.32s ease both; }
+.retrato-saindo { opacity: 0; animation: ocultarVersao 0.32s ease both; }
+@keyframes revelarVersao { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ocultarVersao { from { opacity: 1; } to { opacity: 0; } }
+
 .card-imagem-placeholder.sem-imagem, .modal-imagem-placeholder.sem-imagem {
     background: radial-gradient(ellipse at center, rgba(var(--cor-aura), 0.07), #080808 75%);
 }

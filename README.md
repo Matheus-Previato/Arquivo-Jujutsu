@@ -11,7 +11,7 @@ Catálogo de personagens de Jujutsu Kaisen feito com HTML, CSS e JavaScript, com
 - Cards reutilizados durante as interações: favoritar altera apenas o selo correspondente, sem reconstruir a grade nem reiniciar suas animações.
 - Validação dos dados, aviso de falha com botão **Tentar novamente** e apresentação alternativa para retratos ausentes ou que não carregaram.
 
-O catálogo contém 20 personagens, todos com retratos estilizados criados com IA para este projeto. As imagens ficam em `assets/img/personagens/`; são ilustrações de fãs, não artes oficiais. A imagem anterior do Gojo foi preservada em `assets/img/gojo-02.png`. Os atributos representam o conteúdo deste projeto, sem pretensão de serem valores oficiais da obra.
+O catálogo contém 20 personagens e 21 retratos estilizados criados com IA para este projeto. A Maki alterna entre **Grau 4** e **Restrição Celestial** na mesma carta por um pequeno botão ⇄ no canto inferior direito, com transição suave entre os retratos e atualização da classificação e descrição. A troca também funciona pelo teclado e respeita a preferência por movimento reduzido. Os detalhes usam a versão selecionada; o favorito pertence à personagem. As imagens ficam em `assets/img/personagens/`; são ilustrações de fãs, não artes oficiais. Os atributos representam o conteúdo deste projeto, sem pretensão de serem valores oficiais da obra.
 
 ## Executar localmente
 
@@ -35,6 +35,7 @@ js/
   dados.js                  Validação dos personagens e regras de busca/filtro
   catalogo.js               Carregamento, cards, contagem e sincronização da URL
   imagens.js                Imagens, carregamento e retratos alternativos
+  versoes.js                Seleção de versões de uma mesma personagem
   favoritos.js              Selos, persistência e avisos de armazenamento
   modal.js                  Abertura, fechamento e foco dos detalhes
   radar.js                  Gráfico, valores em texto e explicação dos atributos
@@ -65,6 +66,8 @@ Edite `data/personagens.json` para adicionar ou modificar personagens. Cada entr
 - `imagem`: caminho relativo como `"./assets/img/gojo-02.png"`, ou `""` enquanto não houver arte. Você pode informar `larguraImagem` e `alturaImagem` com as dimensões reais do arquivo.
 
 Use caminhos relativos e respeite maiúsculas e minúsculas dos nomes de arquivos: isso importa no GitHub Pages. Para futuras mudanças, as regras de pesquisa ficam em `dados.js`, a apresentação dos cards em `catalogo.js` e os efeitos em `efeitos.js`.
+
+Uma personagem pode declarar `versoes`, uma lista com pelo menos duas entradas. Cada versão precisa de `id` único dentro da lista e `classe`; pode substituir `descricao`, `imagem`, dimensões, `corAura` e `atributos`. Os campos não informados vêm da ficha principal. A Maki mantém os valores de atributos já cadastrados nas duas versões. A primeira versão aparece por padrão, e a seleção permanece enquanto você filtra o catálogo durante a visita. Recarregar a página volta à primeira versão. A busca considera as classificações de todas as versões, sem duplicar a personagem nos resultados.
 
 ## Verificar alterações
 

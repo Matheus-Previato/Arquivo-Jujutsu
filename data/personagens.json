@@ -80,14 +80,28 @@
     {
         "id": "maki-07",
         "nome": "Maki Zenin",
-        "classe": "Restrição Celestial",
+        "classe": "Grau 4",
         "tipo": "neutro",
-        "descricao": "Rejeitada pelo seu clã por não ter energia amaldiçoada, ela compensa com destreza física absurda e maestria em ferramentas amaldiçoadas.",
+        "descricao": "Classificada como feiticeira de Grau 4, Maki compensa suas limitações de energia amaldiçoada com treinamento físico e habilidade no uso de ferramentas amaldiçoadas.",
         "imagem": "./assets/img/personagens/maki-07.png",
         "larguraImagem": 1122,
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte da Maki ]",
         "corAura": "0, 100, 0",
+        "versoes": [
+            {
+                "id": "grau-4",
+                "classe": "Grau 4"
+            },
+            {
+                "id": "restricao-celestial",
+                "classe": "Restrição Celestial",
+                "descricao": "Após seu despertar, Maki leva a Restrição Celestial ao limite. Suas cicatrizes marcam uma nova fase, sustentada por força física extraordinária e domínio das ferramentas amaldiçoadas.",
+                "imagem": "./assets/img/personagens/maki-07-despertar.png",
+                "larguraImagem": 1122,
+                "alturaImagem": 1402
+            }
+        ],
         "atributos": { "fis": 95, "vel": 95, "eng": 0, "int": 85, "let": 85 }
     },
     {

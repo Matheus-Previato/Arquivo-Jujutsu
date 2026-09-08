@@ -4,6 +4,7 @@ import { afterEach, test } from 'node:test';
 import { criarCatalogo } from '../js/catalogo.js';
 import { validarPersonagens, filtrarPersonagens } from '../js/dados.js';
 import { preencherImagemPersonagem } from '../js/imagens.js';
+import { obterVersao } from '../js/versoes.js';
 
 const dadosReais = JSON.parse(await readFile(new URL('../data/personagens.json', import.meta.url), 'utf8'));
 const globaisOriginais = new Map(['document', 'window', 'fetch', 'console'].map(nome => [nome, Object.getOwnPropertyDescriptor(globalThis, nome)]));
@@ -142,6 +143,140 @@ function prepararAmbiente({ favoritos = [], tipo = 'todos', respostas = [] } = {
 
 test('todos os personagens reais passam na validação', () => {
     assert.equal(validarPersonagens(dadosReais).length, dadosReais.length);
+});
+
+test('Maki tem duas apresentações e uma única identidade, sem alterar sua ficha base', () => {
+    const personagens = validarPersonagens(dadosReais);
+    const maki = personagens.find(p => p.id === 'maki-07');
+    const antes = structuredClone(maki);
+    const grau4 = obterVersao(maki);
+    const despertada = obterVersao(maki, 1);
+    assert.equal(grau4.classe, 'Grau 4');
+    assert.equal(grau4.imagem, './assets/img/personagens/maki-07.png');
+    assert.equal(despertada.classe, 'Restrição Celestial');
+    assert.equal(despertada.imagem, './assets/img/personagens/maki-07-despertar.png');
+    assert.equal(despertada.id, grau4.id);
+    assert.equal(despertada.id, 'maki-07');
+    assert.deepEqual(despertada.atributos, grau4.atributos);
+    assert.notEqual(despertada.descricao, grau4.descricao);
+    assert.deepEqual(maki, antes);
+    assert.equal(obterVersao(maki, 99).versaoId, 'grau-4');
+    assert.equal(obterVersao(personagens[0]), personagens[0]);
+});
+
+test('versões inválidas são rejeitadas, inclusive imagens, atributos e identidade alterada', () => {
+    const maki = dadosReais.find(p => p.id === 'maki-07');
+    for (const versoes of [[], {}, [maki.versoes[0]], [maki.versoes[0], maki.versoes[0]], [null, maki.versoes[1]]]) {
+        assert.throws(() => validarPersonagens([{ ...maki, versoes }]));
+    }
+    for (const ajuste of [
+        { id: 'com espaço' }, { classe: '' }, { nome: 'Outra pessoa' }, { tipo: 'maldicao' },
+        { versoes: [] }, { imagem: 'https://example.com/imagem.png' }, { alturaImagem: -1 },
+        { atributos: { ...maki.atributos, fis: 101 } },
+    ]) {
+        const versoes = [maki.versoes[0], { ...maki.versoes[1], ...ajuste }];
+        assert.throws(() => validarPersonagens([{ ...maki, versoes }]));
+    }
+});
+
+test('ambas as classificações encontram uma única Maki na busca e nos favoritos', () => {
+    const personagens = validarPersonagens(dadosReais);
+    assert.deepEqual(filtrarPersonagens(personagens, 'grau 4', 'todos', []).map(p => p.id), ['maki-07']);
+    assert.deepEqual(filtrarPersonagens(personagens, 'restricao celestial', 'favoritos', ['maki-07']).map(p => p.id), ['maki-07']);
+});
+
+test('trocar a versão muda só a carta da Maki e envia a apresentação escolhida aos detalhes', async () => {
+    const env = prepararAmbiente();
+    await env.invocarFeiticeiros();
+    const wrappers = [...env.grid.children];
+    const card = env.grid.querySelectorAll('article').find(item => item.dataset.personagemId === 'maki-07');
+    const [alternar] = card.querySelectorAll('.btn-versao');
+    assert.equal(card.querySelectorAll('.btn-versao').length, 1);
+    assert.equal(alternar.getAttribute('aria-label'), 'Alternar Maki Zenin para Restrição Celestial');
+    const imagemInicial = card.querySelector('img');
+    await imagemInicial.dispatch('load');
+    alternar.focus();
+    await alternar.dispatch('click');
+    const imagemAtual = card.querySelectorAll('img').at(-1);
+    assert.equal(env.documento.activeElement, alternar);
+    assert.equal(alternar.getAttribute('aria-label'), 'Alternar Maki Zenin para Grau 4');
+    assert.equal(card.querySelector('.badge').textContent, 'Restrição Celestial');
+    assert.match(imagemAtual.src, /maki-07-despertar\.png$/);
+    assert.equal(imagemAtual.loading, 'eager');
+    assert.deepEqual(env.grid.children, wrappers);
+    assert.equal(env.aberturas.length, 0);
+    assert.deepEqual(env.estado.feiticeirosSelados, []);
+    await imagemInicial.dispatch('error');
+    assert.equal(card.querySelector('img'), imagemInicial, 'Mantém o retrato até a nova imagem carregar.');
+    await imagemAtual.dispatch('load');
+    assert.equal(imagemAtual.classList.contains('retrato-revelado'), true);
+    await imagemAtual.dispatch('animationend');
+    assert.equal(card.querySelector('img'), imagemAtual);
+    assert.equal(card.querySelectorAll('img').length, 1);
+
+    await card.querySelector('.btn-abrir-personagem').dispatch('click');
+    assert.equal(env.aberturas.at(-1)[0].id, 'maki-07');
+    assert.equal(env.aberturas.at(-1)[0].classe, 'Restrição Celestial');
+    assert.match(env.aberturas.at(-1)[0].descricao, /cicatrizes/);
+    await alternar.dispatch('click');
+    assert.equal(card.querySelector('.badge').textContent, 'Grau 4');
+    assert.match(card.querySelectorAll('img').at(-1).src, /maki-07\.png$/);
+    await card.dispatch('click');
+    assert.equal(env.aberturas.at(-1)[0].classe, 'Grau 4');
+});
+
+test('versão selecionada permanece após filtros e as duas versões compartilham um favorito', async () => {
+    const env = prepararAmbiente();
+    await env.invocarFeiticeiros();
+    const card = env.grid.querySelectorAll('article').find(item => item.dataset.personagemId === 'maki-07');
+    await card.querySelector('.btn-versao').dispatch('click');
+    await card.querySelector('.btn-selo').dispatch('click');
+    assert.deepEqual(env.estado.feiticeirosSelados, ['maki-07']);
+    env.filtro.value = 'favoritos';
+    env.aplicarFiltros();
+    assert.deepEqual(env.grid.querySelectorAll('article'), [card]);
+    assert.equal(card.dataset.versaoId, 'restricao-celestial');
+    env.ids.get('busca-personagem').value = 'gojo';
+    env.aplicarFiltros();
+    env.ids.get('busca-personagem').value = '';
+    env.aplicarFiltros();
+    assert.equal(env.grid.querySelector('article'), card);
+    assert.equal(card.dataset.versaoId, 'restricao-celestial');
+    await card.querySelector('.btn-versao').dispatch('click');
+    assert.equal(card.querySelector('.btn-selo').getAttribute('aria-pressed'), 'true');
+    await card.querySelector('.btn-selo').dispatch('click');
+    assert.deepEqual(env.estado.feiticeirosSelados, []);
+    assert.equal(env.grid.querySelectorAll('article').length, 0);
+});
+
+test('trocas rápidas ignoram eventos antigos e limpam retratos mesmo sem animação', async () => {
+    const env = prepararAmbiente();
+    const container = env.documento.createElement('div');
+    const maki = dadosReais.find(p => p.id === 'maki-07');
+    const trocar = indice => preencherImagemPersonagem(container, obterVersao(maki, indice), { transicao: true });
+    trocar(0);
+    const inicial = container.querySelector('img');
+    await inicial.dispatch('load');
+    trocar(1);
+    const abandonada = container.querySelectorAll('img').at(-1);
+    trocar(0);
+    const seguinte = container.querySelectorAll('img').at(-1);
+    await abandonada.dispatch('load');
+    await abandonada.dispatch('error');
+    assert.deepEqual(container.querySelectorAll('img'), [inicial, seguinte]);
+    await seguinte.dispatch('load');
+    trocar(1);
+    const ultima = container.querySelectorAll('img').at(-1);
+    await seguinte.dispatch('animationend');
+    assert.deepEqual(container.querySelectorAll('img'), [seguinte, ultima]);
+    await ultima.dispatch('load');
+    await new Promise(resolve => setTimeout(resolve, 450));
+    assert.deepEqual(container.querySelectorAll('img'), [ultima]);
+    assert.equal(ultima.classList.contains('retrato-sobreposto'), false);
+    trocar(0);
+    await container.querySelectorAll('img').at(-1).dispatch('error');
+    assert.equal(container.querySelectorAll('img').length, 0);
+    assert.match(container.textContent, /Retrato indisponível/);
 });
 
 test('catálogo rejeita estrutura, IDs duplicados, tipos e atributos inválidos', () => {

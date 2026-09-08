@@ -1,5 +1,25 @@
 const TIPOS = new Set(['feiticeiro', 'maldicao', 'neutro', 'anomalia']);
 const ATRIBUTOS = ['fis', 'vel', 'eng', 'int', 'let'];
+const CAMPOS_VERSAO = new Set(['id', 'classe', 'descricao', 'imagem', 'larguraImagem', 'alturaImagem', 'corAura', 'atributos']);
+
+function validarVersoes(personagem) {
+    const { versoes, ...base } = personagem;
+    if (!Array.isArray(versoes) || versoes.length < 2) throw new Error(`Declare pelo menos duas versões: ${base.id}.`);
+    const ids = new Set();
+    return versoes.map(versao => {
+        if (!versao || typeof versao !== 'object' || Array.isArray(versao) ||
+            Object.keys(versao).some(chave => !CAMPOS_VERSAO.has(chave)) ||
+            typeof versao.id !== 'string' || !/^[a-z0-9-]+$/i.test(versao.id) || ids.has(versao.id) ||
+            typeof versao.classe !== 'string' || !versao.classe.trim()) {
+            throw new Error(`Versão inválida ou repetida: ${base.id}.`);
+        }
+        ids.add(versao.id);
+        const { id, ...ajustes } = versao;
+        // Reaproveita a validação da ficha; versões aninhadas não são permitidas.
+        const [ficha] = validarPersonagens([{ ...base, ...ajustes }]);
+        return { ...ficha, id };
+    });
+}
 
 export function validarPersonagens(dados) {
     if (!Array.isArray(dados)) throw new Error('O catálogo deve ser uma lista.');
@@ -25,7 +45,14 @@ export function validarPersonagens(dados) {
         if (typeof imagem !== 'string' || (imagem && !/^\.\/assets\/img\/[a-z0-9_./-]+$/i.test(imagem))) {
             throw new Error(`Caminho de imagem inválido: ${id}. Use ./assets/img/arquivo.`);
         }
-        return { ...personagem, nome: nome.trim(), corAura, imagem };
+        for (const chave of ['larguraImagem', 'alturaImagem']) {
+            if (personagem[chave] !== undefined && (!Number.isInteger(personagem[chave]) || personagem[chave] <= 0 || personagem[chave] > 16384)) {
+                throw new Error(`Dimensão de imagem inválida: ${id}.`);
+            }
+        }
+        const normalizado = { ...personagem, nome: nome.trim(), corAura, imagem };
+        if (personagem.versoes !== undefined) normalizado.versoes = validarVersoes(normalizado);
+        return normalizado;
     });
 }
 
@@ -36,7 +63,8 @@ export function normalizarBusca(texto) {
 export function filtrarPersonagens(personagens, busca, tipo, favoritos) {
     const termo = normalizarBusca(busca);
     return personagens.filter(personagem => {
-        const texto = normalizarBusca(`${personagem.nome} ${personagem.classe}`);
+        const classes = [personagem.classe, ...(personagem.versoes?.map(versao => versao.classe) ?? [])];
+        const texto = normalizarBusca(`${personagem.nome} ${classes.join(' ')}`);
         if (!texto.includes(termo)) return false;
         if (tipo === 'favoritos') return favoritos.includes(personagem.id);
         if (tipo === 'outro') return !['feiticeiro', 'maldicao'].includes(personagem.tipo);

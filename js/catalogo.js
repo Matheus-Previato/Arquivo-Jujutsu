@@ -1,6 +1,7 @@
 import { validarPersonagens, filtrarPersonagens } from './dados.js';
 import { preencherImagemPersonagem } from './imagens.js';
 import { atualizarBotaoFavorito } from './favoritos.js';
+import { obterVersao, criarSeletorVersoes } from './versoes.js';
 
 export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincronizarFavoritos, invocarExplosao, vincularEfeitoCard }) {
     const grid = document.getElementById('grid-personagens');
@@ -31,6 +32,7 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
     }
 
     function criarCard(personagem, indice) {
+        let exibido = obterVersao(personagem);
         const wrapper = document.createElement('div');
         wrapper.className = 'card-wrapper entrada';
         wrapper.style.animationDelay = `${Math.min(indice * 35, 210)}ms`;
@@ -40,17 +42,18 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
         const card = document.createElement('article');
         card.className = 'card';
         card.dataset.personagemId = personagem.id;
-        card.style.setProperty('--cor-aura', personagem.corAura);
+        card.style.setProperty('--cor-aura', exibido.corAura);
+        if (exibido.versaoId) card.dataset.versaoId = exibido.versaoId;
         const imagem = document.createElement('div');
         imagem.className = 'card-imagem-placeholder';
-        preencherImagemPersonagem(imagem, personagem, { prioritaria: indice < 3 });
+        preencherImagemPersonagem(imagem, exibido, { prioritaria: indice < 3 });
         const info = document.createElement('div');
         info.className = 'card-info';
         const badge = document.createElement('span');
         badge.className = `badge ${personagem.tipo}`;
         const textoBadge = document.createElement('span');
         if (personagem.tipo === 'anomalia') textoBadge.className = 'texto-hibrido';
-        textoBadge.textContent = personagem.classe;
+        textoBadge.textContent = exibido.classe;
         badge.append(textoBadge);
         const titulo = document.createElement('h3');
         const abrir = document.createElement('button');
@@ -61,9 +64,17 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
         abrir.setAttribute('aria-label', `Ver detalhes de ${personagem.nome}`);
         abrir.setAttribute('aria-haspopup', 'dialog');
         card.setAttribute('aria-labelledby', abrir.id);
-        abrir.addEventListener('click', () => abrirModal(personagem, abrir));
+        abrir.addEventListener('click', () => abrirModal(exibido, abrir));
         titulo.append(abrir);
         info.append(badge, titulo);
+        const seletor = criarSeletorVersoes(personagem, versao => {
+            exibido = versao;
+            card.dataset.versaoId = versao.versaoId;
+            card.style.setProperty('--cor-aura', versao.corAura);
+            textoBadge.textContent = versao.classe;
+            preencherImagemPersonagem(imagem, versao, { prioritaria: true, transicao: true });
+        });
+        if (seletor) card.classList.add('tem-versoes');
         const selo = document.createElement('button');
         selo.type = 'button';
         selo.className = 'btn-selo';
@@ -72,12 +83,13 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
         selo.addEventListener('click', () => {
             const rect = selo.getBoundingClientRect();
             alternarSeloGlobal(personagem.id);
-            invocarExplosao(rect.left + rect.width / 2, rect.top + rect.height / 2, personagem.corAura);
+            invocarExplosao(rect.left + rect.width / 2, rect.top + rect.height / 2, exibido.corAura);
         });
         card.addEventListener('click', evento => {
-            if (!evento.target.closest('button, a, input, select')) abrirModal(personagem, abrir);
+            if (!evento.target.closest('button, a, input, select')) abrirModal(exibido, abrir);
         });
         card.append(imagem, info, selo);
+        if (seletor) card.append(seletor);
         wrapper.append(card);
         const descartarEfeito = vincularEfeitoCard(card, wrapper);
         return { wrapper, abrir, selo, personagem, descartarEfeito };
