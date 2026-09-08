@@ -1,5 +1,14 @@
 /* --- RESPONSIVIDADE (MOBILE ABSOLUTO) --- */
 @media (max-width: 768px) {
+    .container {
+        padding: 2rem 1rem;
+    }
+
+    .grid-personagens {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+        gap: 1.5rem;
+    }
+
     .header-conteudo { 
         flex-direction: column; 
         align-items: stretch; 
@@ -7,25 +16,30 @@
     
     .header-titulos-wrapper { 
         justify-content: center; 
+        gap: 1rem;
     } 
+
+    .header-titulos { min-width: 0; }
+    .btn-dominio { flex-shrink: 0; }
 
     .search-container { 
         flex-direction: column; 
+        align-items: stretch;
         max-width: 100%; 
     }
     
     .custom-select-wrapper { 
         flex: 0 0 auto; 
         width: 100%; 
-        max-width: 280px; 
-        align-self: center; 
+        max-width: 100%; 
+        align-self: stretch; 
     }
 
     .btn-fechar {
         top: 15px; 
         right: 15px; 
-        width: 35px; 
-        height: 35px;
+        width: 44px; 
+        height: 44px;
     }
 
     .modal-layout { 
@@ -44,6 +58,11 @@
     .modal-info { 
         align-items: center; 
         text-align: center; 
+        min-width: 0;
+    }
+
+    .modal-conteudo {
+        padding: clamp(1rem, 4vw, 2rem);
     }
     
     .modal-titulo-wrapper {
@@ -54,6 +73,7 @@
 
     .modal-titulo-wrapper h2 { 
         font-size: 2.2rem; 
+        overflow-wrap: anywhere;
     } 
 
     .header-titulos h1 { 
@@ -67,5 +87,13 @@
     
     .dominio-higuruma::before { 
         background: repeating-linear-gradient(90deg, #050505, #1a1a1a 8px, #333 12px, #1a1a1a 16px, #050505 20px, transparent 20px, transparent 80px); 
+    }
+}
+
+/* Toque mantém a rolagem nativa e não deixa o card ampliado após tocar. */
+@media (hover: none), (pointer: coarse) {
+    .card:hover,
+    .card:hover :is(.card-img, .badge, .btn-selo) {
+        transform: none;
     }
 }

@@ -1,98 +1,87 @@
-# Arquivo Jujutsu - Domínio Expandido ⛩️
+# Arquivo Jujutsu ⛩️
 
-<p align="center">
-  <img src="![BANNER OU GIF AQUI]" alt="Demonstração do Arquivo Jujutsu" width="100%">
-</p>
+Catálogo de personagens de Jujutsu Kaisen feito com HTML, CSS e JavaScript, com busca, favoritos, detalhes de combate e cenários inspirados nos domínios da obra.
 
-## Catálogo de Feiticeiros, Maldições e Anomalias
+## Recursos
 
-O **Arquivo Jujutsu** não é apenas um catálogo visual; é um Domínio Expandido de Engenharia Front-end. Este repositório é a vitrine de uma aplicação construída com JavaScript Vanilla Moderno, focada em performance, acessibilidade e interatividade avançada, ambientada na atmosfera visceral e sombria do universo Jujutsu Kaisen.
+- Busca por nome ou classe, sem distinguir maiúsculas e acentos; filtros por tipo e favoritos. Busca e tipo ficam na URL para compartilhar a consulta.
+- Favoritos salvos no navegador. Se o armazenamento estiver bloqueado, continuam funcionando durante a visita; dados salvos inválidos são recuperados com um aviso.
+- Detalhes em uma janela acessível pelo teclado, com fechamento por Escape e retorno do foco ao catálogo. Os atributos aparecem no gráfico e em texto.
+- Inclinação dos cards com mouse, partículas e alternância entre os cenários normal, Gojo, Sukuna e Higuruma. O botão **Efeitos** permite reduzir o movimento e o custo visual; a preferência de movimento reduzido do sistema também é respeitada.
+- Cards reutilizados durante as interações: favoritar altera apenas o selo correspondente, sem reconstruir a grade nem reiniciar suas animações.
+- Validação dos dados, aviso de falha com botão **Tentar novamente** e apresentação alternativa para retratos ausentes ou que não carregaram.
 
-> *"O Domínio está Completo. Mas os seus Filtros são Infinitos."*
+O catálogo contém 20 personagens, todos com retratos estilizados criados com IA para este projeto. As imagens ficam em `assets/img/personagens/`; são ilustrações de fãs, não artes oficiais. A imagem anterior do Gojo foi preservada em `assets/img/gojo-02.png`. Os atributos representam o conteúdo deste projeto, sem pretensão de serem valores oficiais da obra.
 
----
+## Executar localmente
 
-## 🛠️ Técnicas de Grau Especial Implementadas
+Abra a pasta do projeto no editor e sirva o `index.html` por um servidor HTTP local, como o Live Server. Se você já tem Python instalado, também pode executar na pasta:
 
-A arquitetura desta aplicação foi blindada com engenharia moderna para garantir a melhor experiência de usuário:
-
-### 🌀 1. Física de Energia Amaldiçoada (Tilt 3D)
-* Os cards não são estáticos; eles reagem fisicamente à presença do mouse, girando no espaço 3D com base nas coordenadas exatas do cursor.
-* Inclui efeito Parallax holográfico: a imagem (a 'arte do feiticeiro') e o selo saltam em direções diferentes com base na inclinação, criando profundidade visual verdadeira.
-
-### 💾 2. Sistema de Selamento (LocalStorage)
-* Persistência de dados: Os usuários podem "selar" (favoritar) seus feiticeiros usando o Kanji 封 (Fū - Selar).
-* Os dados são salvos no `localStorage` do navegador e sobrevivem ao fechamento da aba ou reinício do dispositivo.
-* Inclui um filtro exclusivo "Selados (Favoritos)" que cruza as IDs salvas com o banco de dados principal.
-
-### 🏎️ 3. Otimização de Carregamento (Lazy Load & Skeleton)
-* **Performance:** Imagens carregam apenas quando necessárias (`loading="lazy"`), economizando banda e mantendo a renderização fluida em redes lentas.
-* **Skeleton UI:** Enquanto as imagens baixam, um esqueleto pulsante de feedback visual (efeito Shimmer) preenche o card, evitando layout shifts e melhorando a UX.
-* 🛡️ **Tratamento de Exceções:** Implementação de `onerror` nas imagens para evitar skeletons infinitos e ícones de erro nativos do navegador.
-
-### 🔗 4. Deep Linking (Roteamento de URL)
-* **Deep Linking & Sincronização:** O estado dos filtros de tipo e da barra de busca é sincronizado instantaneamente com os parâmetros da URL (`index.html?busca=yuji&tipo=anomalia`).
-* Os links são compartilháveis e abrem no estado exato em que estavam.
-
-### 🛡️ 5. Proteção de Renderização (Debounce)
-* Controle de fluxo na barra de busca: A renderização do Grid é protegida por um `Debounce` de 300ms, evitando travamentos em listas grandes.
-
-### ♿ 6. Domínio Acessível (A11y)
-* Cards totalmente acessíveis via teclado (`tabindex="0"`).
-* Motor de física 3D desativado em favor da acessibilidade pura quando o foco não é via mouse (`:focus-visible`).
-* Feedback visual claro para navegação sem mouse.
-
----
-
-## 🎨 O Design Amaldiçoado
-
-* **Vignette de Barreira:** Efeito visual de *Vignette* (radial-gradient) que simula a o catálogo dentro de uma "Cortina" (barreira visual de JJK).
-* **Talismãs de Selo:** Badges de Grau no estilo de Ofuda tradicional, que flutuam em Parallax.
-* **Instabilidade no Hover:** Cards e seletores tremem e vibram levemente quando focados, indicando energia amaldiçoada instável lutando para escapar.
-
----
-
-## 🚀 Invocando Localmente
-
-Para rodar este Domínio na sua máquina:
-
-1.  Clone este repositório (Grimório).
-2.  Abra a pasta no seu editor de código (VS Code recomendado).
-3.  Instale a extensão **Live Server**.
-4.  Clique com o botão direito no arquivo `index.html` e selecione **"Open with Live Server"**.
-
-Use um servidor HTTP local, como o Live Server. O JavaScript usa módulos nativos do navegador e o catálogo é carregado por `fetch`, portanto abrir o HTML diretamente como `file://` não é suficiente. Não é necessário instalar pacotes nem executar uma compilação.
-
----
-
-### Organização dos arquivos
-
-```text
-index.html                 Estrutura da página e ordem dos estilos
-js/
-  main.js                  Inicialização e conexão dos módulos
-  estado.js                Dados compartilhados da aplicação
-  catalogo.js              Carregamento, cards, busca, filtros e URL
-  favoritos.js             Selos e persistência dos favoritos
-  modal.js                 Detalhes e eventos da janela do personagem
-  radar.js                 Gráfico de atributos e suas dicas
-  efeitos.js               Partículas, domínios e interação 3D
-css/
-  base.css                 Tema, estilos globais e camadas dos efeitos
-  cabecalho.css            Cabeçalho, busca e filtro
-  catalogo.css             Grade, cards, badges e selos
-  modal.css                Detalhes, gráfico e dicas
-  dominios.css             Aparência dos cenários de domínio
-  animacoes.css            Keyframes e efeito de carregamento
-  responsivo.css           Adaptação para telas pequenas
-data/
-  personagens.json         Informações dos personagens
-assets/img/
-  gojo-02.png               Artes dos personagens
+```sh
+python -m http.server 8000
 ```
 
-Cada módulo de JavaScript expõe uma função de inicialização ou criação. O `main.js` conecta essas funções e passa o estado e os callbacks necessários, evitando que catálogo, favoritos e detalhes importem uns aos outros.
+Depois acesse `http://localhost:8000/`. Abrir o HTML diretamente como `file://` não é suficiente: a aplicação usa módulos JavaScript e carrega o catálogo com `fetch`.
 
-Para mudar o conteúdo de um personagem, edite `data/personagens.json`. Para alterar a busca, use `js/catalogo.js`; para ajustar um domínio, use `js/efeitos.js` e `css/dominios.css`.
+O site não precisa de instalação de pacotes nem de compilação. As fontes vêm do Google Fonts; se estiverem indisponíveis, o navegador usa as fontes alternativas definidas no CSS.
 
-Os estilos são carregados diretamente no `index.html`. Preserve a ordem dos links: a divisão mantém a mesma sequência de regras do antigo `style.css`, com os ajustes responsivos por último. Os caminhos relativos de dados e imagens continuam compatíveis com a publicação em `/Arquivo-Jujutsu/` no GitHub Pages.
+## Organização
+
+```text
+index.html                  Estrutura e ordem dos estilos
+js/
+  main.js                   Inicialização e conexão entre módulos
+  estado.js                 Estado compartilhado e leitura segura dos favoritos
+  dados.js                  Validação dos personagens e regras de busca/filtro
+  catalogo.js               Carregamento, cards, contagem e sincronização da URL
+  imagens.js                Imagens, carregamento e retratos alternativos
+  favoritos.js              Selos, persistência e avisos de armazenamento
+  modal.js                  Abertura, fechamento e foco dos detalhes
+  radar.js                  Gráfico, valores em texto e explicação dos atributos
+  efeitos.js                Partículas, domínios e interação com mouse
+css/
+  base.css                  Tema, estilos globais e controles auxiliares
+  cabecalho.css             Cabeçalho, busca e filtro
+  catalogo.css               Grade, cards, retratos e selos
+  modal.css                 Detalhes e gráfico
+  dominios.css              Cenários de domínio
+  animacoes.css             Animações e preferência de movimento reduzido
+  responsivo.css            Telas pequenas e dispositivos de toque
+data/personagens.json       Conteúdo do catálogo
+assets/img/                 Imagens dos personagens
+tests/                      Testes de regressão com o executor nativo do Node
+```
+
+O `main.js` conecta as funções dos módulos e passa os callbacks necessários. Preserve a ordem dos estilos no `index.html`, com os ajustes responsivos por último.
+
+## Alterar o conteúdo
+
+Edite `data/personagens.json` para adicionar ou modificar personagens. Cada entrada precisa de:
+
+- `id` único com letras, números ou hífens; `nome`, `classe` e `descricao` preenchidos.
+- `tipo`: `feiticeiro`, `maldicao`, `neutro` ou `anomalia`. O filtro **Outros** reúne os dois últimos.
+- `atributos`: valores numéricos entre 0 e 100 para `fis`, `vel`, `eng`, `int` e `let`.
+- `corAura`: três componentes RGB entre 0 e 255, como `"89, 0, 179"`.
+- `imagem`: caminho relativo como `"./assets/img/gojo-02.png"`, ou `""` enquanto não houver arte. Você pode informar `larguraImagem` e `alturaImagem` com as dimensões reais do arquivo.
+
+Use caminhos relativos e respeite maiúsculas e minúsculas dos nomes de arquivos: isso importa no GitHub Pages. Para futuras mudanças, as regras de pesquisa ficam em `dados.js`, a apresentação dos cards em `catalogo.js` e os efeitos em `efeitos.js`.
+
+## Verificar alterações
+
+Com Node.js 20 ou superior instalado, execute na raiz:
+
+```sh
+node --test
+```
+
+O atalho `npm test` executa o mesmo comando, quando npm estiver disponível. Não há dependências para instalar.
+
+Os testes cobrem recuperação de favoritos, filtros, reaproveitamento de cards, tentativas de carregamento, imagens, modal, atributos e efeitos. Como usam simulações do navegador, complemente mudanças de interface conferindo teclado, Escape, foco e telas pequenas em um navegador real.
+
+## Publicar no GitHub Pages
+
+Este é um site estático, pronto para ser servido a partir da raiz do repositório. No GitHub, em **Settings → Pages**, selecione a publicação por branch e a pasta **/(root)** da branch que contém estes arquivos. Aguarde o resultado da publicação antes de testar o endereço exibido pelo GitHub.
+
+Um erro 404 antes de a página carregar precisa ser verificado na configuração/publicação do Pages. O botão **Tentar novamente** recupera falhas de carregamento do catálogo depois que a página já abriu.
+
+Consulte a [documentação do GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) se precisar alterar a origem da publicação.

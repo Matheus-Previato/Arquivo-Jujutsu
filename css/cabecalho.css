@@ -15,7 +15,7 @@
     top: -50px;
     left: 50%;
     transform: translateX(-50%);
-    width: 400px;
+    width: min(400px, 100%);
     height: 120px;
     background: radial-gradient(circle, rgba(153, 0, 0, 0.2) 0%, transparent 70%);
     z-index: 0;
@@ -126,72 +126,20 @@
     background-color: #000;
 }
 
-/* --- MENU DROPDOWN CUSTOMIZADO --- */
-.custom-select-wrapper {
-    position: relative;
-    flex: 0 0 220px; 
-    font-family: var(--font-texto);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    outline: none;
-    z-index: 9999; 
-}
-
-.custom-select-trigger {
-    background-color: var(--ofuda-bg);
-    color: var(--ofuda-text);
-    padding: 0.9rem 1.2rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all var(--transition-speed) ease;
-    clip-path: polygon(0% 5%, 5% 0%, 95% 2%, 100% 8%, 98% 92%, 92% 100%, 8% 98%, 0% 90%);
-}
-
-.custom-select-wrapper:hover .custom-select-trigger,
-.custom-select-wrapper:focus-visible .custom-select-trigger,
-.custom-select-wrapper.open .custom-select-trigger {
-    background-color: #c4b69c; 
-    transform: skewX(-2deg) scale(1.02); 
-}
-
-.custom-select-options {
-    position: absolute;
-    top: calc(100% + 5px); 
-    left: 0;
+/* Filtro nativo com o tema visual do catálogo. */
+.custom-select-wrapper { position: relative; flex: 0 0 240px; min-width: 0; }
+#filtro-tipo {
     width: 100%;
-    background-color: var(--card-bg);
-    border: 1px solid #333;
-    border-top: 3px solid var(--accent-color);
-    list-style: none;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-10px);
-    transition: all var(--transition-speed) ease;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-    z-index: 99999; 
-}
-
-.custom-select-wrapper.open .custom-select-options {
-    opacity: 1;
-    pointer-events: all;
-    transform: translateY(0);
-}
-
-.custom-select-options li {
-    padding: 0.9rem 1.2rem;
-    color: var(--text-color);
-    border-bottom: 1px solid #1a1a1a;
+    min-height: 52px;
+    padding: 0.9rem 0.8rem;
+    border: 2px solid #9b8970;
+    border-radius: 0;
+    background: var(--ofuda-bg);
+    color: var(--ofuda-text);
+    font: 700 1rem var(--font-texto);
+    letter-spacing: 0.5px;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    color-scheme: light;
 }
-
-.custom-select-options li:hover, 
-.custom-select-options li.selected {
-    background-color: #222;
-    color: var(--kokusen-red);
-    border-left: 4px solid var(--kokusen-red);
-}
-
+#filtro-tipo:focus-visible { outline: 3px solid #bba4d8; outline-offset: 4px; }
+#busca-personagem { min-width: 0; }

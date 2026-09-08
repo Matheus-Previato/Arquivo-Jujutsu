@@ -16,11 +16,11 @@
 
 /* --- Estilos do Card --- */
 .card-wrapper {
-    animation: invocarCard 0.6s ease-out backwards;
     display: block;
     height: 100%; 
     perspective: 1200px; 
 }
+.card-wrapper.entrada { animation: invocarCard 0.4s ease-out backwards; }
 
 .card {
     background-color: rgba(17, 17, 17, 0.9); 
@@ -166,10 +166,10 @@
     right: 15px;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid #333;
-    color: #444; 
+    color: #b6b6b6;
     font-size: 1.3rem;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 4px; 
     display: flex;
     justify-content: center;
@@ -199,3 +199,54 @@
     animation: pulsarSelo 2s infinite alternate;
 }
 
+
+/* Abertura e favorito são controles independentes. */
+.btn-abrir-personagem {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    min-height: 44px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.btn-abrir-personagem:focus-visible {
+    outline: 3px solid #bba4d8;
+    outline-offset: 5px;
+}
+.card:focus-within { border-color: rgb(var(--cor-aura)); }
+.card-imagem-placeholder.sem-imagem, .modal-imagem-placeholder.sem-imagem {
+    background: radial-gradient(ellipse at center, rgba(var(--cor-aura), 0.07), #080808 75%);
+}
+.retrato-ausente {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4rem;
+    padding: 1.5rem;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+.retrato-iniciais {
+    display: grid;
+    place-items: center;
+    width: 100px;
+    height: 120px;
+    border: 1px solid #4a4147;
+    outline: 1px solid #282125;
+    outline-offset: 7px;
+    color: #aaa0a4;
+    font: 2rem var(--font-titulo);
+}
+.retrato-legenda {
+    color: #a89e9e;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}

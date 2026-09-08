@@ -1,40 +1,90 @@
-// Gráfico de atributos e suas dicas de leitura.
+// Gráfico visual e valores em texto, disponíveis também por teclado e toque.
 export function iniciarRadar() {
     const btnInfoGrafico = document.getElementById('btn-info-grafico');
     const tooltipGrafico = document.getElementById('tooltip-grafico');
     const canvasRadar = document.getElementById('grafico-radar');
     const tooltipPonto = document.getElementById('tooltip-ponto');
-
-    // --- MOTOR GRÁFICO DO PENTÁGONO (RADAR CHART) ---
+    const atributosTexto = document.getElementById('atributos-texto');
+    const modal = document.getElementById('modal-personagem');
+    const eixos = [
+        { chave: 'fis', abreviacao: 'FÍS', nome: 'Físico' },
+        { chave: 'vel', abreviacao: 'VEL', nome: 'Velocidade' },
+        { chave: 'eng', abreviacao: 'ENG', nome: 'Energia' },
+        { chave: 'int', abreviacao: 'INT', nome: 'Inteligência' },
+        { chave: 'let', abreviacao: 'LET', nome: 'Letalidade' }
+    ];
     let pontosRadar = [];
+    let timerTooltipPonto = null;
+    let pontoAtivoIndex = -1;
+
+    function fecharTooltip() {
+        if (tooltipGrafico) {
+            tooltipGrafico.hidden = true;
+            tooltipGrafico.classList.remove('ativo');
+        }
+        if (btnInfoGrafico) {
+            btnInfoGrafico.setAttribute('aria-expanded', 'false');
+            btnInfoGrafico.classList.remove('ativo');
+        }
+    }
+
+    function esconderTooltipPonto() {
+        clearTimeout(timerTooltipPonto);
+        timerTooltipPonto = null;
+        pontoAtivoIndex = -1;
+        if (!tooltipPonto) return;
+        tooltipPonto.classList.remove('ativo');
+        tooltipPonto.hidden = true;
+        tooltipPonto.textContent = '';
+        tooltipPonto.style.removeProperty('left');
+        tooltipPonto.style.removeProperty('top');
+    }
+
+    function limparRadar() {
+        esconderTooltipPonto();
+        fecharTooltip();
+        pontosRadar = [];
+        atributosTexto?.replaceChildren();
+        if (canvasRadar) {
+            canvasRadar.getContext('2d')?.clearRect(0, 0, canvasRadar.width, canvasRadar.height);
+        }
+    }
 
     function desenharGraficoRadar(atributos, corAura) {
-        const canvas = document.getElementById('grafico-radar');
-        if(!canvas) return;
-        const ctx = canvas.getContext('2d');
+        limparRadar();
+        const valores = eixos.map(({ chave }) => {
+            const valor = Number(atributos?.[chave] ?? 0);
+            return Number.isFinite(valor) ? Math.min(100, Math.max(0, valor)) : 0;
+        });
+        if (atributosTexto) {
+            const linhas = eixos.map((eixo, i) => {
+                const linha = document.createElement('div');
+                const nome = document.createElement('dt');
+                nome.textContent = eixo.nome;
+                const valor = document.createElement('dd');
+                valor.textContent = `${valores[i]} / 100`;
+                linha.append(nome, valor);
+                return linha;
+            });
+            atributosTexto.replaceChildren(...linhas);
+        }
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        pontosRadar = [];
-
-        const cw = canvas.width;
-        const ch = canvas.height;
-        const cx = cw / 2;
-        const cy = ch / 2;
+        const ctx = canvasRadar?.getContext('2d');
+        if (!ctx) return;
+        const cx = canvasRadar.width / 2;
+        const cy = canvasRadar.height / 2;
         const raioMaximo = 100;
-
-        const labels = ['FÍS', 'VEL', 'ENG', 'INT', 'LET'];
-        const vals = atributos ? [atributos.fis, atributos.vel, atributos.eng, atributos.int, atributos.let] : [0,0,0,0,0];
-        const lados = 5;
+        const lados = eixos.length;
+        const angulo = i => (Math.PI * 2 * i / lados) - (Math.PI / 2);
 
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
         ctx.lineWidth = 1;
         for (let nivel = 1; nivel <= 5; nivel++) {
-            const r = raioMaximo * (nivel / 5);
+            const raio = raioMaximo * (nivel / 5);
             ctx.beginPath();
             for (let i = 0; i < lados; i++) {
-                const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
-                const x = cx + Math.cos(angle) * r;
-                const y = cy + Math.sin(angle) * r;
+                const x = cx + Math.cos(angulo(i)) * raio;
+                const y = cy + Math.sin(angulo(i)) * raio;
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
@@ -44,9 +94,8 @@ export function iniciarRadar() {
 
         ctx.beginPath();
         for (let i = 0; i < lados; i++) {
-            const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
             ctx.moveTo(cx, cy);
-            ctx.lineTo(cx + Math.cos(angle) * raioMaximo, cy + Math.sin(angle) * raioMaximo);
+            ctx.lineTo(cx + Math.cos(angulo(i)) * raioMaximo, cy + Math.sin(angulo(i)) * raioMaximo);
         }
         ctx.stroke();
 
@@ -55,26 +104,21 @@ export function iniciarRadar() {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         for (let i = 0; i < lados; i++) {
-            const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
-            const x = cx + Math.cos(angle) * (raioMaximo + 25);
-            const y = cy + Math.sin(angle) * (raioMaximo + 20);
-            ctx.fillText(labels[i], x, y);
+            const x = cx + Math.cos(angulo(i)) * (raioMaximo + 25);
+            const y = cy + Math.sin(angulo(i)) * (raioMaximo + 20);
+            ctx.fillText(eixos[i].abreviacao, x, y);
         }
 
         ctx.beginPath();
         for (let i = 0; i < lados; i++) {
-            const angle = (Math.PI * 2 * i / lados) - (Math.PI / 2);
-            const r = raioMaximo * ((vals[i] || 0) / 100);
-            const x = cx + Math.cos(angle) * r;
-            const y = cy + Math.sin(angle) * r;
-
-            pontosRadar.push({ x: x, y: y, valor: vals[i] || 0 });
-
+            const raio = raioMaximo * (valores[i] / 100);
+            const x = cx + Math.cos(angulo(i)) * raio;
+            const y = cy + Math.sin(angulo(i)) * raio;
+            pontosRadar.push({ x, y, valor: valores[i] });
             if (i === 0) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
         }
         ctx.closePath();
-
         ctx.fillStyle = `rgba(${corAura}, 0.5)`;
         ctx.fill();
         ctx.strokeStyle = `rgb(${corAura})`;
@@ -84,121 +128,86 @@ export function iniciarRadar() {
         ctx.stroke();
         ctx.shadowBlur = 0;
 
-        for (let i = 0; i < pontosRadar.length; i++) {
+        for (const ponto of pontosRadar) {
             ctx.beginPath();
-            ctx.arc(pontosRadar[i].x, pontosRadar[i].y, 4, 0, Math.PI * 2);
+            ctx.arc(ponto.x, ponto.y, 4, 0, Math.PI * 2);
             ctx.fillStyle = '#fff';
             ctx.fill();
             ctx.stroke();
         }
     }
 
-    // --- MOTOR MATEMÁTICO: BALÃO DE NÚMEROS NOS PONTOS ---
-    let timerTooltipPonto = null;
-    let pontoAtivoIndex = -1;
+    function agendarFechamentoPonto() {
+        clearTimeout(timerTooltipPonto);
+        timerTooltipPonto = setTimeout(esconderTooltipPonto, 1000);
+    }
 
-    if (canvasRadar && tooltipPonto) {
-        canvasRadar.addEventListener('mousemove', (e) => {
-            const rect = canvasRadar.getBoundingClientRect();
-            const scaleX = canvasRadar.width / rect.width;
-            const scaleY = canvasRadar.height / rect.height;
-
-            const mouseX = (e.clientX - rect.left) * scaleX;
-            const mouseY = (e.clientY - rect.top) * scaleY;
-
-            let achouColisao = false;
-
-            for (let i = 0; i < pontosRadar.length; i++) {
-                const p = pontosRadar[i];
-                const distancia = Math.hypot(p.x - mouseX, p.y - mouseY);
-
-                if (distancia < 15) {
-                    achouColisao = true;
-                    if (pontoAtivoIndex !== i) {
-                        pontoAtivoIndex = i;
-                        abrirTooltipPonto(p.valor, p.x / scaleX, p.y / scaleY, rect);
-                    }
-                    break;
-                }
-            }
-
-            if (!achouColisao && pontoAtivoIndex !== -1) {
+    function mostrarPonto(evento) {
+        if (!canvasRadar || !tooltipPonto || !pontosRadar.length) return;
+        const rect = canvasRadar.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const escalaX = canvasRadar.width / rect.width;
+        const escalaY = canvasRadar.height / rect.height;
+        const x = (evento.clientX - rect.left) * escalaX;
+        const y = (evento.clientY - rect.top) * escalaY;
+        const indice = pontosRadar.findIndex(ponto => Math.hypot(ponto.x - x, ponto.y - y) < 15);
+        if (indice === -1) {
+            if (pontoAtivoIndex !== -1) {
                 pontoAtivoIndex = -1;
-                iniciarContagemPonto();
+                agendarFechamentoPonto();
             }
-        });
-
-        canvasRadar.addEventListener('mouseleave', () => {
-            pontoAtivoIndex = -1;
-            iniciarContagemPonto();
-        });
-    }
-
-    function abrirTooltipPonto(valor, visualX, visualY, canvasRect) {
+            return;
+        }
         clearTimeout(timerTooltipPonto);
-        tooltipPonto.textContent = valor;
+        timerTooltipPonto = null;
+        pontoAtivoIndex = indice;
+        const ponto = pontosRadar[indice];
+        const containerRect = canvasRadar.closest('.grafico-container').getBoundingClientRect();
+        tooltipPonto.textContent = String(ponto.valor);
+        tooltipPonto.style.left = `${rect.left - containerRect.left + ponto.x / escalaX}px`;
+        tooltipPonto.style.top = `${rect.top - containerRect.top + ponto.y / escalaY}px`;
+        tooltipPonto.hidden = false;
         tooltipPonto.classList.add('ativo');
-
-        const containerRect = document.querySelector('.grafico-container').getBoundingClientRect();
-        const posX = (canvasRect.left - containerRect.left) + visualX;
-        const posY = (canvasRect.top - containerRect.top) + visualY;
-
-        tooltipPonto.style.left = `${posX}px`;
-        tooltipPonto.style.top = `${posY}px`;
     }
 
-    function iniciarContagemPonto() {
-        clearTimeout(timerTooltipPonto);
-        timerTooltipPonto = setTimeout(() => {
-            tooltipPonto.classList.remove('ativo');
-        }, 1000);
-    }
-
-
-    // --- LÓGICA DA TOOLTIP DE EXPLICAÇÃO ---
-    let timerTooltip;
-
-    function abrirTooltip() {
-        if(!tooltipGrafico || !btnInfoGrafico) return;
-        tooltipGrafico.classList.add('ativo');
-        btnInfoGrafico.classList.add('ativo');
-    }
-
-    function fecharTooltip() {
-        if(!tooltipGrafico || !btnInfoGrafico) return;
-        tooltipGrafico.classList.remove('ativo');
-        btnInfoGrafico.classList.remove('ativo');
-    }
-
-    function agendarFechamento() {
-        clearTimeout(timerTooltip);
-        timerTooltip = setTimeout(() => { fecharTooltip(); }, 3000);
-    }
-
-    function cancelarFechamento() { clearTimeout(timerTooltip); }
-
-    if (btnInfoGrafico) {
-        btnInfoGrafico.addEventListener('mouseenter', () => { abrirTooltip(); cancelarFechamento(); });
-        btnInfoGrafico.addEventListener('mouseleave', () => { agendarFechamento(); });
-        btnInfoGrafico.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (tooltipGrafico.classList.contains('ativo')) fecharTooltip();
-            else { abrirTooltip(); agendarFechamento(); }
-        });
-    }
-
-    if (tooltipGrafico) {
-        tooltipGrafico.addEventListener('mouseenter', () => { cancelarFechamento(); });
-        tooltipGrafico.addEventListener('mouseleave', () => { agendarFechamento(); });
-    }
-
-    document.addEventListener('click', (e) => {
-        if (tooltipGrafico && btnInfoGrafico) {
-            if (tooltipGrafico.classList.contains('ativo') && !tooltipGrafico.contains(e.target) && e.target !== btnInfoGrafico) {
-                fecharTooltip();
-            }
+    canvasRadar?.addEventListener('pointermove', evento => {
+        if (evento.pointerType !== 'touch') mostrarPonto(evento);
+    });
+    canvasRadar?.addEventListener('pointerdown', evento => {
+        if (evento.pointerType === 'touch') {
+            mostrarPonto(evento);
+            if (tooltipPonto && !tooltipPonto.hidden) agendarFechamentoPonto();
         }
     });
+    canvasRadar?.addEventListener('pointerleave', () => {
+        pontoAtivoIndex = -1;
+        if (tooltipPonto && !tooltipPonto.hidden) agendarFechamentoPonto();
+    });
+    canvasRadar?.addEventListener('pointercancel', esconderTooltipPonto);
 
-    return { desenharGraficoRadar, fecharTooltip };
+    // Uma abertura explícita não some enquanto o usuário lê a explicação.
+    btnInfoGrafico?.addEventListener('click', () => {
+        if (!tooltipGrafico) return;
+        const abrir = tooltipGrafico.hidden;
+        tooltipGrafico.hidden = !abrir;
+        tooltipGrafico.classList.toggle('ativo', abrir);
+        btnInfoGrafico.classList.toggle('ativo', abrir);
+        btnInfoGrafico.setAttribute('aria-expanded', String(abrir));
+    });
+    document.addEventListener('click', evento => {
+        if (tooltipGrafico && !tooltipGrafico.hidden &&
+            !tooltipGrafico.contains(evento.target) && !btnInfoGrafico?.contains(evento.target)) fecharTooltip();
+    });
+    document.addEventListener('focusin', evento => {
+        if (tooltipGrafico && !tooltipGrafico.hidden &&
+            !tooltipGrafico.contains(evento.target) && !btnInfoGrafico?.contains(evento.target)) fecharTooltip();
+    });
+    modal?.addEventListener('cancel', evento => {
+        if (tooltipGrafico && !tooltipGrafico.hidden) {
+            evento.preventDefault();
+            fecharTooltip();
+        }
+    });
+    limparRadar();
+    return { desenharGraficoRadar, limparRadar };
 }

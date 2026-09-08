@@ -1,84 +1,122 @@
-// Conteúdo e eventos da janela de detalhes do personagem.
-export function criarModal({ estado, alternarSeloGlobal, invocarExplosao, desenharGraficoRadar, fecharTooltip }) {
+import { preencherImagemPersonagem } from './imagens.js';
+import { atualizarBotaoFavorito } from './favoritos.js';
+
+// O <dialog> mantém o foco nos detalhes e torna o restante da página inativo.
+export function criarModal({ estado, alternarSeloGlobal, invocarExplosao, desenharGraficoRadar, limparRadar }) {
     const modal = document.getElementById('modal-personagem');
     const btnFecharModal = document.getElementById('btn-fechar-modal');
     const btnSelarModal = document.getElementById('btn-selar-modal');
-    const tooltipPonto = document.getElementById('tooltip-ponto');
-
     const modalNome = document.getElementById('modal-nome');
     const modalClasse = document.getElementById('modal-classe');
     const modalDescricao = document.getElementById('modal-descricao');
-    const containerImagemModal = document.querySelector('.modal-imagem-placeholder');
+    const containerImagemModal = modal?.querySelector('.modal-imagem-placeholder');
+    let elementoOrigem = null;
+    let indiceOrigem = 0;
+    let overflowAnterior = null;
+    let toqueComecouNoFundo = false;
+    let toqueTerminouNoFundo = false;
 
-    // --- 5. MODAL E EVENTOS ---
-    function abrirModal(personagem) {
+    function podeReceberFoco(elemento) {
+        if (!elemento?.isConnected || elemento.disabled || elemento.tabIndex < 0 ||
+            elemento.closest('[hidden], [inert], [aria-hidden="true"]')) return false;
+        const estilo = getComputedStyle(elemento);
+        return elemento.getClientRects().length > 0 && !['hidden', 'collapse'].includes(estilo.visibility) && estilo.display !== 'none';
+    }
+
+    function devolverFoco() {
+        let destino = elementoOrigem;
+        if (!podeReceberFoco(destino)) {
+            const botoes = [...document.querySelectorAll('.btn-abrir-personagem')].filter(podeReceberFoco);
+            destino = botoes[Math.min(indiceOrigem, botoes.length - 1)];
+        }
+        if (!podeReceberFoco(destino)) {
+            destino = ['filtro-tipo', 'busca-personagem']
+                .map(id => document.getElementById(id)).find(podeReceberFoco);
+        }
+        destino?.focus({ preventScroll: true });
+        elementoOrigem = null;
+    }
+
+    function abrirModal(personagem, origem = document.activeElement) {
+        if (!modal) return;
+        if (!modal.open) {
+            elementoOrigem = origem;
+            const botoes = [...document.querySelectorAll('.btn-abrir-personagem')].filter(podeReceberFoco);
+            indiceOrigem = Math.max(0, botoes.indexOf(origem));
+            overflowAnterior = document.body.style.overflow;
+        }
+
         estado.personagemAtualModal = personagem;
-
-        if(modalNome) {
-            modalNome.textContent = personagem.nome;
-            modalNome.className = '';
-        }
-
-        if(modalClasse) {
-            modalClasse.className = `badge ${personagem.tipo}`;
-            if(personagem.tipo === 'anomalia') modalClasse.innerHTML = `<span class="texto-hibrido">${personagem.classe}</span>`;
-            else modalClasse.textContent = personagem.classe;
-        }
-
-        if(modalDescricao) modalDescricao.textContent = personagem.descricao;
-
-        if (btnSelarModal) {
-            if (estado.feiticeirosSelados.includes(personagem.id)) {
-                btnSelarModal.classList.add('ativo');
+        const corAura = personagem.corAura || '89, 0, 179';
+        modal.style.setProperty('--cor-aura', corAura);
+        if (modalNome) modalNome.textContent = personagem.nome;
+        if (modalDescricao) modalDescricao.textContent = personagem.descricao;
+        if (modalClasse) {
+            modalClasse.className = 'badge';
+            if (personagem.tipo) modalClasse.classList.add(personagem.tipo);
+            if (personagem.tipo === 'anomalia') {
+                const texto = document.createElement('span');
+                texto.className = 'texto-hibrido';
+                texto.textContent = personagem.classe;
+                modalClasse.replaceChildren(texto);
             } else {
-                btnSelarModal.classList.remove('ativo');
+                modalClasse.textContent = personagem.classe;
             }
         }
 
-        if (containerImagemModal) {
-            if (personagem.imagem) {
-                containerImagemModal.innerHTML = `<img src="${personagem.imagem}" alt="${personagem.nome}" class="modal-img-real" loading="lazy" onerror="this.onerror=null; this.outerHTML='<span id=\\'modal-img-texto\\'>${personagem.imgPlaceholder}</span>'; document.querySelector('.modal-imagem-placeholder').style.background = 'linear-gradient(45deg, #111, #222)';">`;
-                containerImagemModal.style.background = "transparent";
-                containerImagemModal.style.border = "none";
-            } else {
-                containerImagemModal.innerHTML = `<span id="modal-img-texto">${personagem.imgPlaceholder}</span>`;
-                containerImagemModal.style.background = "linear-gradient(45deg, #111, #222)";
-                containerImagemModal.style.border = "1px solid #333";
-            }
-        }
+        atualizarBotaoFavorito(btnSelarModal, personagem, estado.feiticeirosSelados.includes(personagem.id));
+        if (containerImagemModal) preencherImagemPersonagem(containerImagemModal, personagem, { modal: true });
+        desenharGraficoRadar(personagem.atributos, corAura);
 
-        desenharGraficoRadar(personagem.atributos, personagem.corAura || "89, 0, 179");
-
-        if(modal) {
-            modal.classList.add('ativo');
-            if(btnFecharModal) btnFecharModal.focus();
-        }
+        if (!modal.open) modal.showModal();
+        document.body.style.overflow = 'hidden';
+        modal.classList.add('ativo');
+        modal.scrollTop = 0;
+        btnFecharModal?.focus({ preventScroll: true });
     }
 
     function fecharModal() {
-        if(modal) modal.classList.remove('ativo');
+        if (modal?.open) modal.close();
+    }
+
+    // O evento nativo cobre o botão, Escape e outras chamadas a dialog.close().
+    modal?.addEventListener('close', () => {
+        modal.classList.remove('ativo');
         estado.personagemAtualModal = null;
-        fecharTooltip();
-        if(tooltipPonto) tooltipPonto.classList.remove('ativo');
-    }
+        limparRadar();
+        if (overflowAnterior !== null) document.body.style.overflow = overflowAnterior;
+        overflowAnterior = null;
+        toqueComecouNoFundo = false;
+        toqueTerminouNoFundo = false;
+        devolverFoco();
+    });
 
-    if(btnSelarModal) {
-        btnSelarModal.addEventListener('click', () => {
-            if (!estado.personagemAtualModal) return;
-            const rect = btnSelarModal.getBoundingClientRect();
-            const centroX = rect.left + (rect.width / 2);
-            const centroY = rect.top + (rect.height / 2);
+    btnSelarModal?.addEventListener('click', () => {
+        if (!estado.personagemAtualModal) return;
+        const personagem = estado.personagemAtualModal;
+        const rect = btnSelarModal.getBoundingClientRect();
+        alternarSeloGlobal(personagem.id);
+        invocarExplosao(rect.left + rect.width / 2, rect.top + rect.height / 2, personagem.corAura || '89, 0, 179');
+    });
+    btnFecharModal?.addEventListener('click', fecharModal);
 
-            alternarSeloGlobal(estado.personagemAtualModal.id);
-            invocarExplosao(centroX, centroY, estado.personagemAtualModal.corAura || "89, 0, 179");
-        });
-    }
-
-    if(btnFecharModal) btnFecharModal.addEventListener('click', fecharModal);
-    if(modal) {
-        modal.addEventListener('click', (evento) => { if (evento.target === modal) fecharModal(); });
-        document.addEventListener('keydown', (evento) => { if (evento.key === 'Escape' && modal.classList.contains('ativo')) fecharModal(); });
-    }
+    // Só fecha quando o gesto começa e termina no fundo, sem fechar ao arrastar o texto.
+    modal?.addEventListener('pointerdown', evento => {
+        toqueComecouNoFundo = evento.target === modal && evento.button === 0;
+        toqueTerminouNoFundo = false;
+    });
+    modal?.addEventListener('pointerup', evento => {
+        toqueTerminouNoFundo = evento.target === modal;
+    });
+    modal?.addEventListener('pointercancel', () => {
+        toqueComecouNoFundo = false;
+        toqueTerminouNoFundo = false;
+    });
+    modal?.addEventListener('click', evento => {
+        if (evento.target === modal && toqueComecouNoFundo && toqueTerminouNoFundo) fecharModal();
+        toqueComecouNoFundo = false;
+        toqueTerminouNoFundo = false;
+    });
 
     return { abrirModal };
 }

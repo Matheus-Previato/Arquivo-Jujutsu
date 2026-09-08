@@ -1,165 +1,175 @@
-// Carregamento dos personagens, busca, filtros, URL e criação dos cards.
-export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, invocarExplosao, aplicarFisica, resetarFisica }) {
-    const gridPersonagens = document.getElementById('grid-personagens');
-    const inputBusca = document.getElementById('busca-personagem');
+import { validarPersonagens, filtrarPersonagens } from './dados.js';
+import { preencherImagemPersonagem } from './imagens.js';
+import { atualizarBotaoFavorito } from './favoritos.js';
 
-    // --- LÓGICA DO MENU CUSTOMIZADO ---
-    const selectWrapper = document.querySelector('.custom-select-wrapper');
-    const textoFiltro = document.getElementById('filtro-texto');
-    const opcoesFiltro = document.querySelectorAll('.custom-select-options li');
-    let filtroTipoAtual = 'todos';
+export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincronizarFavoritos, invocarExplosao, vincularEfeitoCard }) {
+    const grid = document.getElementById('grid-personagens');
+    const busca = document.getElementById('busca-personagem');
+    const filtro = document.getElementById('filtro-tipo');
+    const resultado = document.getElementById('resultado-busca');
+    const statusFavoritos = document.getElementById('status-favoritos');
+    const cards = new Map();
+    let carregando = false;
+    let erroCarregamento = false;
+    let timerBusca;
 
-    if (selectWrapper) {
-        selectWrapper.addEventListener('click', () => { selectWrapper.classList.toggle('open'); });
-        document.addEventListener('click', (evento) => { if (!selectWrapper.contains(evento.target)) { selectWrapper.classList.remove('open'); } });
-    }
-
-    opcoesFiltro.forEach(opcao => {
-        opcao.addEventListener('click', (e) => {
-            opcoesFiltro.forEach(opt => opt.classList.remove('selected'));
-            opcao.classList.add('selected');
-            if(textoFiltro) textoFiltro.textContent = opcao.textContent;
-            filtroTipoAtual = opcao.getAttribute('data-value');
-            aplicarFiltros();
-        });
-    });
-
-    // --- 3. COMUNICAÇÃO COM API ---
-    async function invocarFeiticeiros() {
-        try {
-            const resposta = await fetch('./data/personagens.json');
-            if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
-            estado.bancoDeDadosPersonagens = await resposta.json();
-            lerURL();
-        } catch (erro) {
-            if(gridPersonagens) gridPersonagens.innerHTML = `<p style="color:red; text-align:center;">Erro na invocação do JSON.</p>`;
+    function mostrarMensagem(texto, tentarNovamente = false) {
+        const mensagem = document.createElement('div');
+        mensagem.className = 'mensagem-catalogo';
+        const paragrafo = document.createElement('p');
+        paragrafo.textContent = texto;
+        mensagem.append(paragrafo);
+        if (tentarNovamente) {
+            const botao = document.createElement('button');
+            botao.type = 'button';
+            botao.className = 'btn-tentar-novamente';
+            botao.textContent = 'Tentar novamente';
+            botao.addEventListener('click', invocarFeiticeiros);
+            mensagem.append(botao);
         }
+        grid.replaceChildren(mensagem);
     }
 
-    function atualizarURL(busca, tipo) {
-        const url = new URL(window.location);
-        if (busca) url.searchParams.set('busca', busca); else url.searchParams.delete('busca');
-        if (tipo && tipo !== 'todos') url.searchParams.set('tipo', tipo); else url.searchParams.delete('tipo');
+    function criarCard(personagem, indice) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'card-wrapper entrada';
+        wrapper.style.animationDelay = `${Math.min(indice * 35, 210)}ms`;
+        wrapper.addEventListener('animationend', evento => {
+            if (evento.target === wrapper) wrapper.classList.remove('entrada');
+        });
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.dataset.personagemId = personagem.id;
+        card.style.setProperty('--cor-aura', personagem.corAura);
+        const imagem = document.createElement('div');
+        imagem.className = 'card-imagem-placeholder';
+        preencherImagemPersonagem(imagem, personagem, { prioritaria: indice < 3 });
+        const info = document.createElement('div');
+        info.className = 'card-info';
+        const badge = document.createElement('span');
+        badge.className = `badge ${personagem.tipo}`;
+        const textoBadge = document.createElement('span');
+        if (personagem.tipo === 'anomalia') textoBadge.className = 'texto-hibrido';
+        textoBadge.textContent = personagem.classe;
+        badge.append(textoBadge);
+        const titulo = document.createElement('h3');
+        const abrir = document.createElement('button');
+        abrir.type = 'button';
+        abrir.className = 'btn-abrir-personagem';
+        abrir.id = `abrir-${personagem.id}`;
+        abrir.textContent = personagem.nome;
+        abrir.setAttribute('aria-label', `Ver detalhes de ${personagem.nome}`);
+        abrir.setAttribute('aria-haspopup', 'dialog');
+        card.setAttribute('aria-labelledby', abrir.id);
+        abrir.addEventListener('click', () => abrirModal(personagem, abrir));
+        titulo.append(abrir);
+        info.append(badge, titulo);
+        const selo = document.createElement('button');
+        selo.type = 'button';
+        selo.className = 'btn-selo';
+        selo.textContent = '封';
+        atualizarBotaoFavorito(selo, personagem, estado.feiticeirosSelados.includes(personagem.id));
+        selo.addEventListener('click', () => {
+            const rect = selo.getBoundingClientRect();
+            alternarSeloGlobal(personagem.id);
+            invocarExplosao(rect.left + rect.width / 2, rect.top + rect.height / 2, personagem.corAura);
+        });
+        card.addEventListener('click', evento => {
+            if (!evento.target.closest('button, a, input, select')) abrirModal(personagem, abrir);
+        });
+        card.append(imagem, info, selo);
+        wrapper.append(card);
+        const descartarEfeito = vincularEfeitoCard(card, wrapper);
+        return { wrapper, abrir, selo, personagem, descartarEfeito };
+    }
+
+    function atualizarURL() {
+        const url = new URL(window.location.href);
+        const texto = busca.value.trim();
+        if (texto) url.searchParams.set('busca', texto); else url.searchParams.delete('busca');
+        if (filtro.value !== 'todos') url.searchParams.set('tipo', filtro.value); else url.searchParams.delete('tipo');
         window.history.replaceState({}, '', url);
     }
 
     function lerURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const busca = urlParams.get('busca');
-        const tipo = urlParams.get('tipo');
+        const parametros = new URLSearchParams(window.location.search);
+        busca.value = parametros.get('busca') || '';
+        const tipo = parametros.get('tipo');
+        filtro.value = Array.from(filtro.options).some(opcao => opcao.value === tipo) ? tipo : 'todos';
+    }
 
-        if (busca && inputBusca) inputBusca.value = busca;
-        if (tipo) {
-            const opcaoEncontrada = Array.from(opcoesFiltro).find(opt => opt.getAttribute('data-value') === tipo);
-            if (opcaoEncontrada) {
-                opcoesFiltro.forEach(opt => opt.classList.remove('selected'));
-                opcaoEncontrada.classList.add('selected');
-                if(textoFiltro) textoFiltro.textContent = opcaoEncontrada.textContent;
-                filtroTipoAtual = tipo;
-            }
+    function atualizarContagem(quantidade) {
+        resultado.textContent = `${quantidade} ${quantidade === 1 ? 'personagem encontrado' : 'personagens encontrados'}`;
+    }
+
+    function aplicarFiltros({ primeiraExibicao = false } = {}) {
+        clearTimeout(timerBusca);
+        if (carregando) return;
+        atualizarURL();
+        if (erroCarregamento) return;
+        const lista = filtrarPersonagens(estado.bancoDeDadosPersonagens, busca.value, filtro.value, estado.feiticeirosSelados);
+        if (!primeiraExibicao) cards.forEach(({ wrapper }) => wrapper.classList.remove('entrada'));
+        grid.replaceChildren(...lista.map(personagem => cards.get(personagem.id).wrapper));
+        if (!lista.length) mostrarMensagem('Nenhum personagem corresponde aos filtros.');
+        atualizarContagem(lista.length);
+    }
+
+    function atualizarFavorito(id) {
+        const item = cards.get(id);
+        if (!item) return;
+        const selado = estado.feiticeirosSelados.includes(id);
+        atualizarBotaoFavorito(item.selo, item.personagem, selado);
+        statusFavoritos.textContent = `${item.personagem.nome} ${selado ? 'adicionado aos' : 'removido dos'} favoritos.`;
+        // Só a lista de favoritos perde um card; as outras grades ficam intactas.
+        if (filtro.value === 'favoritos' && !selado && item.wrapper.parentElement === grid) {
+            const elementos = Array.from(grid.querySelectorAll('.btn-abrir-personagem'));
+            const posicao = elementos.indexOf(item.abrir);
+            const tinhaFoco = item.wrapper.contains(document.activeElement);
+            item.wrapper.remove();
+            const restantes = Array.from(grid.querySelectorAll('.btn-abrir-personagem'));
+            if (!restantes.length) mostrarMensagem('Nenhum personagem corresponde aos filtros.');
+            atualizarContagem(restantes.length);
+            if (tinhaFoco) (restantes[Math.min(posicao, restantes.length - 1)] || filtro).focus();
         }
-        aplicarFiltros();
     }
 
-    // --- 4. RENDERIZAÇÃO ---
-    function renderizarCards(listaDePersonagens) {
-        if (!gridPersonagens) return;
-        gridPersonagens.innerHTML = "";
-
-        if (listaDePersonagens.length === 0) {
-            gridPersonagens.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #ccc;">Nenhum personagem condiz com os filtros.</p>`;
-            return;
+    async function invocarFeiticeiros() {
+        if (carregando) return;
+        const recuperarFoco = grid.contains(document.activeElement);
+        carregando = true;
+        erroCarregamento = false;
+        grid.setAttribute('aria-busy', 'true');
+        resultado.textContent = 'Carregando personagens…';
+        mostrarMensagem('Abrindo o arquivo…');
+        try {
+            const resposta = await fetch('./data/personagens.json');
+            if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
+            const personagens = validarPersonagens(await resposta.json());
+            cards.forEach(item => item.descartarEfeito?.());
+            cards.clear();
+            estado.bancoDeDadosPersonagens = personagens;
+            sincronizarFavoritos();
+            personagens.forEach((personagem, indice) => cards.set(personagem.id, criarCard(personagem, indice)));
+            lerURL();
+            carregando = false;
+            aplicarFiltros({ primeiraExibicao: true });
+            if (recuperarFoco) (grid.querySelector('.btn-abrir-personagem') || busca).focus();
+        } catch (erro) {
+            erroCarregamento = true;
+            console.error('Não foi possível carregar o catálogo:', erro);
+            resultado.textContent = 'Catálogo indisponível no momento.';
+            mostrarMensagem('Não foi possível carregar os personagens. Verifique sua conexão e tente novamente.', true);
+        } finally {
+            carregando = false;
+            grid.setAttribute('aria-busy', 'false');
         }
-
-        listaDePersonagens.forEach((personagem, index) => {
-            const wrapperCard = document.createElement('div');
-            wrapperCard.classList.add('card-wrapper');
-            wrapperCard.style.animationDelay = `${index * 50}ms`;
-
-            const card = document.createElement('article');
-            card.classList.add('card');
-            card.setAttribute('tabindex', '0');
-
-            const corAura = personagem.corAura || "89, 0, 179";
-            card.style.setProperty('--cor-aura', corAura);
-
-            let elementoVisual = `<span>${personagem.imgPlaceholder}</span>`;
-            let temImagem = false;
-
-            if (personagem.imagem) {
-                temImagem = true;
-                elementoVisual = `<img src="${personagem.imagem}" alt="${personagem.nome}" class="card-img" loading="lazy" onload="this.parentElement.classList.remove('skeleton')" onerror="this.onerror=null; this.parentElement.classList.remove('skeleton'); this.outerHTML='<span>${personagem.imgPlaceholder}</span>';">`;
-            }
-
-            const badgeHibridaClass = personagem.tipo === 'anomalia' ? 'hibrida' : '';
-            const conteudoBadge = personagem.tipo === 'anomalia' ? `<span class="texto-hibrido">${personagem.classe}</span>` : personagem.classe;
-
-            card.innerHTML = `
-                <div class="card-imagem-placeholder ${temImagem ? 'skeleton' : ''}">
-                    ${elementoVisual}
-                </div>
-                <div class="card-info">
-                    <span class="badge ${personagem.tipo} ${badgeHibridaClass}">${conteudoBadge}</span>
-                    <h3>${personagem.nome}</h3>
-                </div>
-            `;
-
-            const btnSelo = document.createElement('button');
-            btnSelo.classList.add('btn-selo');
-            btnSelo.innerHTML = '封';
-            btnSelo.setAttribute('title', 'Selar Personagem');
-            if (estado.feiticeirosSelados.includes(personagem.id)) btnSelo.classList.add('ativo');
-
-            btnSelo.addEventListener('click', (evento) => {
-                evento.stopPropagation();
-                const rect = btnSelo.getBoundingClientRect();
-                const centroX = rect.left + (rect.width / 2);
-                const centroY = rect.top + (rect.height / 2);
-                alternarSeloGlobal(personagem.id);
-                invocarExplosao(centroX, centroY, corAura);
-            });
-
-            card.appendChild(btnSelo);
-            card.addEventListener('click', () => abrirModal(personagem));
-            card.addEventListener('keydown', (evento) => { if (evento.key === 'Enter' || evento.key === ' ') { evento.preventDefault(); abrirModal(personagem); } });
-            card.addEventListener('mousemove', (evento) => { const rect = card.getBoundingClientRect(); aplicarFisica(card, evento.clientX - rect.left, evento.clientY - rect.top); });
-            card.addEventListener('mouseleave', () => resetarFisica(card));
-
-            wrapperCard.appendChild(card);
-            gridPersonagens.appendChild(wrapperCard);
-        });
     }
 
-    function aplicarFiltros() {
-        if (!inputBusca) return;
-        const termoBusca = inputBusca.value.toLowerCase();
-        atualizarURL(termoBusca, filtroTipoAtual);
-
-        const personagensFiltrados = estado.bancoDeDadosPersonagens.filter(personagem => {
-            const nomeBate = personagem.nome.toLowerCase().includes(termoBusca);
-            const classeBate = personagem.classe.toLowerCase().includes(termoBusca);
-            const passouNoTexto = nomeBate || classeBate;
-            let passouNoTipo = false;
-
-            if (filtroTipoAtual === 'todos') passouNoTipo = true;
-            else if (filtroTipoAtual === 'feiticeiro') passouNoTipo = personagem.tipo === 'feiticeiro';
-            else if (filtroTipoAtual === 'maldicao') passouNoTipo = personagem.tipo === 'maldicao';
-            else if (filtroTipoAtual === 'outro') passouNoTipo = personagem.tipo !== 'feiticeiro' && personagem.tipo !== 'maldicao';
-            else if (filtroTipoAtual === 'favoritos') passouNoTipo = estado.feiticeirosSelados.includes(personagem.id);
-
-            return passouNoTexto && passouNoTipo;
-        });
-
-        renderizarCards(personagensFiltrados);
-    }
-
-    const buscarComCooldown = debounce(aplicarFiltros, 300);
-    if(inputBusca) inputBusca.addEventListener('input', buscarComCooldown);
-
-    function debounce(funcao, tempoEspera) {
-        let temporizador;
-        return function(...argumentos) { clearTimeout(temporizador); temporizador = setTimeout(() => { funcao.apply(this, argumentos); }, tempoEspera); };
-    }
-
-    return { invocarFeiticeiros, aplicarFiltros };
+    busca.addEventListener('input', () => {
+        clearTimeout(timerBusca);
+        timerBusca = setTimeout(aplicarFiltros, 200);
+    });
+    filtro.addEventListener('change', () => aplicarFiltros());
+    window.addEventListener('popstate', () => { lerURL(); aplicarFiltros(); });
+    return { invocarFeiticeiros, aplicarFiltros, atualizarFavorito };
 }

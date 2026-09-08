@@ -13,7 +13,7 @@ const radar = iniciarRadar();
 // O callback só é chamado em interações, após a criação do catálogo.
 const favoritos = criarFavoritos({
     estado,
-    aoAlterar: () => catalogo.aplicarFiltros(),
+    aoAlterar: id => catalogo.atualizarFavorito(id),
 });
 
 const modal = criarModal({
@@ -21,13 +21,14 @@ const modal = criarModal({
     alternarSeloGlobal: favoritos.alternarSeloGlobal,
     invocarExplosao: efeitos.invocarExplosao,
     desenharGraficoRadar: radar.desenharGraficoRadar,
-    fecharTooltip: radar.fecharTooltip,
+    limparRadar: radar.limparRadar,
 });
 
 const catalogo = criarCatalogo({
     estado,
     abrirModal: modal.abrirModal,
     alternarSeloGlobal: favoritos.alternarSeloGlobal,
+    sincronizarFavoritos: favoritos.sincronizarFavoritos,
     ...efeitos,
 });
 

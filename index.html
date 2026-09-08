@@ -19,15 +19,16 @@
 </head>
 <body>
 
-    <div id="cenario-dominio"></div>
+    <a class="pular-conteudo" href="#conteudo">Pular para o catálogo</a>
+    <div id="cenario-dominio" aria-hidden="true"></div>
 
-    <canvas id="dominio-vfx"></canvas>
+    <canvas id="dominio-vfx" aria-hidden="true"></canvas>
 
     <header class="header-principal">
         <div class="header-conteudo">
             
             <div class="header-titulos-wrapper">
-                <button id="btn-dominio" class="btn-dominio" title="Expandir Domínio">🌀</button>
+                <button id="btn-dominio" type="button" class="btn-dominio" title="Mudar domínio" aria-label="Mudar domínio">🌀</button>
                 <div class="header-titulos">
                     <h1>Arquivo Jujutsu</h1>
                     <p>Catálogo de Feiticeiros e Maldições</p>
@@ -35,34 +36,38 @@
             </div>
             
             <div class="search-container">
-                <input type="text" id="busca-personagem" placeholder="Rastrear feiticeiro..." autocomplete="off">
-                
-                <div class="custom-select-wrapper" tabindex="0">
-                    <div class="custom-select-trigger">
-                        <span id="filtro-texto">TODOS</span>
-                        <span class="custom-select-arrow">▼</span>
-                    </div>
-                    <ul class="custom-select-options">
-                        <li data-value="todos" class="selected">TODOS</li>
-                        <li data-value="feiticeiro">FEITICEIROS</li>
-                        <li data-value="maldicao">MALDIÇÕES</li>
-                        <li data-value="outro">OUTROS</li>
-                        <li data-value="favoritos">SELADOS (FAVORITOS)</li>
-                    </ul>
+                <label class="sr-only" for="busca-personagem">Buscar por nome ou classe</label>
+                <input type="search" id="busca-personagem" placeholder="Rastrear feiticeiro..." autocomplete="off" aria-controls="grid-personagens">
+                <div class="custom-select-wrapper">
+                    <label class="sr-only" for="filtro-tipo">Filtrar personagens</label>
+                    <select id="filtro-tipo" aria-controls="grid-personagens">
+                        <option value="todos">TODOS</option>
+                        <option value="feiticeiro">FEITICEIROS</option>
+                        <option value="maldicao">MALDIÇÕES</option>
+                        <option value="outro">OUTROS</option>
+                        <option value="favoritos">SELADOS (FAVORITOS)</option>
+                    </select>
                 </div>
 
             </div>
         </div>
     </header>
 
-    <main class="container">
-        <section id="grid-personagens" class="grid-personagens">
+    <main id="conteudo" class="container" tabindex="-1">
+        <div class="catalogo-ferramentas">
+            <p id="resultado-busca" role="status" aria-live="polite">Carregando personagens…</p>
+            <button id="btn-efeitos" class="btn-efeitos" type="button" aria-pressed="true">Efeitos: ativos</button>
+        </div>
+        <p id="aviso-armazenamento" class="aviso-armazenamento" role="status" hidden></p>
+        <p id="status-favoritos" class="sr-only" role="status"></p>
+        <section id="grid-personagens" class="grid-personagens" aria-label="Personagens" aria-busy="true">
         </section>
+        <noscript><p>Ative o JavaScript no navegador para consultar o catálogo.</p></noscript>
     </main>
 
-    <div id="modal-personagem" class="modal">
+    <dialog id="modal-personagem" class="modal" aria-labelledby="modal-nome" aria-describedby="modal-descricao">
         
-        <button id="btn-fechar-modal" class="btn-fechar" aria-label="Fechar Modal"></button>
+        <button id="btn-fechar-modal" type="button" class="btn-fechar" aria-label="Fechar detalhes"></button>
         
         <div class="modal-wrapper">
             <div class="modal-conteudo">
@@ -74,7 +79,7 @@
                     <div class="modal-info">
                         <div class="modal-titulo-wrapper">
                             <h2 id="modal-nome">Nome do Personagem</h2>
-                            <button id="btn-selar-modal" class="btn-selo" aria-label="Selar Personagem">封</button>
+                            <button id="btn-selar-modal" type="button" class="btn-selo" aria-label="Favoritar personagem" aria-pressed="false">封</button>
                         </div>
                         
                         <span id="modal-classe" class="badge">Grau</span>
@@ -83,14 +88,15 @@
                         <div class="grafico-container">
                             <div class="grafico-header">
                                 <h3>Status de Combate</h3>
-                                <button id="btn-info-grafico" class="btn-info" aria-label="Explicação dos Atributos">?</button>
+                                <button id="btn-info-grafico" type="button" class="btn-info" aria-label="Explicação dos atributos" aria-controls="tooltip-grafico" aria-expanded="false">?</button>
                             </div>
                             
-                            <canvas id="grafico-radar" width="320" height="320"></canvas>
+                            <canvas id="grafico-radar" width="320" height="320" aria-hidden="true"></canvas>
+                            <dl id="atributos-texto" class="atributos-texto" aria-label="Atributos de combate"></dl>
                             
-                            <div id="tooltip-ponto" class="tooltip-ponto">0</div>
+                            <div id="tooltip-ponto" class="tooltip-ponto" aria-hidden="true">0</div>
                             
-                            <div id="tooltip-grafico" class="tooltip-grafico">
+                            <div id="tooltip-grafico" class="tooltip-grafico" hidden>
                                 <ul>
                                     <li><strong>FÍS:</strong> Força Bruta e Combate Corporal</li>
                                     <li><strong>VEL:</strong> Agilidade e Tempo de Reação</li>
@@ -105,7 +111,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </dialog>
 
     <script type="module" src="./js/main.js"></script>
 </body>

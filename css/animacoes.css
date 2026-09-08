@@ -80,3 +80,68 @@
     opacity: 0; 
 }
 
+/* Movimento reduzido mantém o conteúdo e os domínios visíveis, sem animações. */
+html[data-efeitos='reduzidos'],
+html[data-efeitos='reduzidos'] *,
+html[data-efeitos='reduzidos'] *::before,
+html[data-efeitos='reduzidos'] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+}
+
+html[data-efeitos='reduzidos'] :is(.card-wrapper, .card, .card-img, .badge, .btn-selo, .btn-fechar, .modal-wrapper, #btn-dominio) {
+    transform: none !important;
+}
+
+html[data-efeitos='reduzidos'] :is(.card, .card-img, .modal, .modal-conteudo, .modal-img-real, .tooltip-grafico, .btn-selo, .btn-fechar, #grafico-radar),
+html[data-efeitos='reduzidos'] .modal::backdrop,
+html[data-efeitos='reduzidos'] #cenario-dominio::before,
+html[data-efeitos='reduzidos'] #cenario-dominio::after {
+    filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+
+html[data-efeitos='reduzidos'] .dominio-higuruma::before {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+html[data-efeitos='reduzidos'] .skeleton::after,
+html[data-efeitos='reduzidos'] .card-imagem-placeholder::before,
+html[data-efeitos='reduzidos'] #dominio-vfx {
+    display: none;
+}
+
+/* Também vale antes do JavaScript iniciar ou se ele estiver indisponível. */
+@media (prefers-reduced-motion: reduce) {
+    html, *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+
+    :is(.card-wrapper, .card, .card-img, .badge, .btn-selo, .btn-fechar, .modal-wrapper, #btn-dominio) {
+        transform: none !important;
+    }
+
+    :is(.card, .card-img, .modal, .modal-conteudo, .modal-img-real, .tooltip-grafico, .btn-selo, .btn-fechar, #grafico-radar),
+    .modal::backdrop,
+    #cenario-dominio::before,
+    #cenario-dominio::after {
+        filter: none !important;
+        backdrop-filter: none !important;
+        box-shadow: none !important;
+    }
+
+    .dominio-higuruma::before {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .skeleton::after, .card-imagem-placeholder::before, #dominio-vfx {
+        display: none;
+    }
+}
+
