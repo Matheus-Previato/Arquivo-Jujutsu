@@ -161,7 +161,7 @@
     padding: 0.4rem 1.2rem; 
 }
 
-.modal-info p { 
+.modal-info > p {
     color: #bbb; 
     font-size: 1.25rem; 
     line-height: 1.9; 
@@ -233,6 +233,40 @@
     height: auto;
     filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
 }
+
+.compartilhar-personagem { width: 100%; margin-top: 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.btn-compartilhar {
+    min-height: 44px;
+    padding: 0.6rem 1rem;
+    border: 1px solid #675473;
+    border-radius: 3px;
+    background: #17101e;
+    color: #e8dff0;
+    font: 1rem var(--font-texto);
+    cursor: pointer;
+}
+.btn-compartilhar:hover { border-color: #bba4d8; background: #291b36; }
+.btn-compartilhar:focus-visible, #link-personagem:focus-visible { outline: 3px solid #bba4d8; outline-offset: 3px; }
+#status-compartilhar { color: #c6bcce; font: 0.85rem/1.5 Arial, sans-serif; }
+#link-personagem { width: 100%; min-width: 0; padding: 0.75rem; border: 1px solid #675473; background: #111; color: #fff; }
+.ficha-personagem { width: 100%; margin-top: 1.8rem; text-align: left; }
+.ficha-personagem > div { padding: 1rem 0; border-top: 1px solid #302535; }
+.ficha-personagem dt { color: #bba4d8; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.85rem; margin-bottom: 0.5rem; }
+.ficha-personagem dd { color: #d4ced9; font: 0.95rem/1.65 Arial, sans-serif; overflow-wrap: anywhere; }
+.ficha-personagem ul { padding-left: 1.2rem; }
+.ficha-personagem li + li { margin-top: 0.4rem; }
+.ficha-resumo { padding: 0.8rem 0; border-top: 1px solid #302535; }
+.ficha-secao { width: 100%; border-top: 1px solid #302535; color: #d4ced9; text-align: left; }
+.ficha-secao summary { min-height: 44px; padding: 0.8rem 0; cursor: pointer; color: #bba4d8; text-transform: uppercase; letter-spacing: 1px; font: 0.95rem var(--font-texto); }
+.ficha-secao summary:focus-visible { outline: 3px solid #bba4d8; outline-offset: 3px; }
+.ficha-secao > div { padding: 0.25rem 0 1rem; font: 0.95rem/1.65 Arial, sans-serif; }
+.atributos-recolhiveis { margin-top: 1rem; }
+.atributos-recolhiveis .grafico-container { margin-top: 0; border: 0; }
+.navegacao-ficha { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; }
+.navegacao-ficha button { min-height: 44px; padding: 0.5rem 0.75rem; border: 1px solid #51425c; border-radius: 3px; color: #e8dff0; background: #17101e; font: 1rem var(--font-texto); cursor: pointer; }
+.navegacao-ficha button:disabled { opacity: 0.4; cursor: default; }
+.navegacao-ficha button:focus-visible { outline: 3px solid #bba4d8; outline-offset: 3px; }
+.navegacao-ficha span { font-size: 0.85rem; color: #bab1c1; text-align: center; }
 
 .atributos-texto {
     width: 100%;

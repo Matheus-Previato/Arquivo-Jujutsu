@@ -1,6 +1,7 @@
 const TIPOS = new Set(['feiticeiro', 'maldicao', 'neutro', 'anomalia']);
 const ATRIBUTOS = ['fis', 'vel', 'eng', 'int', 'let'];
-const CAMPOS_VERSAO = new Set(['id', 'classe', 'descricao', 'imagem', 'larguraImagem', 'alturaImagem', 'corAura', 'atributos']);
+const CAMPOS_VERSAO = new Set(['id', 'classe', 'descricao', 'imagem', 'larguraImagem', 'alturaImagem', 'corAura', 'atributos', 'retratos', 'tecnica', 'habilidades', 'ferramentas', 'afiliacao']);
+const CAMINHO_IMAGEM = /^\.\/assets\/img\/(?:[a-z0-9_-]+\/)*[a-z0-9_.-]+\.(?:png|webp|avif|jpe?g)$/i;
 
 function validarVersoes(personagem) {
     const { versoes, ...base } = personagem;
@@ -15,6 +16,8 @@ function validarVersoes(personagem) {
         }
         ids.add(versao.id);
         const { id, ...ajustes } = versao;
+        // Uma nova arte não deve herdar miniaturas da imagem anterior.
+        if (ajustes.imagem !== undefined && ajustes.imagem !== base.imagem && ajustes.retratos === undefined) ajustes.retratos = [];
         // Reaproveita a validação da ficha; versões aninhadas não são permitidas.
         const [ficha] = validarPersonagens([{ ...base, ...ajustes }]);
         return { ...ficha, id };
@@ -42,8 +45,25 @@ export function validarPersonagens(dados) {
             throw new Error(`Cor inválida: ${id}.`);
         }
         const imagem = personagem.imagem || '';
-        if (typeof imagem !== 'string' || (imagem && !/^\.\/assets\/img\/[a-z0-9_./-]+$/i.test(imagem))) {
+        if (typeof imagem !== 'string' || (imagem && !CAMINHO_IMAGEM.test(imagem))) {
             throw new Error(`Caminho de imagem inválido: ${id}. Use ./assets/img/arquivo.`);
+        }
+        if (personagem.retratos !== undefined) {
+            if (!Array.isArray(personagem.retratos) || personagem.retratos.length > 6) throw new Error(`Retratos inválidos: ${id}.`);
+            let ultimaLargura = 0;
+            for (const retrato of personagem.retratos) {
+                if (!retrato || typeof retrato.imagem !== 'string' || !CAMINHO_IMAGEM.test(retrato.imagem) ||
+                    !Number.isInteger(retrato.largura) || retrato.largura <= ultimaLargura || retrato.largura > 16384 ||
+                    !Number.isInteger(retrato.altura) || retrato.altura < 1 || retrato.altura > 16384) throw new Error(`Retrato responsivo inválido: ${id}.`);
+                ultimaLargura = retrato.largura;
+            }
+        }
+        for (const campo of ['tecnica', 'afiliacao']) {
+            if (personagem[campo] !== undefined && (typeof personagem[campo] !== 'string' || !personagem[campo].trim())) throw new Error(`Campo ${campo} inválido: ${id}.`);
+        }
+        for (const campo of ['habilidades', 'ferramentas']) {
+            if (personagem[campo] !== undefined && (!Array.isArray(personagem[campo]) || personagem[campo].length > 12 ||
+                personagem[campo].some(item => typeof item !== 'string' || !item.trim()))) throw new Error(`Lista ${campo} inválida: ${id}.`);
         }
         for (const chave of ['larguraImagem', 'alturaImagem']) {
             if (personagem[chave] !== undefined && (!Number.isInteger(personagem[chave]) || personagem[chave] <= 0 || personagem[chave] > 16384)) {
@@ -60,14 +80,18 @@ export function normalizarBusca(texto) {
     return texto.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
 
-export function filtrarPersonagens(personagens, busca, tipo, favoritos) {
+export function filtrarPersonagens(personagens, busca, tipo, favoritos, { classe = '', ordem = 'padrao' } = {}) {
     const termo = normalizarBusca(busca);
-    return personagens.filter(personagem => {
+    const lista = personagens.filter(personagem => {
         const classes = [personagem.classe, ...(personagem.versoes?.map(versao => versao.classe) ?? [])];
-        const texto = normalizarBusca(`${personagem.nome} ${classes.join(' ')}`);
+        const fichas = [personagem, ...(personagem.versoes ?? [])];
+        const texto = normalizarBusca([personagem.nome, ...classes, ...fichas.flatMap(ficha => [ficha.tecnica, ficha.afiliacao, ...(ficha.habilidades ?? []), ...(ficha.ferramentas ?? [])])].filter(Boolean).join(' '));
         if (!texto.includes(termo)) return false;
+        if (classe && !classes.includes(classe)) return false;
         if (tipo === 'favoritos') return favoritos.includes(personagem.id);
         if (tipo === 'outro') return !['feiticeiro', 'maldicao'].includes(personagem.tipo);
         return tipo === 'todos' || personagem.tipo === tipo;
     });
+    if (ordem === 'nome') lista.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    return lista;
 }

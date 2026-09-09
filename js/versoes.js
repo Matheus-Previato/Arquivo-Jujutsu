@@ -21,11 +21,14 @@ export function criarSeletorVersoes(personagem, aoSelecionar) {
         botao.setAttribute('aria-label', `Alternar ${personagem.nome} para ${proxima.classe}`);
         botao.title = `Alternar para ${proxima.classe}`;
     }
-    botao.addEventListener('click', () => {
-        selecionado = (selecionado + 1) % personagem.versoes.length;
+    function selecionar(id) {
+        const indice = personagem.versoes.findIndex(versao => versao.id === id);
+        if (indice < 0 || indice === selecionado) return;
+        selecionado = indice;
         atualizarRotulo();
         aoSelecionar(obterVersao(personagem, selecionado));
-    });
+    }
+    botao.addEventListener('click', () => selecionar(personagem.versoes[(selecionado + 1) % personagem.versoes.length].id));
     atualizarRotulo();
-    return botao;
+    return { botao, selecionar };
 }

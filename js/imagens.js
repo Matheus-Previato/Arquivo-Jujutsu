@@ -41,6 +41,10 @@ export function preencherImagemPersonagem(container, personagem, { modal = false
     imagem.height = personagem.alturaImagem || 500;
     imagem.loading = modal || prioritaria ? 'eager' : 'lazy';
     imagem.decoding = 'async';
+    if (personagem.retratos?.length) {
+        imagem.srcset = personagem.retratos.map(retrato => `${retrato.imagem} ${retrato.largura}w`).join(', ');
+        imagem.sizes = modal ? '(max-width: 768px) 300px, 320px' : '(max-width: 600px) calc(100vw - 32px), (max-width: 900px) 50vw, 350px';
+    }
     if (prioritaria) imagem.fetchPriority = 'high';
     container.classList.add('tem-imagem');
     if (anterior) imagem.classList.add('retrato-sobreposto', 'retrato-pendente');
@@ -64,9 +68,16 @@ export function preencherImagemPersonagem(container, personagem, { modal = false
         // Também limpa a imagem anterior quando o usuário desativa as animações.
         pedido.temporizador = setTimeout(concluir, 400);
     }, { once: true });
+    let usandoOriginal = !personagem.retratos?.length;
     imagem.addEventListener('error', () => {
-        if (requisicoes.get(container) === pedido && container.contains(imagem)) mostrarAusencia();
-    }, { once: true });
+        if (requisicoes.get(container) !== pedido || !container.contains(imagem)) return;
+        if (!usandoOriginal) {
+            usandoOriginal = true;
+            imagem.srcset = '';
+            imagem.sizes = '';
+            imagem.src = personagem.imagem;
+        } else mostrarAusencia();
+    });
     container.append(imagem);
     imagem.src = personagem.imagem;
 }

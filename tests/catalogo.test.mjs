@@ -92,7 +92,8 @@ function prepararAmbiente({ favoritos = [], tipo = 'todos', respostas = [] } = {
         }
     }
     documento.createElement = tag => { const elemento = new Elemento(tag); criados.push(elemento); return elemento; };
-    const ids = new Map(['grid-personagens', 'busca-personagem', 'filtro-tipo', 'resultado-busca', 'status-favoritos'].map(id => [id, new Elemento()]));
+    const ids = new Map(['grid-personagens', 'busca-personagem', 'filtro-tipo', 'resultado-busca', 'status-favoritos', 'filtro-classe', 'ordenacao', 'limpar-filtros'].map(id => [id, new Elemento()]));
+    Object.defineProperty(ids.get('filtro-classe'), 'options', { get() { return this.children; } });
     documento.getElementById = id => ids.get(id) ?? null;
     const filtro = ids.get('filtro-tipo');
     filtro.options = ['todos', 'feiticeiro', 'maldicao', 'outro', 'favoritos'].map(value => ({ value }));
@@ -134,7 +135,7 @@ function prepararAmbiente({ favoritos = [], tipo = 'todos', respostas = [] } = {
         vincularEfeitoCard: () => () => {},
     });
     return {
-        ...catalogo, estado, criados, documento, filtro, ids, aberturas, alternancias, explosoes, erros,
+        ...catalogo, estado, criados, documento, filtro, ids, aberturas, alternancias, explosoes, erros, janela,
         grid: ids.get('grid-personagens'),
         get requisicoes() { return requisicoes; },
         get sincronizacoes() { return sincronizacoes; },
@@ -274,7 +275,10 @@ test('trocas rápidas ignoram eventos antigos e limpam retratos mesmo sem anima�
     assert.deepEqual(container.querySelectorAll('img'), [ultima]);
     assert.equal(ultima.classList.contains('retrato-sobreposto'), false);
     trocar(0);
-    await container.querySelectorAll('img').at(-1).dispatch('error');
+    const falha = container.querySelectorAll('img').at(-1);
+    await falha.dispatch('error');
+    assert.equal(falha.srcset, '', 'Uma falha no WebP tenta o PNG original.');
+    await falha.dispatch('error');
     assert.equal(container.querySelectorAll('img').length, 0);
     assert.match(container.textContent, /Retrato indisponível/);
 });
@@ -425,4 +429,86 @@ test('imagem ausente ou quebrada mostra iniciais; erro antigo não sobrescreve n
     assert.equal(container.querySelector('.retrato-iniciais').textContent, 'SG');
     assert.equal(container.classList.contains('skeleton'), false);
     assert.equal(container.classList.contains('sem-imagem'), true);
+});
+
+test('imagens responsivas usam tamanhos por contexto e recuperam o PNG se o WebP falhar', async () => {
+    const env = prepararAmbiente();
+    const container = env.documento.createElement('div');
+    const personagem = dadosReais[0];
+    preencherImagemPersonagem(container, personagem, { modal: true });
+    const imagem = container.querySelector('img');
+    assert.match(imagem.srcset, /-480\.webp 480w/);
+    assert.match(imagem.srcset, /-1122\.webp 1122w/);
+    assert.match(imagem.sizes, /320px/);
+    await imagem.dispatch('error');
+    assert.equal(container.querySelector('img'), imagem);
+    assert.equal(imagem.src, personagem.imagem);
+    assert.equal(imagem.srcset, '');
+    await imagem.dispatch('load');
+    assert.equal(container.classList.contains('skeleton'), false);
+});
+
+test('abrir uma ficha por link sincroniza a versão da carta e a próxima ação do botão', async () => {
+    const env = prepararAmbiente();
+    await env.invocarFeiticeiros();
+    const maki = env.estado.bancoDeDadosPersonagens.find(p => p.id === 'maki-07');
+    env.abrirPersonagem(obterVersao(maki, 1));
+    const card = env.grid.querySelectorAll('article').find(p => p.dataset.personagemId === 'maki-07');
+    assert.equal(card.dataset.versaoId, 'restricao-celestial');
+    assert.equal(env.aberturas.at(-1)[0].classe, 'Restrição Celestial');
+    assert.equal(env.aberturas.at(-1)[2].sincronizarURL, false);
+    await card.querySelector('.btn-versao').dispatch('click');
+    assert.equal(card.dataset.versaoId, 'grau-4');
+});
+
+test('busca encontra técnicas, ferramentas e afiliação e combina classificação e ordem', () => {
+    const personagens = validarPersonagens(dadosReais);
+    assert.ok(filtrarPersonagens(personagens, 'sangue', 'todos', []).some(p => p.id === 'choso-14'));
+    assert.ok(filtrarPersonagens(personagens, 'sombras', 'todos', []).some(p => p.id === 'megumi-04'));
+    assert.ok(filtrarPersonagens(personagens, 'óculos', 'todos', []).some(p => p.id === 'maki-07'));
+    const lista = filtrarPersonagens(personagens, 'kyoto', 'todos', [], {classe:'Grau Semi-1', ordem:'nome'});
+    assert.deepEqual(lista.map(p => p.id), ['mechamaru-22']);
+    const original = personagens.map(p => p.id);
+    const ordenados = filtrarPersonagens(personagens, '', 'todos', [], {ordem:'nome'});
+    assert.equal(ordenados[0].nome, 'Aoi Todo');
+    assert.deepEqual(personagens.map(p => p.id), original);
+});
+
+test('filtros novos persistem na URL e limpar restaura o catálogo e o foco', async () => {
+    const env = prepararAmbiente();
+    await env.invocarFeiticeiros();
+    env.ids.get('filtro-classe').value = 'Grau Especial';
+    env.ids.get('ordenacao').value = 'nome';
+    await env.ids.get('ordenacao').dispatch('change');
+    assert.equal(env.janela.location.searchParams.get('classe'), 'Grau Especial');
+    assert.equal(env.janela.location.searchParams.get('ordem'), 'nome');
+    assert.equal(env.grid.querySelector('article').dataset.personagemId, 'gojo-02');
+    await env.ids.get('limpar-filtros').dispatch('click');
+    assert.equal(env.grid.querySelectorAll('article').length, 23);
+    assert.equal(env.janela.location.search, '');
+    assert.equal(env.documento.activeElement, env.ids.get('busca-personagem'));
+});
+
+test('anterior e próximo respeitam filtros, limites e versões selecionadas', async () => {
+    const env = prepararAmbiente();
+    await env.invocarFeiticeiros();
+    env.filtro.value = 'outro';
+    env.aplicarFiltros();
+    const toji = env.estado.bancoDeDadosPersonagens.find(p => p.id === 'toji-01');
+    env.estado.personagemAtualModal = toji;
+    assert.equal(env.obterNavegacao(toji).anterior, null);
+    env.navegar(-1);
+    assert.equal(env.aberturas.length, 0);
+    env.navegar(1);
+    assert.equal(env.aberturas.at(-1)[0].id, 'yuji-03');
+    const maki = env.estado.bancoDeDadosPersonagens.find(p => p.id === 'maki-07');
+    env.estado.personagemAtualModal = obterVersao(maki);
+    env.alternarVersaoModal();
+    assert.equal(env.aberturas.at(-1)[0].versaoId, 'restricao-celestial');
+    const card = env.grid.querySelectorAll('article').find(p => p.dataset.personagemId === 'maki-07');
+    assert.equal(card.dataset.versaoId, 'restricao-celestial');
+    env.ids.get('busca-personagem').value = 'gojo';
+    env.aplicarFiltros();
+    assert.equal(env.obterNavegacao(maki).proximo, null);
+    assert.equal(env.obterNavegacao(maki).indice, -1);
 });

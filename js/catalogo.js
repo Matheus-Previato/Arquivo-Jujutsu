@@ -3,10 +3,13 @@ import { preencherImagemPersonagem } from './imagens.js';
 import { atualizarBotaoFavorito } from './favoritos.js';
 import { obterVersao, criarSeletorVersoes } from './versoes.js';
 
-export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincronizarFavoritos, invocarExplosao, vincularEfeitoCard }) {
+export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincronizarFavoritos, invocarExplosao, vincularEfeitoCard, aoCarregar = () => {}, animarPersonagem = () => {} }) {
     const grid = document.getElementById('grid-personagens');
     const busca = document.getElementById('busca-personagem');
     const filtro = document.getElementById('filtro-tipo');
+    const filtroClasse = document.getElementById('filtro-classe');
+    const ordenacao = document.getElementById('ordenacao');
+    const limparFiltros = document.getElementById('limpar-filtros');
     const resultado = document.getElementById('resultado-busca');
     const statusFavoritos = document.getElementById('status-favoritos');
     const cards = new Map();
@@ -73,6 +76,7 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
             card.style.setProperty('--cor-aura', versao.corAura);
             textoBadge.textContent = versao.classe;
             preencherImagemPersonagem(imagem, versao, { prioritaria: true, transicao: true });
+            animarPersonagem(card, versao);
         });
         if (seletor) card.classList.add('tem-versoes');
         const selo = document.createElement('button');
@@ -89,10 +93,10 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
             if (!evento.target.closest('button, a, input, select')) abrirModal(exibido, abrir);
         });
         card.append(imagem, info, selo);
-        if (seletor) card.append(seletor);
+        if (seletor) card.append(seletor.botao);
         wrapper.append(card);
         const descartarEfeito = vincularEfeitoCard(card, wrapper);
-        return { wrapper, abrir, selo, personagem, descartarEfeito };
+        return { wrapper, abrir, selo, personagem, descartarEfeito, selecionarVersao: seletor?.selecionar, get exibido() { return exibido; } };
     }
 
     function atualizarURL() {
@@ -100,6 +104,9 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
         const texto = busca.value.trim();
         if (texto) url.searchParams.set('busca', texto); else url.searchParams.delete('busca');
         if (filtro.value !== 'todos') url.searchParams.set('tipo', filtro.value); else url.searchParams.delete('tipo');
+        for (const [nome, valor] of [['classe', filtroClasse?.value], ['ordem', ordenacao?.value === 'nome' ? 'nome' : '']]) {
+            if (valor) url.searchParams.set(nome, valor); else url.searchParams.delete(nome);
+        }
         window.history.replaceState({}, '', url);
     }
 
@@ -108,6 +115,8 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
         busca.value = parametros.get('busca') || '';
         const tipo = parametros.get('tipo');
         filtro.value = Array.from(filtro.options).some(opcao => opcao.value === tipo) ? tipo : 'todos';
+        if (filtroClasse) filtroClasse.value = Array.from(filtroClasse.options).some(opcao => opcao.value === parametros.get('classe')) ? parametros.get('classe') : '';
+        if (ordenacao) ordenacao.value = parametros.get('ordem') === 'nome' ? 'nome' : 'padrao';
     }
 
     function atualizarContagem(quantidade) {
@@ -119,7 +128,7 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
         if (carregando) return;
         atualizarURL();
         if (erroCarregamento) return;
-        const lista = filtrarPersonagens(estado.bancoDeDadosPersonagens, busca.value, filtro.value, estado.feiticeirosSelados);
+        const lista = obterLista();
         if (!primeiraExibicao) cards.forEach(({ wrapper }) => wrapper.classList.remove('entrada'));
         grid.replaceChildren(...lista.map(personagem => cards.get(personagem.id).wrapper));
         if (!lista.length) mostrarMensagem('Nenhum personagem corresponde aos filtros.');
@@ -162,10 +171,20 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
             estado.bancoDeDadosPersonagens = personagens;
             sincronizarFavoritos();
             personagens.forEach((personagem, indice) => cards.set(personagem.id, criarCard(personagem, indice)));
+            if (filtroClasse) {
+                const classes = [...new Set(personagens.flatMap(p => [p.classe, ...(p.versoes?.map(v => v.classe) ?? [])]))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                filtroClasse.replaceChildren(...['', ...classes].map(classe => {
+                    const opcao = document.createElement('option');
+                    opcao.value = classe;
+                    opcao.textContent = classe || 'Todas as classificações';
+                    return opcao;
+                }));
+            }
             lerURL();
             carregando = false;
             aplicarFiltros({ primeiraExibicao: true });
             if (recuperarFoco) (grid.querySelector('.btn-abrir-personagem') || busca).focus();
+            aoCarregar();
         } catch (erro) {
             erroCarregamento = true;
             console.error('Não foi possível carregar o catálogo:', erro);
@@ -182,6 +201,42 @@ export function criarCatalogo({ estado, abrirModal, alternarSeloGlobal, sincroni
         timerBusca = setTimeout(aplicarFiltros, 200);
     });
     filtro.addEventListener('change', () => aplicarFiltros());
+    filtroClasse?.addEventListener('change', () => aplicarFiltros());
+    ordenacao?.addEventListener('change', () => aplicarFiltros());
+    limparFiltros?.addEventListener('click', () => {
+        busca.value = ''; filtro.value = 'todos';
+        if (filtroClasse) filtroClasse.value = '';
+        if (ordenacao) ordenacao.value = 'padrao';
+        aplicarFiltros(); busca.focus();
+    });
     window.addEventListener('popstate', () => { lerURL(); aplicarFiltros(); });
-    return { invocarFeiticeiros, aplicarFiltros, atualizarFavorito };
+    function abrirPersonagem(personagem, opcoes = { sincronizarURL: false }) {
+        const item = cards.get(personagem.id);
+        if (!item) return;
+        item.selecionarVersao?.(personagem.versaoId);
+        abrirModal(personagem, item.abrir, opcoes);
+    }
+    function obterLista() {
+        return filtrarPersonagens(estado.bancoDeDadosPersonagens, busca.value, filtro.value, estado.feiticeirosSelados, { classe: filtroClasse?.value, ordem: ordenacao?.value });
+    }
+    function obterNavegacao(personagem) {
+        const lista = obterLista();
+        const indice = lista.findIndex(p => p.id === personagem?.id);
+        return { indice, total: lista.length, anterior: indice > 0 ? lista[indice - 1].id : null, proximo: indice >= 0 && indice < lista.length - 1 ? lista[indice + 1].id : null };
+    }
+    function navegar(direcao) {
+        const nav = obterNavegacao(estado.personagemAtualModal);
+        const id = direcao < 0 ? nav.anterior : nav.proximo;
+        const item = cards.get(id);
+        if (item) abrirPersonagem(item.exibido, { sincronizarURL: true, manterFoco: true });
+    }
+    function alternarVersaoModal() {
+        const atual = estado.personagemAtualModal;
+        const item = cards.get(atual?.id);
+        if (!item?.personagem.versoes) return;
+        const versoes = item.personagem.versoes;
+        const indice = versoes.findIndex(v => v.id === atual.versaoId);
+        abrirPersonagem(obterVersao(item.personagem, (indice + 1) % versoes.length), { sincronizarURL: true, manterFoco: true });
+    }
+    return { invocarFeiticeiros, aplicarFiltros, atualizarFavorito, abrirPersonagem, obterNavegacao, navegar, alternarVersaoModal };
 }

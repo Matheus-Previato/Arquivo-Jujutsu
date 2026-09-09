@@ -14,6 +14,12 @@
     gap: 2.5rem;
 }
 
+.filtros-avancados { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; margin: 0 0 2rem; }
+.filtros-avancados label { display: flex; flex: 1 1 200px; flex-direction: column; gap: 0.4rem; color: #bcb3c7; font-size: 0.9rem; }
+.filtros-avancados select, .filtros-avancados button { min-height: 44px; padding: 0.65rem 0.85rem; background: #121014; color: #eee7f2; border: 1px solid #44384e; font: 1rem var(--font-texto); border-radius: 3px; cursor: pointer; }
+.filtros-avancados select { width: 100%; min-width: 0; }
+.filtros-avancados :is(select, button):focus-visible { outline: 3px solid #bba4d8; outline-offset: 3px; }
+
 /* --- Estilos do Card --- */
 .card-wrapper {
     display: block;

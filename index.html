@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="./css/modal.css">
     <link rel="stylesheet" href="./css/dominios.css">
     <link rel="stylesheet" href="./css/animacoes.css">
+    <link rel="stylesheet" href="./css/efeitos-personagens.css">
     <link rel="stylesheet" href="./css/responsivo.css">
 </head>
 <body>
@@ -36,8 +37,8 @@
             </div>
             
             <div class="search-container">
-                <label class="sr-only" for="busca-personagem">Buscar por nome ou classe</label>
-                <input type="search" id="busca-personagem" placeholder="Rastrear feiticeiro..." autocomplete="off" aria-controls="grid-personagens">
+                <label class="sr-only" for="busca-personagem">Buscar personagem, técnica ou habilidade</label>
+                <input type="search" id="busca-personagem" placeholder="Nome, técnica ou habilidade..." autocomplete="off" aria-controls="grid-personagens">
                 <div class="custom-select-wrapper">
                     <label class="sr-only" for="filtro-tipo">Filtrar personagens</label>
                     <select id="filtro-tipo" aria-controls="grid-personagens">
@@ -59,6 +60,15 @@
             <button id="btn-efeitos" class="btn-efeitos" type="button" aria-pressed="true">Efeitos: ativos</button>
         </div>
         <p id="aviso-armazenamento" class="aviso-armazenamento" role="status" hidden></p>
+        <div class="filtros-avancados">
+            <label for="filtro-classe">Classificação
+                <select id="filtro-classe" aria-controls="grid-personagens"><option value="">Todas as classificações</option></select>
+            </label>
+            <label for="ordenacao">Ordenar
+                <select id="ordenacao" aria-controls="grid-personagens"><option value="padrao">Ordem do arquivo</option><option value="nome">Nome — A a Z</option></select>
+            </label>
+            <button id="limpar-filtros" type="button">Limpar filtros</button>
+        </div>
         <p id="status-favoritos" class="sr-only" role="status"></p>
         <section id="grid-personagens" class="grid-personagens" aria-label="Personagens" aria-busy="true">
         </section>
@@ -71,6 +81,11 @@
         
         <div class="modal-wrapper">
             <div class="modal-conteudo">
+                <nav class="navegacao-ficha" aria-label="Navegar nos personagens filtrados">
+                    <button id="personagem-anterior" type="button">← Anterior</button>
+                    <span id="posicao-personagem" role="status"></span>
+                    <button id="personagem-proximo" type="button">Próximo →</button>
+                </nav>
                 <div class="modal-layout">
                     <div class="modal-imagem-placeholder">
                         <span id="modal-img-texto">[ Imagem ]</span>
@@ -84,7 +99,16 @@
                         
                         <span id="modal-classe" class="badge">Grau</span>
                         <p id="modal-descricao">Descrição detalhada vai aqui...</p>
-                        
+                        <div class="compartilhar-personagem">
+                            <button id="btn-copiar-link" type="button" class="btn-compartilhar">Copiar link da ficha</button>
+                            <button id="alternar-versao-modal" type="button" class="btn-compartilhar" hidden>⇄ Alternar versão</button>
+                            <span id="status-compartilhar" role="status" aria-live="polite"></span>
+                            <input id="link-personagem" type="url" readonly hidden aria-label="Link da ficha para copiar">
+                        </div>
+                        <div id="modal-ficha" class="ficha-personagem" aria-label="Técnicas e habilidades" hidden></div>
+
+                        <details class="ficha-secao atributos-recolhiveis">
+                        <summary>Atributos de combate</summary>
                         <div class="grafico-container">
                             <div class="grafico-header">
                                 <h3>Status de Combate</h3>
@@ -106,6 +130,7 @@
                                 </ul>
                             </div>
                         </div>
+                        </details>
 
                     </div>
                 </div>
