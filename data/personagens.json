@@ -10,7 +10,38 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Toji ]",
         "corAura": "46, 139, 87",
-        "atributos": { "fis": 100, "vel": 100, "eng": 0, "int": 95, "let": 85 }
+        "atributos": {
+            "fis": 100,
+            "vel": 100,
+            "eng": 0,
+            "int": 95,
+            "let": 85
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/toji-01-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/toji-01-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/toji-01-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Restrição Celestial",
+        "habilidades": [
+            "Força e velocidade sobre-humanas.",
+            "Combate apoiado em ferramentas amaldiçoadas."
+        ],
+        "ferramentas": [
+            "Ferramentas amaldiçoadas"
+        ]
     },
     {
         "id": "gojo-02",
@@ -23,7 +54,37 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Gojo ]",
         "corAura": "0, 191, 255",
-        "atributos": { "fis": 95, "vel": 100, "eng": 100, "int": 95, "let": 100 }
+        "atributos": {
+            "fis": 95,
+            "vel": 100,
+            "eng": 100,
+            "int": 95,
+            "let": 100
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/gojo-02-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/gojo-02-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/gojo-02-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Ilimitado",
+        "habilidades": [
+            "Controle do espaço pela técnica herdada.",
+            "Percepção e controle de energia associados aos Seis Olhos."
+        ],
+        "ferramentas": [],
+        "afiliacao": "Colégio Jujutsu de Tokyo"
     },
     {
         "id": "yuji-03",
@@ -36,7 +97,37 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Yuji ]",
         "corAura": "220, 20, 60",
-        "atributos": { "fis": 95, "vel": 85, "eng": 75, "int": 75, "let": 70 }
+        "atributos": {
+            "fis": 95,
+            "vel": 85,
+            "eng": 75,
+            "int": 75,
+            "let": 70
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/yuji-03-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/yuji-03-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/yuji-03-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Combate corporal com energia amaldiçoada",
+        "habilidades": [
+            "Capacidade física excepcional.",
+            "Resistência como receptáculo de Sukuna."
+        ],
+        "ferramentas": [],
+        "afiliacao": "Colégio Jujutsu de Tokyo"
     },
     {
         "id": "megumi-04",
@@ -49,7 +140,37 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Megumi ]",
         "corAura": "0, 51, 102",
-        "atributos": { "fis": 65, "vel": 75, "eng": 75, "int": 85, "let": 85 }
+        "atributos": {
+            "fis": 65,
+            "vel": 75,
+            "eng": 75,
+            "int": 85,
+            "let": 85
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/megumi-04-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/megumi-04-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/megumi-04-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Técnica das Dez Sombras",
+        "habilidades": [
+            "Invocação de shikigami por meio das sombras.",
+            "Combina invocações com estratégia de combate."
+        ],
+        "ferramentas": [],
+        "afiliacao": "Colégio Jujutsu de Tokyo"
     },
     {
         "id": "nobara-05",
@@ -62,7 +183,41 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte da Nobara ]",
         "corAura": "199, 21, 133",
-        "atributos": { "fis": 50, "vel": 60, "eng": 65, "int": 70, "let": 75 }
+        "atributos": {
+            "fis": 50,
+            "vel": 60,
+            "eng": 65,
+            "int": 70,
+            "let": 75
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/nobara-05-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/nobara-05-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/nobara-05-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Técnica do Boneco de Palha",
+        "habilidades": [
+            "Ressonância para atingir o alvo por uma ligação.",
+            "Ataques com pregos imbuídos de energia amaldiçoada."
+        ],
+        "ferramentas": [
+            "Martelo",
+            "Pregos",
+            "Boneco de palha"
+        ],
+        "afiliacao": "Colégio Jujutsu de Tokyo"
     },
     {
         "id": "nanami-06",
@@ -75,7 +230,38 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Nanami ]",
         "corAura": "255, 215, 0",
-        "atributos": { "fis": 85, "vel": 80, "eng": 75, "int": 90, "let": 80 }
+        "atributos": {
+            "fis": 85,
+            "vel": 80,
+            "eng": 75,
+            "int": 90,
+            "let": 80
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/nanami-06-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/nanami-06-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/nanami-06-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Técnica da Proporção — 7:3",
+        "habilidades": [
+            "Criação de pontos fracos no alvo.",
+            "Golpes precisos para explorar a proporção."
+        ],
+        "ferramentas": [
+            "Lâmina envolta em tecido"
+        ]
     },
     {
         "id": "maki-07",
@@ -99,10 +285,68 @@
                 "descricao": "Após seu despertar, Maki leva a Restrição Celestial ao limite. Suas cicatrizes marcam uma nova fase, sustentada por força física extraordinária e domínio das ferramentas amaldiçoadas.",
                 "imagem": "./assets/img/personagens/maki-07-despertar.png",
                 "larguraImagem": 1122,
-                "alturaImagem": 1402
+                "alturaImagem": 1402,
+                "retratos": [
+                    {
+                        "imagem": "./assets/img/personagens/webp/maki-07-despertar-480.webp",
+                        "largura": 480,
+                        "altura": 600
+                    },
+                    {
+                        "imagem": "./assets/img/personagens/webp/maki-07-despertar-800.webp",
+                        "largura": 800,
+                        "altura": 1000
+                    },
+                    {
+                        "imagem": "./assets/img/personagens/webp/maki-07-despertar-1122.webp",
+                        "largura": 1122,
+                        "altura": 1402
+                    }
+                ],
+                "tecnica": "Restrição Celestial — despertar",
+                "habilidades": [
+                    "Capacidade física ampliada após o despertar.",
+                    "Combate com ferramentas amaldiçoadas sem depender dos óculos."
+                ],
+                "ferramentas": [
+                    "Ferramentas amaldiçoadas"
+                ]
             }
         ],
-        "atributos": { "fis": 95, "vel": 95, "eng": 0, "int": 85, "let": 85 }
+        "atributos": {
+            "fis": 95,
+            "vel": 95,
+            "eng": 0,
+            "int": 85,
+            "let": 85
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/maki-07-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/maki-07-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/maki-07-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Restrição Celestial e domínio de armas",
+        "habilidades": [
+            "Treinamento físico e combate a curta distância.",
+            "Uso versátil de ferramentas amaldiçoadas."
+        ],
+        "ferramentas": [
+            "Óculos para enxergar maldições",
+            "Ferramentas amaldiçoadas"
+        ],
+        "afiliacao": "Colégio Jujutsu de Tokyo"
     },
     {
         "id": "toge-08",
@@ -115,7 +359,37 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Toge ]",
         "corAura": "138, 43, 226",
-        "atributos": { "fis": 60, "vel": 70, "eng": 70, "int": 70, "let": 80 }
+        "atributos": {
+            "fis": 60,
+            "vel": 70,
+            "eng": 70,
+            "int": 70,
+            "let": 80
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/toge-08-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/toge-08-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/toge-08-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Fala Amaldiçoada",
+        "habilidades": [
+            "Palavras que impõem comandos ao alvo.",
+            "Vocabulário restrito para proteger os aliados."
+        ],
+        "ferramentas": [],
+        "afiliacao": "Colégio Jujutsu de Tokyo"
     },
     {
         "id": "panda-09",
@@ -128,7 +402,37 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Panda ]",
         "corAura": "211, 211, 211",
-        "atributos": { "fis": 85, "vel": 75, "eng": 80, "int": 75, "let": 75 }
+        "atributos": {
+            "fis": 85,
+            "vel": 75,
+            "eng": 80,
+            "int": 75,
+            "let": 75
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/panda-09-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/panda-09-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/panda-09-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Corpo de cadáver amaldiçoado mutante",
+        "habilidades": [
+            "Combate corporal sustentado por energia amaldiçoada.",
+            "Três núcleos no corpo."
+        ],
+        "ferramentas": [],
+        "afiliacao": "Colégio Jujutsu de Tokyo"
     },
     {
         "id": "geto-10",
@@ -141,7 +445,36 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Geto ]",
         "corAura": "75, 0, 130",
-        "atributos": { "fis": 90, "vel": 85, "eng": 95, "int": 95, "let": 90 }
+        "atributos": {
+            "fis": 90,
+            "vel": 85,
+            "eng": 95,
+            "int": 95,
+            "let": 90
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/geto-10-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/geto-10-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/geto-10-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Manipulação de Espíritos Amaldiçoados",
+        "habilidades": [
+            "Absorção de maldições.",
+            "Controle das maldições incorporadas ao seu arsenal."
+        ],
+        "ferramentas": []
     },
     {
         "id": "sukuna-11",
@@ -154,7 +487,36 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Sukuna ]",
         "corAura": "139, 0, 0",
-        "atributos": { "fis": 100, "vel": 100, "eng": 100, "int": 100, "let": 100 }
+        "atributos": {
+            "fis": 100,
+            "vel": 100,
+            "eng": 100,
+            "int": 100,
+            "let": 100
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/sukuna-11-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/sukuna-11-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/sukuna-11-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Técnicas de corte",
+        "habilidades": [
+            "Ataques cortantes com energia amaldiçoada.",
+            "Expansão de Domínio: Santuário Malevolente."
+        ],
+        "ferramentas": []
     },
     {
         "id": "mahito-12",
@@ -167,7 +529,36 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Mahito ]",
         "corAura": "0, 206, 209",
-        "atributos": { "fis": 75, "vel": 85, "eng": 90, "int": 85, "let": 100 }
+        "atributos": {
+            "fis": 75,
+            "vel": 85,
+            "eng": 90,
+            "int": 85,
+            "let": 100
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/mahito-12-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/mahito-12-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/mahito-12-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Transfiguração Ociosa",
+        "habilidades": [
+            "Altera a forma da alma por contato.",
+            "Remodela o corpo a partir dessas alterações."
+        ],
+        "ferramentas": []
     },
     {
         "id": "yuta-13",
@@ -180,7 +571,39 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Yuta ]",
         "corAura": "0, 0, 139",
-        "atributos": { "fis": 85, "vel": 85, "eng": 100, "int": 90, "let": 95 }
+        "atributos": {
+            "fis": 85,
+            "vel": 85,
+            "eng": 100,
+            "int": 90,
+            "let": 95
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/yuta-13-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/yuta-13-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/yuta-13-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Energia amaldiçoada e vínculo com Rika",
+        "habilidades": [
+            "Grandes reservas de energia amaldiçoada.",
+            "Combate com apoio de Rika."
+        ],
+        "ferramentas": [
+            "Katana"
+        ],
+        "afiliacao": "Colégio Jujutsu de Tokyo"
     },
     {
         "id": "choso-14",
@@ -193,7 +616,36 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Choso ]",
         "corAura": "139, 0, 0",
-        "atributos": { "fis": 80, "vel": 80, "eng": 85, "int": 85, "let": 90 }
+        "atributos": {
+            "fis": 80,
+            "vel": 80,
+            "eng": 85,
+            "int": 85,
+            "let": 90
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/choso-14-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/choso-14-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/choso-14-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Manipulação de Sangue",
+        "habilidades": [
+            "Controla o próprio sangue em combate.",
+            "Ataques de sangue concentrado."
+        ],
+        "ferramentas": []
     },
     {
         "id": "todo-15",
@@ -206,7 +658,37 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Todo ]",
         "corAura": "255, 20, 147",
-        "atributos": { "fis": 90, "vel": 85, "eng": 80, "int": 100, "let": 65 }
+        "atributos": {
+            "fis": 90,
+            "vel": 85,
+            "eng": 80,
+            "int": 100,
+            "let": 65
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/todo-15-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/todo-15-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/todo-15-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Boogie Woogie",
+        "habilidades": [
+            "Troca a posição de alvos com energia amaldiçoada ao bater palmas.",
+            "Combina força física e estratégia."
+        ],
+        "ferramentas": [],
+        "afiliacao": "Colégio Jujutsu de Kyoto"
     },
     {
         "id": "jogo-16",
@@ -219,7 +701,36 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Jogo ]",
         "corAura": "255, 69, 0",
-        "atributos": { "fis": 60, "vel": 95, "eng": 90, "int": 80, "let": 95 }
+        "atributos": {
+            "fis": 60,
+            "vel": 95,
+            "eng": 90,
+            "int": 80,
+            "let": 95
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/jogo-16-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/jogo-16-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/jogo-16-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Poderes vulcânicos",
+        "habilidades": [
+            "Ataques de fogo e calor intenso.",
+            "Ofensiva com manifestações vulcânicas."
+        ],
+        "ferramentas": []
     },
     {
         "id": "hanami-17",
@@ -232,7 +743,36 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Hanami ]",
         "corAura": "34, 139, 34",
-        "atributos": { "fis": 95, "vel": 75, "eng": 90, "int": 75, "let": 80 }
+        "atributos": {
+            "fis": 95,
+            "vel": 75,
+            "eng": 90,
+            "int": 75,
+            "let": 80
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/hanami-17-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/hanami-17-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/hanami-17-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Manipulação de plantas",
+        "habilidades": [
+            "Ataques com vegetação amaldiçoada.",
+            "Corpo de grande resistência."
+        ],
+        "ferramentas": []
     },
     {
         "id": "hakari-18",
@@ -245,7 +785,37 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Hakari ]",
         "corAura": "255, 215, 0",
-        "atributos": { "fis": 90, "vel": 85, "eng": 100, "int": 85, "let": 75 }
+        "atributos": {
+            "fis": 90,
+            "vel": 85,
+            "eng": 100,
+            "int": 85,
+            "let": 75
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/hakari-18-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/hakari-18-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/hakari-18-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Domínio baseado em apostas",
+        "habilidades": [
+            "Jackpot que concede energia amaldiçoada ilimitada por 4 minutos e 11 segundos.",
+            "Combate corporal sustentado pelo resultado da aposta."
+        ],
+        "ferramentas": [],
+        "afiliacao": "Colégio Jujutsu de Tokyo — suspenso"
     },
     {
         "id": "kashimo-19",
@@ -258,7 +828,36 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Kashimo ]",
         "corAura": "0, 255, 255",
-        "atributos": { "fis": 95, "vel": 95, "eng": 90, "int": 85, "let": 95 }
+        "atributos": {
+            "fis": 95,
+            "vel": 95,
+            "eng": 90,
+            "int": 85,
+            "let": 95
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/kashimo-19-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/kashimo-19-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/kashimo-19-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Energia amaldiçoada com propriedade elétrica",
+        "habilidades": [
+            "Descargas elétricas em combate.",
+            "Pressão ofensiva a curta distância."
+        ],
+        "ferramentas": []
     },
     {
         "id": "higuruma-20",
@@ -271,6 +870,164 @@
         "alturaImagem": 1402,
         "imgPlaceholder": "[ Arte do Higuruma ]",
         "corAura": "105, 105, 105",
-        "atributos": { "fis": 65, "vel": 70, "eng": 75, "int": 100, "let": 95 }
+        "atributos": {
+            "fis": 65,
+            "vel": 70,
+            "eng": 75,
+            "int": 100,
+            "let": 95
+        },
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/higuruma-20-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/higuruma-20-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/higuruma-20-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ],
+        "tecnica": "Domínio de julgamento",
+        "habilidades": [
+            "Submete o adversário a um julgamento.",
+            "Aplica as regras e consequências do domínio."
+        ],
+        "ferramentas": []
+    },
+    {
+        "nome": "Yuki Tsukumo",
+        "classe": "Grau Especial",
+        "tipo": "feiticeiro",
+        "descricao": "Feiticeira de Grau Especial que busca um mundo onde as maldições deixem de nascer. Prefere investigar a origem do problema a apenas exorcizar seus efeitos.",
+        "tecnica": "Star Rage — massa virtual",
+        "habilidades": [
+            "Adição de massa virtual aos próprios golpes.",
+            "Combate em conjunto com Garuda."
+        ],
+        "ferramentas": [
+            "Garuda"
+        ],
+        "afiliacao": "Feiticeira independente",
+        "corAura": "224, 170, 65",
+        "atributos": {
+            "fis": 98,
+            "vel": 85,
+            "eng": 95,
+            "int": 90,
+            "let": 95
+        },
+        "id": "yuki-21",
+        "imagem": "./assets/img/personagens/yuki-21.png",
+        "larguraImagem": 1122,
+        "alturaImagem": 1402,
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/yuki-21-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/yuki-21-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/yuki-21-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ]
+    },
+    {
+        "nome": "Ultimate Mechamaru",
+        "classe": "Grau Semi-1",
+        "tipo": "feiticeiro",
+        "descricao": "Marionete controlada à distância por Kokichi Muta, estudante de Kyoto. Sua Restrição Celestial amplia o alcance e a potência de sua energia amaldiçoada.",
+        "tecnica": "Manipulação de Marionetes",
+        "habilidades": [
+            "Controle remoto de corpos mecânicos.",
+            "Disparos de energia amaldiçoada a distância."
+        ],
+        "ferramentas": [
+            "Corpo mecânico de Ultimate Mechamaru"
+        ],
+        "afiliacao": "Colégio Jujutsu de Kyoto",
+        "corAura": "194, 144, 73",
+        "atributos": {
+            "fis": 65,
+            "vel": 60,
+            "eng": 90,
+            "int": 90,
+            "let": 80
+        },
+        "id": "mechamaru-22",
+        "imagem": "./assets/img/personagens/mechamaru-22.png",
+        "larguraImagem": 1122,
+        "alturaImagem": 1402,
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/mechamaru-22-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/mechamaru-22-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/mechamaru-22-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ]
+    },
+    {
+        "nome": "Dagon",
+        "classe": "Maldição de Grau Especial",
+        "tipo": "maldicao",
+        "descricao": "Maldição associada ao oceano. Em sua forma evoluída, combina um corpo resistente, ataques aquáticos e um domínio povoado por shikigami marinhos.",
+        "tecnica": "Manipulação de água e shikigami",
+        "habilidades": [
+            "Ataques e defesa com grandes volumes de água.",
+            "Invocação de shikigami marinhos dentro de seu domínio."
+        ],
+        "ferramentas": [],
+        "corAura": "34, 170, 190",
+        "atributos": {
+            "fis": 85,
+            "vel": 70,
+            "eng": 90,
+            "int": 70,
+            "let": 85
+        },
+        "id": "dagon-23",
+        "imagem": "./assets/img/personagens/dagon-23.png",
+        "larguraImagem": 1122,
+        "alturaImagem": 1402,
+        "retratos": [
+            {
+                "imagem": "./assets/img/personagens/webp/dagon-23-480.webp",
+                "largura": 480,
+                "altura": 600
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/dagon-23-800.webp",
+                "largura": 800,
+                "altura": 1000
+            },
+            {
+                "imagem": "./assets/img/personagens/webp/dagon-23-1122.webp",
+                "largura": 1122,
+                "altura": 1402
+            }
+        ]
     }
 ]
